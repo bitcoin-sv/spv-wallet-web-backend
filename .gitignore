@@ -1,0 +1,6 @@
+# Additional extensions related to IDEs
+.idea
+.vscode
+
+# Docker
+.env
