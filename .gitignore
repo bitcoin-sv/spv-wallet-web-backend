@@ -1,1 +1,6 @@
-/data/sql/db
+.idea/
+*.iml
+
+build/
+dist/
+/release/artifacts/
