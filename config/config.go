@@ -1,0 +1,47 @@
+package config
+
+// Define basic db config.
+const (
+	// EnvDbHost define the database host.
+	EnvDbHost = "db.host"
+	// EnvDbPort define the database port.
+	EnvDbPort = "db.port"
+	// EnvDbUser define the database user.
+	EnvDbUser = "db.user"
+	// EnvDbPassword define the database password.
+	EnvDbPassword = "db.password"
+	// EnvDbName define the database name.
+	EnvDbName = "db.name"
+	// EnvDbSslMode define the database ssl mode.
+	EnvDbSslMode = "db.sslMode"
+	// EnvDbMigrationsPath define the database migrations path.
+	EnvDbMigrationsPath = "db.migrationsPath"
+)
+
+// Define basic http server config.
+const (
+	// EnvHttpServerReadTimeout http server read timeout.
+	EnvHttpServerReadTimeout = "http.server.readTimeout"
+	// EnvHttpServerWriteTimeout http server write timeout.
+	EnvHttpServerWriteTimeout = "http.server.writeTimeout"
+	// EnvHttpServerPort http server port.
+	EnvHttpServerPort = "http.server.port"
+	// EnvHttpServerUrlPrefix http server url prefix.
+	EnvHttpServerUrlPrefix = "http.server.urlPrefix"
+)
+
+// Config returns strongly typed config values.
+type Config struct {
+	Db *Db
+}
+
+// Db represents a database connection.
+type Db struct {
+	Host           string
+	Port           int
+	User           string
+	Password       string
+	Name           string
+	SslMode        string
+	MigrationsPath string
+}
