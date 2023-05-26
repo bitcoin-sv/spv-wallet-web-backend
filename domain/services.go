@@ -1,8 +1,8 @@
 package domain
 
 import (
-	"bux-wallet/domain/users"
 	db_users "bux-wallet/data/users"
+	"bux-wallet/domain/users"
 )
 
 // Services is a struct that contains all services.

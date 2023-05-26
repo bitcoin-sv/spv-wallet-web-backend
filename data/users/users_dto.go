@@ -6,7 +6,7 @@ import (
 
 // UserDto is a struct that represent user database record.
 type UserDto struct {
-	Username  string    `db:"username"`
+	Email     string    `db:"email"`
 	Password  string    `db:"password"`
 	Mnemonic  string    `db:"mnemonic"`
 	Xpriv     string    `db:"xpriv"`
