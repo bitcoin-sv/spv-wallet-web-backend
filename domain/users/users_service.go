@@ -2,7 +2,7 @@ package users
 
 import (
 	"bux-wallet/data/users"
-	"bux-wallet/hash"
+	"bux-wallet/encryption"
 	buxclient "bux-wallet/transports/bux/client"
 	"context"
 	"time"
@@ -15,16 +15,14 @@ import (
 // UserService represents User service and provide access to repository.
 type UserService struct {
 	repo      UsersRepository
-	BuxClient *buxclient.BClient
-	Hasher    *hash.SHA256Hasher
+	BuxClient *buxclient.AdminBuxClient
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo *users.UsersRepository, buxClient *buxclient.BClient, hasher *hash.SHA256Hasher) *UserService {
+func NewUserService(repo *users.UsersRepository, buxClient *buxclient.AdminBuxClient) *UserService {
 	return &UserService{
 		repo:      repo,
 		BuxClient: buxClient,
-		Hasher:    hasher,
 	}
 }
 
@@ -35,64 +33,46 @@ func (s *UserService) InsertUser(user *User) error {
 }
 
 // CreateNewUser creates new user.
-func (s *UserService) CreateNewUser(email, password string) (*User, error) {
+func (s *UserService) CreateNewUser(email, password string) (string, error) {
 	// Generate mnemonic and seed
 	mnemonic, seed, err := generateMnemonic()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	xpriv, err := generateXpriv(seed)
 	if err != nil {
-		return nil, err
+		return "", err
+	}
+
+	// Create hash from password
+	hashedPassword, err := encryption.Hash(password)
+	if err != nil {
+		return "", err
+	}
+
+	// Encrypt xpriv with hashed password
+	encryptedXpriv, err := encryption.Encrypt(hashedPassword, xpriv.String())
+
+	if err != nil {
+		return "", err
 	}
 
 	user := &User{
 		Email:     email,
-		Password:  password,
-		Mnemonic:  mnemonic,
-		Xpriv:     xpriv.String(),
+		Xpriv:     encryptedXpriv,
 		CreatedAt: time.Now(),
-	}
-
-	// Hash user data
-	err = s.hashUser(user)
-	if err != nil {
-		return nil, err
 	}
 
 	err = s.InsertUser(user)
 	if err == nil {
 		err = s.BuxClient.RegisterXpub(xpriv)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 	}
 
-	// Restore uncrypted mnemonic to show it to user.
-	user.Mnemonic = mnemonic
-	return user, err
-}
-
-func (s *UserService) hashUser(user *User) error {
-	hashedPassword, err := s.Hasher.Hash(user.Password)
-	if err != nil {
-		return err
-	}
-	hashedMnemonic, err := s.Hasher.Hash(user.Mnemonic)
-	if err != nil {
-		return err
-	}
-	hashedXpriv, err := s.Hasher.Hash(user.Xpriv)
-	if err != nil {
-		return err
-	}
-
-	user.Password = hashedPassword
-	user.Mnemonic = hashedMnemonic
-	user.Xpriv = hashedXpriv
-
-	return nil
+	return mnemonic, err
 }
 
 // generateMnemonic generates mnemonic and seed.
