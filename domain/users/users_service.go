@@ -2,6 +2,7 @@ package users
 
 import (
 	"bux-wallet/data/users"
+	bux_client "bux-wallet/transports/bux/client"
 	"context"
 	"time"
 
@@ -12,13 +13,15 @@ import (
 
 // UserService represents User service and provide access to repository.
 type UserService struct {
-	repo UsersRepository
+	repo      UsersRepository
+	BuxClient *bux_client.BClient
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo *users.UsersRepository) *UserService {
+func NewUserService(repo *users.UsersRepository, buxClient *bux_client.BClient) *UserService {
 	return &UserService{
-		repo: repo,
+		repo:      repo,
+		BuxClient: buxClient,
 	}
 }
 
@@ -45,10 +48,15 @@ func (s *UserService) CreateNewUser(email, password string) (*User, error) {
 		Email:     email,
 		Password:  password,
 		Mnemonic:  mnemonic,
-		Xpriv:     xpriv,
+		Xpriv:     xpriv.String(),
 		CreatedAt: time.Now(),
 	}
 	err = s.InsertUser(user)
+
+	if err == nil {
+		s.BuxClient.RegisterXpub(xpriv)
+
+	}
 	return user, err
 }
 
@@ -63,10 +71,10 @@ func generateMnemonic() (string, []byte, error) {
 }
 
 // generateXpriv generates xpriv from seed.
-func generateXpriv(seed []byte) (string, error) {
-	hdXpriv, err := bip32.NewMaster(seed, &chaincfg.MainNet)
+func generateXpriv(seed []byte) (*bip32.ExtendedKey, error) {
+	xpriv, err := bip32.NewMaster(seed, &chaincfg.MainNet)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return hdXpriv.String(), nil
+	return xpriv, nil
 }

@@ -11,6 +11,7 @@ func NewViperConfig(appname string) *Config {
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	setHttpServerDefaults()
+	setBuxDefaults()
 	return &Config{}
 }
 
@@ -42,4 +43,12 @@ func setHttpServerDefaults() {
 	viper.SetDefault(EnvHttpServerWriteTimeout, 10)
 	viper.SetDefault(EnvHttpServerPort, 8080)
 	viper.SetDefault(EnvHttpServerUrlPrefix, "/api/v1")
+}
+
+// setBuxDefaults sets default values for bux connection.
+func setBuxDefaults() {
+	viper.SetDefault("bux.admin.xpriv", "xprv")
+	viper.SetDefault("bux.server.url", "http://localhost:3003/v1")
+	viper.SetDefault("bux.withDebug", true)
+	viper.SetDefault("bux.sign.request", true)
 }
