@@ -12,6 +12,7 @@ func NewViperConfig(appname string) *Config {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	setHttpServerDefaults()
 	setBuxDefaults()
+	setHashDefaults()
 	return &Config{}
 }
 
@@ -51,4 +52,9 @@ func setBuxDefaults() {
 	viper.SetDefault("bux.server.url", "http://localhost:3003/v1")
 	viper.SetDefault("bux.withDebug", true)
 	viper.SetDefault("bux.sign.request", true)
+}
+
+// setHashDefaults sets default values for hash.
+func setHashDefaults() {
+	viper.SetDefault(EnvHashSalt, "bux")
 }

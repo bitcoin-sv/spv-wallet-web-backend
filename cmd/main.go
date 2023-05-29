@@ -5,6 +5,8 @@ import (
 	"bux-wallet/config/databases"
 	db_users "bux-wallet/data/users"
 	"bux-wallet/domain"
+	"bux-wallet/hash"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"net/http"
@@ -24,11 +26,8 @@ const appname = "bux-wallet-backend"
 
 func main() {
 	// Load config.
-	c := config.NewViperConfig(appname).
+	config.NewViperConfig(appname).
 		WithDb()
-
-	fmt.Println(c)
-	fmt.Println(c.Db.Host)
 
 	db := databases.SetUpDatabase()
 	defer db.Close() // nolint: all
@@ -39,7 +38,10 @@ func main() {
 		fmt.Println("cannot create bux client: ", err)
 		os.Exit(1)
 	}
-	s := domain.NewServices(repo, buxClient)
+
+	hasher := hash.NewSHA256Hasher(viper.GetString(config.EnvHashSalt), sha256.New())
+
+	s := domain.NewServices(repo, buxClient, hasher)
 
 	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort))
 	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s))

@@ -8,7 +8,7 @@ import (
 // User is a struct that contains user data.
 type User struct {
 	Email     string    `json:"email"`
-	Password  string    `json:"password"`
+	Password  string    `json:"-"`
 	Mnemonic  string    `json:"mnemonic"`
 	Xpriv     string    `json:"-"`
 	CreatedAt time.Time `json:"created_at"`

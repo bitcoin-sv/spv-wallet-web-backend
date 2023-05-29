@@ -2,6 +2,7 @@ package users
 
 import (
 	"bux-wallet/data/users"
+	"bux-wallet/hash"
 	bux_client "bux-wallet/transports/bux/client"
 	"context"
 	"time"
@@ -15,13 +16,15 @@ import (
 type UserService struct {
 	repo      UsersRepository
 	BuxClient *bux_client.BClient
+	Hasher    *hash.SHA256Hasher
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo *users.UsersRepository, buxClient *bux_client.BClient) *UserService {
+func NewUserService(repo *users.UsersRepository, buxClient *bux_client.BClient, hasher *hash.SHA256Hasher) *UserService {
 	return &UserService{
 		repo:      repo,
 		BuxClient: buxClient,
+		Hasher:    hasher,
 	}
 }
 
@@ -51,13 +54,43 @@ func (s *UserService) CreateNewUser(email, password string) (*User, error) {
 		Xpriv:     xpriv.String(),
 		CreatedAt: time.Now(),
 	}
-	err = s.InsertUser(user)
 
+	// Hash user data
+	err = s.hashUser(user)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.InsertUser(user)
 	if err == nil {
 		s.BuxClient.RegisterXpub(xpriv)
 
 	}
+
+	// Restore uncrypted mnemonic to show it to user.
+	user.Mnemonic = mnemonic
 	return user, err
+}
+
+func (s *UserService) hashUser(user *User) error {
+	hashedPassword, err := s.Hasher.Hash(user.Password)
+	if err != nil {
+		return err
+	}
+	hashedMnemonic, err := s.Hasher.Hash(user.Mnemonic)
+	if err != nil {
+		return err
+	}
+	hashedXpriv, err := s.Hasher.Hash(user.Xpriv)
+	if err != nil {
+		return err
+	}
+
+	user.Password = hashedPassword
+	user.Mnemonic = hashedMnemonic
+	user.Xpriv = hashedXpriv
+
+	return nil
 }
 
 // generateMnemonic generates mnemonic and seed.
