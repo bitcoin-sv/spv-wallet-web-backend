@@ -1,6 +1,6 @@
 package users
 
-// UserSignIn is a struct that contains user sign in data.
+// RegisterUser is a struct that contains user register data.
 type RegisterUser struct {
 	Email                string `json:"email"`
 	Password             string `json:"password"`

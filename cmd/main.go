@@ -17,7 +17,7 @@ import (
 	"bux-wallet/transports/http/endpoints"
 	httpserver "bux-wallet/transports/http/server"
 
-	bux_client "bux-wallet/transports/bux/client"
+	buxclient "bux-wallet/transports/bux/client"
 
 	"github.com/spf13/viper"
 )
@@ -33,7 +33,7 @@ func main() {
 	defer db.Close() // nolint: all
 
 	repo := db_users.NewUsersRepository(db)
-	buxClient, err := bux_client.CreateAdminBuxClient()
+	buxClient, err := buxclient.CreateAdminBuxClient()
 	if err != nil {
 		fmt.Println("cannot create bux client: ", err)
 		os.Exit(1)

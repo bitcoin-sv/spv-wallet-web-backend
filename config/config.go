@@ -42,7 +42,7 @@ const (
 	EnvBuxSignRequest = "bux.sign.request"
 )
 
-// Define basic hash config.
+// EnvHashSalt define the hash salt.
 const EnvHashSalt = "hash.salt"
 
 // Config returns strongly typed config values.

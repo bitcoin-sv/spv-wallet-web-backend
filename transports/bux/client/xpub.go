@@ -1,4 +1,4 @@
-package bux_client
+package buxclient
 
 import (
 	"context"

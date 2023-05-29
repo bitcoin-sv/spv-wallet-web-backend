@@ -1,4 +1,4 @@
-package bux_client
+package buxclient
 
 import (
 	"bux-wallet/config"
@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// BClient is a wrapper for Bux Client.
 type BClient struct {
 	AdminClient *buxclient.BuxClient
 }
