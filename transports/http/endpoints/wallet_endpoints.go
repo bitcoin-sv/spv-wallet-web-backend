@@ -23,7 +23,7 @@ func SetupWalletRoutes(s *domain.Services) httpserver.GinEngineOpt {
 
 	return func(engine *gin.Engine) {
 		prefix := viper.GetString(config.EnvHttpServerUrlPrefix)
-		rootRouter := engine.Group(prefix)
+		rootRouter := engine.Group("")
 		apiRouter := engine.Group(prefix)
 		for _, r := range routes {
 			switch r := r.(type) {

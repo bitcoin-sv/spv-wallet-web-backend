@@ -7,13 +7,18 @@ import (
 	"github.com/spf13/viper"
 )
 
-// BClient is a wrapper for Bux Client.
-type BClient struct {
-	AdminClient *buxclient.BuxClient
+// AdminBuxClient is a wrapper for Admin Bux Client.
+type AdminBuxClient struct {
+	client *buxclient.BuxClient
+}
+
+// BuxClient is a wrapper for Bux Client.
+type BuxClient struct {
+	client *buxclient.BuxClient
 }
 
 // CreateAdminBuxClient creates instance of Bux Client with admin keys.
-func CreateAdminBuxClient() (*BClient, error) {
+func CreateAdminBuxClient() (*AdminBuxClient, error) {
 	// Get env variables.
 	xpriv := viper.GetString(config.EnvBuxAdminXpriv)
 	serverUrl := viper.GetString(config.EnvBuxServerUrl)
@@ -33,11 +38,11 @@ func CreateAdminBuxClient() (*BClient, error) {
 		return nil, err
 	}
 
-	return &BClient{AdminClient: buxClient}, nil
+	return &AdminBuxClient{client: buxClient}, nil
 }
 
 // CreateBuxClient creates instance of Bux Client with user xpub.
-func CreateBuxClient(xpub string) (*BClient, error) {
+func CreateBuxClient(xpub string) (*BuxClient, error) {
 	// Get env variables.
 	serverUrl := viper.GetString(config.EnvBuxServerUrl)
 	debug := viper.GetBool(config.EnvBuxWithDebug)
@@ -55,5 +60,5 @@ func CreateBuxClient(xpub string) (*BClient, error) {
 		return nil, err
 	}
 
-	return &BClient{AdminClient: buxClient}, nil
+	return &BuxClient{buxClient}, nil
 }

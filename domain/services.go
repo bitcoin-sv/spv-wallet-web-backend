@@ -3,7 +3,6 @@ package domain
 import (
 	db_users "bux-wallet/data/users"
 	"bux-wallet/domain/users"
-	"bux-wallet/hash"
 	buxclient "bux-wallet/transports/bux/client"
 )
 
@@ -13,8 +12,8 @@ type Services struct {
 }
 
 // NewServices creates services instance.
-func NewServices(usersRepo *db_users.UsersRepository, buxClient *buxclient.BClient, hasher *hash.SHA256Hasher) *Services {
+func NewServices(usersRepo *db_users.UsersRepository, adminBuxClient *buxclient.AdminBuxClient) *Services {
 	return &Services{
-		UsersService: users.NewUserService(usersRepo, buxClient, hasher),
+		UsersService: users.NewUserService(usersRepo, adminBuxClient),
 	}
 }

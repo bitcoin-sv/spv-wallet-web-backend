@@ -21,13 +21,21 @@ func NewHandler(s *domain.Services) router.ApiEndpoints {
 
 // RegisterApiEndpoints registers routes that are part of service API.
 func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
-	tokens := router.Group("")
+	users := router.Group("/user")
 	{
-		tokens.POST("/register", h.register)
+		users.POST("", h.register)
 	}
 }
 
 // register registers new user.
+//
+//	@Summary Register new user
+//	@Tags user
+//	@Accept */*
+//	@Produce json
+//	@Success 200 {object} RegisterResponse
+//	@Router /user [post]
+//	@Param data body RegisterUser true "User data"
 func (h *handler) register(c *gin.Context) {
 	var reqUser RegisterUser
 	err := c.Bind(&reqUser)
@@ -44,7 +52,7 @@ func (h *handler) register(c *gin.Context) {
 		return
 	}
 
-	user, err := h.service.CreateNewUser(reqUser.Email, reqUser.Password)
+	mnemonic, err := h.service.CreateNewUser(reqUser.Email, reqUser.Password)
 
 	// Check if user with this email already exists or there is another error
 	if err != nil {
@@ -52,5 +60,5 @@ func (h *handler) register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, RegisterReposne{Mnemonic: mnemonic})
 }

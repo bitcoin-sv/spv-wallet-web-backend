@@ -5,8 +5,6 @@ import (
 	"bux-wallet/config/databases"
 	db_users "bux-wallet/data/users"
 	"bux-wallet/domain"
-	"bux-wallet/hash"
-	"crypto/sha256"
 	"errors"
 	"fmt"
 	"net/http"
@@ -39,9 +37,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	hasher := hash.NewSHA256Hasher(viper.GetString(config.EnvHashSalt), sha256.New())
-
-	s := domain.NewServices(repo, buxClient, hasher)
+	s := domain.NewServices(repo, buxClient)
 
 	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort))
 	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s))

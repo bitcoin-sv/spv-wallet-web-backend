@@ -6,3 +6,8 @@ type RegisterUser struct {
 	Password             string `json:"password"`
 	PasswordConfirmation string `json:"passwordConfirmation"`
 }
+
+// RegisterReposne is a struct that contains user mnemonic.
+type RegisterReposne struct {
+	Mnemonic string `json:"mnemonic"`
+}

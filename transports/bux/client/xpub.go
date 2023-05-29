@@ -8,8 +8,8 @@ import (
 	"github.com/libsv/go-bk/bip32"
 )
 
-// RegisterXpub registers xpub in blockchain.
-func (buxClient *BClient) RegisterXpub(xpriv *bip32.ExtendedKey) error {
+// RegisterXpub registers xpub in bux.
+func (adminBuxClient *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) error {
 	// Get xpub from xpriv.
 	xpub, err := xpriv.Neuter()
 
@@ -19,7 +19,7 @@ func (buxClient *BClient) RegisterXpub(xpriv *bip32.ExtendedKey) error {
 	}
 
 	// Register new xpub in BUX.
-	err = buxClient.AdminClient.NewXpub(
+	err = adminBuxClient.client.NewXpub(
 		context.Background(), xpub.String(), &bux.Metadata{},
 	)
 
