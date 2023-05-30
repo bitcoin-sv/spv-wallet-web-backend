@@ -40,44 +40,44 @@ func (s *UserService) InsertUser(user *User) error {
 }
 
 // CreateNewUser creates new user.
-func (s *UserService) CreateNewUser(email, password string) (mnemonic, paymail string, err error) {
+func (s *UserService) CreateNewUser(email, password string) (*NewUser, error) {
 	// Validate user.
-	err = s.validateUser(email)
+	err := s.validateUser(email)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
 
 	// Generate mnemonic and seed
 	mnemonic, seed, err := generateMnemonic()
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
 
 	xpriv, err := generateXpriv(seed)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
 
 	// Encrypt xpriv
 	encryptedXpriv, err := encryptXpriv(password, xpriv.String())
 
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
 
 	// Register xpub in BUX.
 	xpub, err := s.BuxClient.RegisterXpub(xpriv)
 	if err != nil {
-		return "", "", fmt.Errorf("error registering xpub in BUX: %s", err.Error())
+		return nil, fmt.Errorf("error registering xpub in BUX: %s", err.Error())
 	}
 
 	// Get username from email which will be used as paymail alias.
 	username, _ := splitEmail(email)
 
 	// Register paymail in BUX.
-	paymail, err = s.BuxClient.RegisterNewPaymail(username, xpub)
+	paymail, err := s.BuxClient.RegisterNewPaymail(username, xpub)
 	if err != nil {
-		return "", "", fmt.Errorf("error registering paymail in BUX: %s", err.Error())
+		return nil, fmt.Errorf("error registering paymail in BUX: %s", err.Error())
 	}
 
 	// Create and save new user.
@@ -90,10 +90,15 @@ func (s *UserService) CreateNewUser(email, password string) (mnemonic, paymail s
 
 	err = s.InsertUser(user)
 	if err != nil {
-		return "", "", err
+		return nil, err
 	}
 
-	return mnemonic, paymail, err
+	newUSerData := &NewUser{
+		Mnemonic: mnemonic,
+		Paymail:  password,
+	}
+
+	return newUSerData, err
 }
 
 func (s *UserService) validateUser(email string) error {

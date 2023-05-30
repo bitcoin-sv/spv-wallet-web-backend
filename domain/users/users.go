@@ -13,6 +13,12 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// NewUser is a struct that contains new user information used to create http response.
+type NewUser struct {
+	Mnemonic string `json:"mnemonic"`
+	Paymail  string `json:"paymail"`
+}
+
 // toUserDto converts User to UserDto.
 func (user *User) toUserDto() *users.UserDto {
 	return &users.UserDto{

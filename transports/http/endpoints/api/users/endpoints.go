@@ -53,7 +53,7 @@ func (h *handler) register(c *gin.Context) {
 		return
 	}
 
-	mnemonic, paymail, err := h.service.CreateNewUser(reqUser.Email, reqUser.Password)
+	newUser, err := h.service.CreateNewUser(reqUser.Email, reqUser.Password)
 
 	// Check if user with this email already exists or there is another error
 	if err != nil {
@@ -63,8 +63,8 @@ func (h *handler) register(c *gin.Context) {
 
 	// Create response
 	response := RegisterResposne{
-		Mnemonic: mnemonic,
-		Paymail:  paymail,
+		Mnemonic: newUser.Mnemonic,
+		Paymail:  newUser.Paymail,
 	}
 
 	c.JSON(http.StatusOK, response)
