@@ -2,6 +2,8 @@ package users
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/mail"
 	"strings"
@@ -115,17 +117,16 @@ func (s *UserService) validateUser(email string) error {
 	}
 
 	// Check if user with email already exists.
-	exists := s.checkIfUserExists(email)
-	if exists {
-		return fmt.Errorf("user with email %s already exists", email)
+	_, err = s.repo.GetUserByEmail(context.Background(), email)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil
+		}
+		return err
 	}
 
-	return nil
-}
-
-func (s *UserService) checkIfUserExists(email string) bool {
-	_, err := s.repo.GetUserByEmail(context.Background(), email)
-	return err == nil
+	return fmt.Errorf("user with email %s already exists", email)
 }
 
 // generateMnemonic generates mnemonic and seed.

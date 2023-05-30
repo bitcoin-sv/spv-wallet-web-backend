@@ -3,8 +3,6 @@ package users
 import (
 	"context"
 	"database/sql"
-
-	"github.com/pkg/errors"
 )
 
 const (
@@ -47,9 +45,9 @@ func (r *UsersRepository) InsertUser(ctx context.Context, user *UserDto) error {
 	}
 	defer stmt.Close() //nolint:all
 	if _, err = stmt.Exec(user.Email, user.Xpriv, user.Paymail, user.CreatedAt); err != nil {
-		return errors.Wrap(err, "failed to insert new user")
+		return err
 	}
-	return errors.Wrap(tx.Commit(), "failed to commit tx")
+	return tx.Commit()
 }
 
 // GetUserByEmail returns user by email.
@@ -57,7 +55,7 @@ func (r *UsersRepository) GetUserByEmail(ctx context.Context, email string) (*Us
 	var user UserDto
 	row := r.db.QueryRowContext(ctx, postgresGetUserByEmail, email)
 	if err := row.Scan(&user.Email, &user.Xpriv, &user.Paymail, &user.CreatedAt); err != nil {
-		return nil, errors.Wrap(err, "failed to get user by email")
+		return nil, err
 	}
 	return &user, nil
 }

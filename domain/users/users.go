@@ -13,7 +13,7 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-// NewUser is a struct that contains new user information used to create http response.
+// CreatedUser is a struct that contains new user information used to create http response.
 type CreatedUser struct {
 	User     *User
 	Mnemonic string
