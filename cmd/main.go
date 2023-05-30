@@ -23,6 +23,10 @@ import (
 
 const appname = "bux-wallet-backend"
 
+// nolint: godot
+// @title           Bux Wallet API
+// @version			1.0
+// @description     This is an API for bux wallet.
 func main() {
 	// Load config.
 	config.NewViperConfig(appname).

@@ -1,9 +1,10 @@
 package users
 
 import (
+	"net/http"
+
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
-	"net/http"
 
 	"bux-wallet/transports/http/endpoints/api"
 	router "bux-wallet/transports/http/endpoints/routes"
@@ -22,9 +23,9 @@ func NewHandler(s *domain.Services) router.ApiEndpoints {
 
 // RegisterApiEndpoints registers routes that are part of service API.
 func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
-	users := router.Group("/user")
+	user := router.Group("/user")
 	{
-		users.POST("", h.register)
+		user.POST("", h.register)
 	}
 }
 
@@ -36,7 +37,7 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 //	@Accept */*
 //	@Produce json
 //	@Success 200 {object} RegisterResponse
-//	@Router /user [post]
+//	@Router /api/v1/user [post]
 //	@Param data body RegisterUser true "User data"
 func (h *handler) register(c *gin.Context) {
 	var reqUser RegisterUser
@@ -63,7 +64,7 @@ func (h *handler) register(c *gin.Context) {
 	}
 
 	// Create response
-	response := RegisterResposne{
+	response := RegisterResponse{
 		Mnemonic: newUser.Mnemonic,
 		Paymail:  newUser.User.Paymail,
 	}
