@@ -29,6 +29,7 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 }
 
 // register registers new user.
+// @Description Register new user with given data, paymail is created based on username from sended email.
 //
 //	@Summary Register new user
 //	@Tags user
@@ -49,7 +50,7 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if sended passwords match
 	if reqUser.Password != reqUser.PasswordConfirmation {
-		c.JSON(http.StatusBadRequest, api.CreateErrorResponse("passwords do not match"))
+		c.JSON(http.StatusBadRequest, api.NewResponseFromString("passwords do not match"))
 		return
 	}
 
@@ -57,14 +58,14 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if user with this email already exists or there is another error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.CreateErrorResponse(err.Error()))
+		c.JSON(http.StatusBadRequest, api.NewResponseFromError(err))
 		return
 	}
 
 	// Create response
 	response := RegisterResposne{
 		Mnemonic: newUser.Mnemonic,
-		Paymail:  newUser.Paymail,
+		Paymail:  newUser.User.Paymail,
 	}
 
 	c.JSON(http.StatusOK, response)

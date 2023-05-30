@@ -6,8 +6,15 @@ type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
-// CreateErrorResponse creates ErrorResponse from string.
-func CreateErrorResponse(err string) *ErrorResponse {
+// NewResponseFromError creates ErrorResponse from error.
+func NewResponseFromError(err error) *ErrorResponse {
+	return &ErrorResponse{
+		Error: err.Error(),
+	}
+}
+
+// NewResponseFromString creates ErrorResponse from string.
+func NewResponseFromString(err string) *ErrorResponse {
 	return &ErrorResponse{
 		Error: err,
 	}

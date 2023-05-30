@@ -40,9 +40,15 @@ func (s *UserService) InsertUser(user *User) error {
 }
 
 // CreateNewUser creates new user.
-func (s *UserService) CreateNewUser(email, password string) (*NewUser, error) {
+func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error) {
+	// Validate password.
+	err := validatePassword(password)
+	if err != nil {
+		return nil, err
+	}
+
 	// Validate user.
-	err := s.validateUser(email)
+	err = s.validateUser(email)
 	if err != nil {
 		return nil, err
 	}
@@ -93,9 +99,9 @@ func (s *UserService) CreateNewUser(email, password string) (*NewUser, error) {
 		return nil, err
 	}
 
-	newUSerData := &NewUser{
+	newUSerData := &CreatedUser{
+		User:     user,
 		Mnemonic: mnemonic,
-		Paymail:  password,
 	}
 
 	return newUSerData, err
@@ -164,4 +170,14 @@ func splitEmail(email string) (string, string) {
 	username, domain := components[0], components[1]
 
 	return username, domain
+}
+
+// validatePassword trim and validates password.
+func validatePassword(password string) error {
+	trimedPassword := strings.TrimSpace(password)
+	if trimedPassword == "" {
+		return fmt.Errorf("correct password is required")
+	}
+
+	return nil
 }

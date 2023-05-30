@@ -14,9 +14,9 @@ type User struct {
 }
 
 // NewUser is a struct that contains new user information used to create http response.
-type NewUser struct {
-	Mnemonic string `json:"mnemonic"`
-	Paymail  string `json:"paymail"`
+type CreatedUser struct {
+	User     *User
+	Mnemonic string
 }
 
 // toUserDto converts User to UserDto.
