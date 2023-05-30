@@ -45,6 +45,11 @@ const (
 // EnvHashSalt define the hash salt.
 const EnvHashSalt = "hash.salt"
 
+const (
+	// EnvLoggingLevel define logging level for running application.
+	EnvLoggingLevel = "logging.level"
+)
+
 // Config returns strongly typed config values.
 type Config struct {
 	Db *Db

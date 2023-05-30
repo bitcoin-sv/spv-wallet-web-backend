@@ -2,6 +2,8 @@ package databases
 
 import (
 	"bux-wallet/config"
+	"bux-wallet/logging"
+
 	"database/sql"
 	"fmt"
 
@@ -13,7 +15,9 @@ import (
 )
 
 // SetUpDatabase is used to set up database connection.
-func SetUpDatabase() *sql.DB {
+func SetUpDatabase(lf logging.LoggerFactory) *sql.DB {
+	log := lf.NewLogger("databases")
+
 	// Load config.
 	host := viper.GetString(config.EnvDbHost)
 	port := viper.GetInt(config.EnvDbPort)
@@ -27,7 +31,7 @@ func SetUpDatabase() *sql.DB {
 		"password=%s dbname=%s sslmode=%s",
 		host, port, user, password, dbname, sslMode)
 
-	fmt.Println(psqlInfo)
+	log.Debug(psqlInfo)
 
 	// Open database connection.
 	db, err := sql.Open("postgres", psqlInfo)
@@ -43,7 +47,7 @@ func SetUpDatabase() *sql.DB {
 
 	// defer db.Close()
 
-	fmt.Println("Successfully connected!")
+	log.Info("Successfully connected!")
 
 	runMigration(db)
 

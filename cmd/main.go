@@ -5,8 +5,9 @@ import (
 	"bux-wallet/config/databases"
 	db_users "bux-wallet/data/users"
 	"bux-wallet/domain"
+	"bux-wallet/logging"
+
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -27,24 +28,27 @@ func main() {
 	config.NewViperConfig(appname).
 		WithDb()
 
-	db := databases.SetUpDatabase()
+	lf := logging.DefaultLoggerFactory()
+	log := lf.NewLogger("main")
+
+	db := databases.SetUpDatabase(lf)
 	defer db.Close() // nolint: all
 
 	repo := db_users.NewUsersRepository(db)
-	buxClient, err := buxclient.CreateAdminBuxClient()
+	buxClient, err := buxclient.CreateAdminBuxClient(lf)
 	if err != nil {
-		fmt.Println("cannot create bux client: ", err)
+		log.Errorf("cannot create bux client: %v", err)
 		os.Exit(1)
 	}
 
-	s := domain.NewServices(repo, buxClient)
+	s := domain.NewServices(repo, buxClient, lf)
 
-	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort))
+	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort), lf)
 	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s))
 
 	go func() {
 		if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			fmt.Println("cannot start server because of an error: ", err)
+			log.Errorf("cannot start server because of an error: ", err)
 			os.Exit(1)
 		}
 	}()
@@ -55,6 +59,6 @@ func main() {
 	<-quit
 
 	if err := server.Shutdown(); err != nil {
-		fmt.Println("failed to stop http server: ", err)
+		log.Errorf("failed to stop http server: ", err)
 	}
 }

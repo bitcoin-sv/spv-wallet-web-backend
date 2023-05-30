@@ -6,6 +6,7 @@ require (
 	github.com/BuxOrg/bux v0.5.1
 	github.com/BuxOrg/go-buxclient v0.3.1
 	github.com/libsv/go-bk v0.1.6
+	github.com/rs/zerolog v1.29.1
 	github.com/spf13/viper v1.15.0
 	github.com/xdg-go/pbkdf2 v1.0.0
 )
@@ -70,6 +71,7 @@ require (
 	github.com/machinebox/graphql v0.2.2 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/matryer/respond v1.0.1 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/miekg/dns v1.1.54 // indirect
