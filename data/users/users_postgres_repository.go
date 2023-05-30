@@ -9,8 +9,8 @@ import (
 
 const (
 	postgresInsertUser = `
-	INSERT INTO users(email, xpriv, created_at)
-	VALUES($1, $2, $3)
+	INSERT INTO users(email, xpriv, paymail, created_at)
+	VALUES($1, $2, $3, $4)
 	`
 )
 
@@ -40,7 +40,7 @@ func (r *UsersRepository) InsertUser(ctx context.Context, user *UserDto) error {
 		return err
 	}
 	defer stmt.Close() //nolint:all
-	if _, err = stmt.Exec(user.Email, user.Xpriv, user.CreatedAt); err != nil {
+	if _, err = stmt.Exec(user.Email, user.Xpriv, user.Paymail, user.CreatedAt); err != nil {
 		return errors.Wrap(err, "failed to insert new user")
 	}
 	return errors.Wrap(tx.Commit(), "failed to commit tx")

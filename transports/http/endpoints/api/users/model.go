@@ -10,4 +10,5 @@ type RegisterUser struct {
 // RegisterReposne is a struct that contains user mnemonic.
 type RegisterReposne struct {
 	Mnemonic string `json:"mnemonic"`
+	Paymail  string `json:"paymail"`
 }

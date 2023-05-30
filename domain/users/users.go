@@ -9,6 +9,7 @@ import (
 type User struct {
 	Email     string    `json:"email"`
 	Xpriv     string    `json:"-"`
+	Paymail   string    `json:"paymail"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -17,6 +18,7 @@ func (user *User) toUserDto() *users.UserDto {
 	return &users.UserDto{
 		Email:     user.Email,
 		Xpriv:     user.Xpriv,
+		Paymail:   user.Paymail,
 		CreatedAt: user.CreatedAt,
 	}
 }

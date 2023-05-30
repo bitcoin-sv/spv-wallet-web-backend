@@ -49,10 +49,12 @@ func setHttpServerDefaults() {
 
 // setBuxDefaults sets default values for bux connection.
 func setBuxDefaults() {
-	viper.SetDefault("bux.admin.xpriv", "xprv")
-	viper.SetDefault("bux.server.url", "http://localhost:3003/v1")
-	viper.SetDefault("bux.withDebug", true)
-	viper.SetDefault("bux.sign.request", true)
+	viper.SetDefault(EnvBuxAdminXpriv, "xprv9s21ZrQH143K3CbJXirfrtpLvhT3Vgusdo8coBritQ3rcS7Jy7sxWhatuxG5h2y1Cqj8FKmPp69536gmjYRpfga2MJdsGyBsnB12E19CESK")
+	viper.SetDefault(EnvBuxServerUrl, "http://localhost:3003/v1")
+	viper.SetDefault(EnvBuxWithDebug, true)
+	viper.SetDefault(EnvBuxSignRequest, true)
+	viper.SetDefault(EnvBuxPaymailDomain, "bux.com")
+
 }
 
 // setHashDefaults sets default values for hash.
