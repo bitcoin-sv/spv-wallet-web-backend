@@ -9,7 +9,7 @@ import (
 )
 
 // RegisterXpub registers xpub in bux.
-func (adminBuxClient *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) error {
+func (c *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) error {
 	// Get xpub from xpriv.
 	xpub, err := xpriv.Neuter()
 
@@ -19,12 +19,12 @@ func (adminBuxClient *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) err
 	}
 
 	// Register new xpub in BUX.
-	err = adminBuxClient.client.NewXpub(
+	err = c.client.NewXpub(
 		context.Background(), xpub.String(), &bux.Metadata{},
 	)
 
 	if err != nil {
-		fmt.Println(err)
+		c.log.Error(err.Error())
 		return err
 	}
 

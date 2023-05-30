@@ -13,6 +13,7 @@ func NewViperConfig(appname string) *Config {
 	setHttpServerDefaults()
 	setBuxDefaults()
 	setHashDefaults()
+	setLoggingDefaults()
 	return &Config{}
 }
 
@@ -57,4 +58,8 @@ func setBuxDefaults() {
 // setHashDefaults sets default values for hash.
 func setHashDefaults() {
 	viper.SetDefault(EnvHashSalt, "bux")
+}
+
+func setLoggingDefaults() {
+	viper.SetDefault(EnvLoggingLevel, "Debug")
 }

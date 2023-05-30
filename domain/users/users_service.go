@@ -1,11 +1,13 @@
 package users
 
 import (
-	"bux-wallet/data/users"
-	"bux-wallet/encryption"
-	buxclient "bux-wallet/transports/bux/client"
 	"context"
 	"time"
+
+	"bux-wallet/data/users"
+	"bux-wallet/encryption"
+	"bux-wallet/logging"
+	buxclient "bux-wallet/transports/bux/client"
 
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
@@ -16,13 +18,15 @@ import (
 type UserService struct {
 	repo      UsersRepository
 	BuxClient *buxclient.AdminBuxClient
+	log       logging.Logger
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo *users.UsersRepository, buxClient *buxclient.AdminBuxClient) *UserService {
+func NewUserService(repo *users.UsersRepository, buxClient *buxclient.AdminBuxClient, lf logging.LoggerFactory) *UserService {
 	return &UserService{
 		repo:      repo,
 		BuxClient: buxClient,
+		log:       lf.NewLogger("user-service"),
 	}
 }
 

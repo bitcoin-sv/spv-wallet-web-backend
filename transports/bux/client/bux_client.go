@@ -2,6 +2,7 @@ package buxclient
 
 import (
 	"bux-wallet/config"
+	"bux-wallet/logging"
 
 	"github.com/BuxOrg/go-buxclient"
 	"github.com/spf13/viper"
@@ -10,6 +11,7 @@ import (
 // AdminBuxClient is a wrapper for Admin Bux Client.
 type AdminBuxClient struct {
 	client *buxclient.BuxClient
+	log    logging.Logger
 }
 
 // BuxClient is a wrapper for Bux Client.
@@ -18,7 +20,7 @@ type BuxClient struct {
 }
 
 // CreateAdminBuxClient creates instance of Bux Client with admin keys.
-func CreateAdminBuxClient() (*AdminBuxClient, error) {
+func CreateAdminBuxClient(lf logging.LoggerFactory) (*AdminBuxClient, error) {
 	// Get env variables.
 	xpriv := viper.GetString(config.EnvBuxAdminXpriv)
 	serverUrl := viper.GetString(config.EnvBuxServerUrl)
@@ -38,7 +40,10 @@ func CreateAdminBuxClient() (*AdminBuxClient, error) {
 		return nil, err
 	}
 
-	return &AdminBuxClient{client: buxClient}, nil
+	return &AdminBuxClient{
+		client: buxClient,
+		log:    lf.NewLogger("admin-bux-client"),
+	}, nil
 }
 
 // CreateBuxClient creates instance of Bux Client with user xpub.
