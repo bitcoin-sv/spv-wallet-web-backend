@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"fmt"
+	"net/mail"
 	"strings"
 	"time"
 
@@ -40,10 +41,10 @@ func (s *UserService) InsertUser(user *User) error {
 
 // CreateNewUser creates new user.
 func (s *UserService) CreateNewUser(email, password string) (mnemonic, paymail string, err error) {
-	// Check if user with email already exists.
-	exists := s.checkIfUserExists(email)
-	if exists {
-		return "", "", fmt.Errorf("user with email %s already exists", email)
+	// Validate user.
+	err = s.validateUser(email)
+	if err != nil {
+		return "", "", err
 	}
 
 	// Generate mnemonic and seed
@@ -93,6 +94,22 @@ func (s *UserService) CreateNewUser(email, password string) (mnemonic, paymail s
 	}
 
 	return mnemonic, paymail, err
+}
+
+func (s *UserService) validateUser(email string) error {
+	//Validate email
+	_, err := mail.ParseAddress(email)
+	if err != nil {
+		return fmt.Errorf("invalid email address")
+	}
+
+	// Check if user with email already exists.
+	exists := s.checkIfUserExists(email)
+	if exists {
+		return fmt.Errorf("user with email %s already exists", email)
+	}
+
+	return nil
 }
 
 func (s *UserService) checkIfUserExists(email string) bool {
