@@ -7,14 +7,14 @@ type ErrorResponse struct {
 }
 
 // NewResponseFromError creates ErrorResponse from error.
-func NewResponseFromError(err error) *ErrorResponse {
+func NewErrorResponseFromError(err error) *ErrorResponse {
 	return &ErrorResponse{
 		Error: err.Error(),
 	}
 }
 
 // NewResponseFromString creates ErrorResponse from string.
-func NewResponseFromString(err string) *ErrorResponse {
+func NewErrorResponseFromString(err string) *ErrorResponse {
 	return &ErrorResponse{
 		Error: err,
 	}

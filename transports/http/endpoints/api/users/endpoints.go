@@ -50,7 +50,7 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if sended passwords match
 	if reqUser.Password != reqUser.PasswordConfirmation {
-		c.JSON(http.StatusBadRequest, api.NewResponseFromString("passwords do not match"))
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("passwords do not match"))
 		return
 	}
 
@@ -58,7 +58,7 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if user with this email already exists or there is another error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewResponseFromError(err))
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return
 	}
 
