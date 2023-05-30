@@ -5,7 +5,7 @@ import (
 	"bux-wallet/domain"
 	"errors"
 
-	"bux-wallet/transports/http/endpoints/registration"
+	"bux-wallet/transports/http/endpoints/api/users"
 	router "bux-wallet/transports/http/endpoints/routes"
 	httpserver "bux-wallet/transports/http/server"
 
@@ -18,12 +18,12 @@ import (
 //	and middlewares. It's returning function that can be used to setup engine of httpserver.HttpServer
 func SetupWalletRoutes(s *domain.Services) httpserver.GinEngineOpt {
 	routes := []interface{}{
-		registration.NewHandler(s),
+		users.NewHandler(s),
 	}
 
 	return func(engine *gin.Engine) {
-		rootRouter := engine.Group("")
 		prefix := viper.GetString(config.EnvHttpServerUrlPrefix)
+		rootRouter := engine.Group("")
 		apiRouter := engine.Group(prefix)
 		for _, r := range routes {
 			switch r := r.(type) {

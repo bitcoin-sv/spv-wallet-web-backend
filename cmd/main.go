@@ -15,6 +15,8 @@ import (
 	"bux-wallet/transports/http/endpoints"
 	httpserver "bux-wallet/transports/http/server"
 
+	buxclient "bux-wallet/transports/bux/client"
+
 	"github.com/spf13/viper"
 )
 
@@ -22,18 +24,20 @@ const appname = "bux-wallet-backend"
 
 func main() {
 	// Load config.
-	c := config.NewViperConfig(appname).
+	config.NewViperConfig(appname).
 		WithDb()
-
-	fmt.Println(c)
-	fmt.Println(c.Db.Host)
 
 	db := databases.SetUpDatabase()
 	defer db.Close() // nolint: all
 
-
 	repo := db_users.NewUsersRepository(db)
-	s := domain.NewServices(repo)
+	buxClient, err := buxclient.CreateAdminBuxClient()
+	if err != nil {
+		fmt.Println("cannot create bux client: ", err)
+		os.Exit(1)
+	}
+
+	s := domain.NewServices(repo, buxClient)
 
 	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort))
 	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s))

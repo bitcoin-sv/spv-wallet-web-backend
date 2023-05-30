@@ -30,6 +30,21 @@ const (
 	EnvHttpServerUrlPrefix = "http.server.urlPrefix"
 )
 
+// Define basic bux config.
+const (
+	// EnvBuxAdminXpriv define the bux admin xpriv.
+	EnvBuxAdminXpriv = "bux.admin.xpriv"
+	// EnvBuxServerUrl define the bux server url.
+	EnvBuxServerUrl = "bux.server.url"
+	// EnvBuxWithDebug define whether to turn debugging on.
+	EnvBuxWithDebug = "bux.withDebug"
+	// EnvBuxWithSignRequest define whether to sign all requests.
+	EnvBuxSignRequest = "bux.sign.request"
+)
+
+// EnvHashSalt define the hash salt.
+const EnvHashSalt = "hash.salt"
+
 // Config returns strongly typed config values.
 type Config struct {
 	Db *Db
