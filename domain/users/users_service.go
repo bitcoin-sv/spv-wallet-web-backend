@@ -2,6 +2,11 @@ package users
 
 import (
 	"context"
+	"database/sql"
+	"errors"
+	"fmt"
+	"net/mail"
+	"strings"
 	"time"
 
 	"bux-wallet/data/users"
@@ -37,46 +42,91 @@ func (s *UserService) InsertUser(user *User) error {
 }
 
 // CreateNewUser creates new user.
-func (s *UserService) CreateNewUser(email, password string) (string, error) {
+func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error) {
+	// Validate password.
+	err := validatePassword(password)
+	if err != nil {
+		return nil, err
+	}
+
+	// Validate user.
+	err = s.validateUser(email)
+	if err != nil {
+		return nil, err
+	}
+
 	// Generate mnemonic and seed
 	mnemonic, seed, err := generateMnemonic()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	xpriv, err := generateXpriv(seed)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	// Create hash from password
-	hashedPassword, err := encryption.Hash(password)
-	if err != nil {
-		return "", err
-	}
-
-	// Encrypt xpriv with hashed password
-	encryptedXpriv, err := encryption.Encrypt(hashedPassword, xpriv.String())
+	// Encrypt xpriv
+	encryptedXpriv, err := encryptXpriv(password, xpriv.String())
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
+	// Register xpub in BUX.
+	xpub, err := s.BuxClient.RegisterXpub(xpriv)
+	if err != nil {
+		return nil, fmt.Errorf("error registering xpub in BUX: %s", err.Error())
+	}
+
+	// Get username from email which will be used as paymail alias.
+	username, _ := splitEmail(email)
+
+	// Register paymail in BUX.
+	paymail, err := s.BuxClient.RegisterNewPaymail(username, xpub)
+	if err != nil {
+		return nil, fmt.Errorf("error registering paymail in BUX: %s", err.Error())
+	}
+
+	// Create and save new user.
 	user := &User{
 		Email:     email,
 		Xpriv:     encryptedXpriv,
+		Paymail:   paymail,
 		CreatedAt: time.Now(),
 	}
 
 	err = s.InsertUser(user)
-	if err == nil {
-		err = s.BuxClient.RegisterXpub(xpriv)
-		if err != nil {
-			return "", err
-		}
+	if err != nil {
+		return nil, err
 	}
 
-	return mnemonic, err
+	newUSerData := &CreatedUser{
+		User:     user,
+		Mnemonic: mnemonic,
+	}
+
+	return newUSerData, err
+}
+
+func (s *UserService) validateUser(email string) error {
+	//Validate email
+	_, err := mail.ParseAddress(email)
+	if err != nil {
+		return fmt.Errorf("invalid email address")
+	}
+
+	// Check if user with email already exists.
+	_, err = s.repo.GetUserByEmail(context.Background(), email)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil
+		}
+		return err
+	}
+
+	return fmt.Errorf("user with email %s already exists", email)
 }
 
 // generateMnemonic generates mnemonic and seed.
@@ -96,4 +146,39 @@ func generateXpriv(seed []byte) (*bip32.ExtendedKey, error) {
 		return nil, err
 	}
 	return xpriv, nil
+}
+
+// encryptXpriv encrypts xpriv with password.
+func encryptXpriv(password, xpriv string) (string, error) {
+	// Create hash from password
+	hashedPassword, err := encryption.Hash(password)
+	if err != nil {
+		return "", err
+	}
+
+	// Encrypt xpriv with hashed password
+	encryptedXpriv, err := encryption.Encrypt(hashedPassword, xpriv)
+	if err != nil {
+		return "", err
+	}
+
+	return encryptedXpriv, nil
+}
+
+// splitEmail splits email to username and domain.
+func splitEmail(email string) (string, string) {
+	components := strings.Split(email, "@")
+	username, domain := components[0], components[1]
+
+	return username, domain
+}
+
+// validatePassword trim and validates password.
+func validatePassword(password string) error {
+	trimedPassword := strings.TrimSpace(password)
+	if trimedPassword == "" {
+		return fmt.Errorf("correct password is required")
+	}
+
+	return nil
 }

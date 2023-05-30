@@ -5,6 +5,7 @@ import (
 	"bux-wallet/domain/users"
 	"net/http"
 
+	"bux-wallet/transports/http/endpoints/api"
 	router "bux-wallet/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,7 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 }
 
 // register registers new user.
+// @Description Register new user with given data, paymail is created based on username from sended email.
 //
 //	@Summary Register new user
 //	@Tags user
@@ -48,17 +50,23 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if sended passwords match
 	if reqUser.Password != reqUser.PasswordConfirmation {
-		c.JSON(http.StatusBadRequest, "passwords do not match")
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("passwords do not match"))
 		return
 	}
 
-	mnemonic, err := h.service.CreateNewUser(reqUser.Email, reqUser.Password)
+	newUser, err := h.service.CreateNewUser(reqUser.Email, reqUser.Password)
 
 	// Check if user with this email already exists or there is another error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return
 	}
 
-	c.JSON(http.StatusOK, RegisterReposne{Mnemonic: mnemonic})
+	// Create response
+	response := RegisterResposne{
+		Mnemonic: newUser.Mnemonic,
+		Paymail:  newUser.User.Paymail,
+	}
+
+	c.JSON(http.StatusOK, response)
 }

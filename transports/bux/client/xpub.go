@@ -9,13 +9,13 @@ import (
 )
 
 // RegisterXpub registers xpub in bux.
-func (c *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) error {
+func (c *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
 	// Get xpub from xpriv.
 	xpub, err := xpriv.Neuter()
 
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return "", err
 	}
 
 	// Register new xpub in BUX.
@@ -25,8 +25,8 @@ func (c *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) error {
 
 	if err != nil {
 		c.log.Error(err.Error())
-		return err
+		return "", err
 	}
 
-	return nil
+	return xpub.String(), nil
 }
