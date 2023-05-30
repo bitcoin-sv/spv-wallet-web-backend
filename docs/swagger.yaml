@@ -1,0 +1,56 @@
+definitions:
+  users.RegisterResponse:
+    properties:
+      mnemonic:
+        type: string
+    type: object
+  users.RegisterUser:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      passwordConfirmation:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is an API for bux wallet.
+  title: Bux Wallet API
+  version: "1.0"
+paths:
+  /api/v1/user:
+    post:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: User data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/users.RegisterUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.RegisterResponse'
+      summary: Register new user
+      tags:
+      - user
+  /status:
+    get:
+      consumes:
+      - '*/*'
+      operationId: /status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Check the status of the server
+      tags:
+      - status
+swagger: "2.0"
