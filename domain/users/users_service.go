@@ -39,7 +39,7 @@ func (s *UserService) InsertUser(user *User) error {
 }
 
 // CreateNewUser creates new user.
-func (s *UserService) CreateNewUser(email, password string) (string, string, error) {
+func (s *UserService) CreateNewUser(email, password string) (mnemonic, paymail string, err error) {
 	// Check if user with email already exists.
 	exists := s.checkIfUserExists(email)
 	if exists {
@@ -74,7 +74,7 @@ func (s *UserService) CreateNewUser(email, password string) (string, string, err
 	username, _ := splitEmail(email)
 
 	// Register paymail in BUX.
-	paymail, err := s.BuxClient.RegisterNewPaymail(username, xpub)
+	paymail, err = s.BuxClient.RegisterNewPaymail(username, xpub)
 	if err != nil {
 		return "", "", fmt.Errorf("error registering paymail in BUX: %s", err.Error())
 	}

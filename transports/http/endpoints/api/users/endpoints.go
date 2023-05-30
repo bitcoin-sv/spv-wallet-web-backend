@@ -62,7 +62,7 @@ func (h *handler) register(c *gin.Context) {
 	}
 
 	// Create response
-	response := RegisterReposne{
+	response := RegisterResposne{
 		Mnemonic: mnemonic,
 		Paymail:  paymail,
 	}

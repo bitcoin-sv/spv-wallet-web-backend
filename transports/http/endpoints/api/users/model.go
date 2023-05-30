@@ -7,8 +7,8 @@ type RegisterUser struct {
 	PasswordConfirmation string `json:"passwordConfirmation"`
 }
 
-// RegisterReposne is a struct that contains user mnemonic.
-type RegisterReposne struct {
+// RegisterResposne is a struct that contains user mnemonic.
+type RegisterResposne struct {
 	Mnemonic string `json:"mnemonic"`
 	Paymail  string `json:"paymail"`
 }
