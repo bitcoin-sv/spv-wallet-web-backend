@@ -5,6 +5,7 @@ import (
 	"bux-wallet/domain/users"
 	"net/http"
 
+	"bux-wallet/transports/http/endpoints/api"
 	router "bux-wallet/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
@@ -48,7 +49,7 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if sended passwords match
 	if reqUser.Password != reqUser.PasswordConfirmation {
-		c.JSON(http.StatusBadRequest, "passwords do not match")
+		c.JSON(http.StatusBadRequest, api.CreateErrorResponse("passwords do not match"))
 		return
 	}
 
@@ -56,7 +57,7 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if user with this email already exists or there is another error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, api.CreateErrorResponse(err.Error()))
 		return
 	}
 
