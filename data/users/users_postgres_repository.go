@@ -12,6 +12,12 @@ const (
 	INSERT INTO users(email, xpriv, paymail, created_at)
 	VALUES($1, $2, $3, $4)
 	`
+
+	postgresGetUserByEmail = `
+	SELECT email, xpriv, paymail, created_at
+	FROM users
+	WHERE email = $1
+	`
 )
 
 // UsersRepository is a repository for users.
@@ -44,4 +50,14 @@ func (r *UsersRepository) InsertUser(ctx context.Context, user *UserDto) error {
 		return errors.Wrap(err, "failed to insert new user")
 	}
 	return errors.Wrap(tx.Commit(), "failed to commit tx")
+}
+
+// GetUserByEmail returns user by email.
+func (r *UsersRepository) GetUserByEmail(ctx context.Context, email string) (*UserDto, error) {
+	var user UserDto
+	row := r.db.QueryRowContext(ctx, postgresGetUserByEmail, email)
+	if err := row.Scan(&user.Email, &user.Xpriv, &user.Paymail, &user.CreatedAt); err != nil {
+		return nil, errors.Wrap(err, "failed to get user by email")
+	}
+	return &user, nil
 }

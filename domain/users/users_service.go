@@ -40,6 +40,12 @@ func (s *UserService) InsertUser(user *User) error {
 
 // CreateNewUser creates new user.
 func (s *UserService) CreateNewUser(email, password string) (string, string, error) {
+	// Check if user with email already exists.
+	exists := s.checkIfUserExists(email)
+	if exists {
+		return "", "", fmt.Errorf("user with email %s already exists", email)
+	}
+
 	// Generate mnemonic and seed
 	mnemonic, seed, err := generateMnemonic()
 	if err != nil {
@@ -87,6 +93,11 @@ func (s *UserService) CreateNewUser(email, password string) (string, string, err
 	}
 
 	return mnemonic, paymail, err
+}
+
+func (s *UserService) checkIfUserExists(email string) bool {
+	_, err := s.repo.GetUserByEmail(context.Background(), email)
+	return err == nil
 }
 
 // generateMnemonic generates mnemonic and seed.
