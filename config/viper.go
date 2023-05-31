@@ -44,6 +44,8 @@ func setHttpServerDefaults() {
 	viper.SetDefault(EnvHttpServerReadTimeout, 10)
 	viper.SetDefault(EnvHttpServerWriteTimeout, 10)
 	viper.SetDefault(EnvHttpServerPort, 8080)
+	viper.SetDefault(EnvHttpServerUrlPrefix, "/api/v1")
+	viper.SetDefault(EnvHttpServerCookieDomain, "localhost")
 }
 
 // setBuxDefaults sets default values for bux connection.

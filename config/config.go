@@ -26,6 +26,10 @@ const (
 	EnvHttpServerWriteTimeout = "http.server.writeTimeout"
 	// EnvHttpServerPort http server port.
 	EnvHttpServerPort = "http.server.port"
+	// EnvHttpServerUrlPrefix http server url prefix.
+	EnvHttpServerUrlPrefix = "http.server.urlPrefix"
+	// EnvHttpServerCookieDomain http server cookie domain parameter.
+	EnvHttpServerCookieDomain = "http.server.cookie.domain"
 )
 
 // Define basic bux config.

@@ -7,6 +7,7 @@ import (
 	"bux-wallet/transports/http/endpoints/status"
 	"bux-wallet/transports/http/endpoints/swagger"
 
+	"bux-wallet/transports/http/endpoints/api/access"
 	"bux-wallet/transports/http/endpoints/api/users"
 	router "bux-wallet/transports/http/endpoints/routes"
 	httpserver "bux-wallet/transports/http/server"
@@ -22,6 +23,7 @@ func SetupWalletRoutes(s *domain.Services) httpserver.GinEngineOpt {
 		swagger.NewHandler(),
 		status.NewHandler(),
 		users.NewHandler(s),
+		access.NewHandler(s),
 	}
 
 	return func(engine *gin.Engine) {
