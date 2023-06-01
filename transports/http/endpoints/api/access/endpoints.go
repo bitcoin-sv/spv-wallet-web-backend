@@ -1,7 +1,6 @@
 package access
 
 import (
-	"bux-wallet/config"
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
 	"net/http"
@@ -11,7 +10,6 @@ import (
 	router "bux-wallet/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 )
 
 type handler struct {
@@ -22,7 +20,7 @@ type handler struct {
 func NewHandler(s *domain.Services) (router.RootEndpoints, router.ApiEndpoints) {
 	h := &handler{service: *s.UsersService}
 
-	prefix := viper.GetString(config.EnvHttpServerUrlPrefix)
+	prefix := "/api/v1"
 
 	// Register root endpoints which are athorized by admin token.
 	rootEndpoints := router.RootEndpointsFunc(func(router *gin.RouterGroup) {
