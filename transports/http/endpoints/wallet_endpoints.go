@@ -30,7 +30,7 @@ func SetupWalletRoutes(s *domain.Services, store sessions.Store) httpserver.GinE
 	}
 
 	rootMiddlewares := toHandlers(auth.NewTokenMiddleware())
-	apiMiddlewares := toHandlers(auth.NewSessionMiddlewares(), auth.NewAuthMiddleware(s))
+	apiMiddlewares := toHandlers(auth.NewSessionMiddleware(), auth.NewAuthMiddleware(s))
 
 	return func(engine *gin.Engine) {
 		// Setup session middleware.

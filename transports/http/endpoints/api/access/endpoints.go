@@ -62,7 +62,10 @@ func (h *handler) signIn(c *gin.Context) {
 		return
 	}
 
-	auth.UpdateSession(c, signInUser.AccessKeyId, signInUser.User.Id)
+	err = auth.UpdateSession(c, signInUser.AccessKeyId, signInUser.User.Id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+	}
 
 	response := SignInResponse{
 		Paymail: signInUser.User.Paymail,
@@ -80,7 +83,11 @@ func (h *handler) signIn(c *gin.Context) {
 //	@Router /sign-out [get]
 func (h *handler) signOut(c *gin.Context) {
 
-	h.service.SignOutUser(c.GetString("token"))
+	err := h.service.SignOutUser(c.GetString("token"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		return
+	}
 
 	c.Status(http.StatusOK)
 }

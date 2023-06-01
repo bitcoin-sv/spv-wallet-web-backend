@@ -143,7 +143,7 @@ func (s *UserService) SignInUser(email, password string) (*SignInUser, error) {
 	return signInUser, nil
 }
 
-// SignInUser signs in user.
+// SignOutUser signs out user by removing session and access key.
 func (s *UserService) SignOutUser(accessKeyId string) error {
 	// TODO: Revoke access key.
 	//

@@ -17,7 +17,7 @@ type AuthMiddleware struct {
 	services       *domain.Services
 }
 
-// NewMiddleware create Cookie middleware that is checking the variables in session.
+// NewAuthMiddleware create middleware that is checking the variables in session.
 func NewAuthMiddleware(s *domain.Services) *AuthMiddleware {
 	return &AuthMiddleware{
 		adminBuxClient: s.UsersService.BuxClient,

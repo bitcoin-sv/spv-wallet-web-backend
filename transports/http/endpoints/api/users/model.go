@@ -13,6 +13,7 @@ type RegisterResponse struct {
 	Paymail  string `json:"paymail"`
 }
 
+// UserResponse is a struct that represents user information.
 type UserResponse struct {
 	UserId  int    `json:"userId"`
 	Token   string `json:"token"`

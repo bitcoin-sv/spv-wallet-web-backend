@@ -31,7 +31,7 @@ const (
 	// EnvHttpServerCookieDomain http server cookie domain parameter.
 	EnvHttpServerCookieDomain = "http.server.cookie.domain"
 	// EnvHttpServerAuthToken http server auth token.
-	EnvHttpServerAuthToken = "http.server.auth.token"
+	EnvHttpServerAuthToken = "http.server.auth.token" //nolint:gosec // false positive (hardcoded credentials
 )
 
 // Define basic bux config.
