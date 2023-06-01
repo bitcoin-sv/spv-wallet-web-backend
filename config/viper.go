@@ -21,9 +21,9 @@ func NewViperConfig(appname string) *Config {
 func (c *Config) WithDb() *Config {
 	viper.SetDefault(EnvDbHost, "localhost")
 	viper.SetDefault(EnvDbPort, "5432")
-	viper.SetDefault(EnvDbUser, "bux")
+	viper.SetDefault(EnvDbUser, "postgres")
 	viper.SetDefault(EnvDbPassword, "postgres")
-	viper.SetDefault(EnvDbName, "bux")
+	viper.SetDefault(EnvDbName, "postgres")
 	viper.SetDefault(EnvDbSslMode, "disable")
 	viper.SetDefault(EnvDbMigrationsPath, "data/sql/migrations")
 
@@ -51,7 +51,7 @@ func setHttpServerDefaults() {
 
 // setBuxDefaults sets default values for bux connection.
 func setBuxDefaults() {
-	viper.SetDefault(EnvBuxAdminXpriv, "xprv9s21ZrQH143K3CbJXirfrtpLvhT3Vgusdo8coBritQ3rcS7Jy7sxWhatuxG5h2y1Cqj8FKmPp69536gmjYRpfga2MJdsGyBsnB12E19CESK")
+	viper.SetDefault(EnvBuxAdminXpriv, "xprv")
 	viper.SetDefault(EnvBuxServerUrl, "http://localhost:3003/v1")
 	viper.SetDefault(EnvBuxWithDebug, true)
 	viper.SetDefault(EnvBuxSignRequest, true)
