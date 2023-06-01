@@ -5,3 +5,8 @@ type SignInUser struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+// SignInResponse is a struct that represents struct sended after user sign in.
+type SignInResponse struct {
+	Paymail string `json:"paymail"`
+}

@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/BuxOrg/bux v0.5.1
 	github.com/BuxOrg/go-buxclient v0.3.1
+	github.com/gin-contrib/sessions v0.0.5
 	github.com/libsv/go-bk v0.1.6
 	github.com/rs/zerolog v1.29.1
 	github.com/spf13/viper v1.15.0
@@ -17,6 +18,7 @@ require (
 require (
 	github.com/99designs/gqlgen v0.17.31 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/antonlindstrom/pgstore v0.0.0-20200229204646-b08ebf1105e0 // indirect
 	github.com/bitcoinschema/go-bitcoin/v2 v2.0.3 // indirect
 	github.com/bitcoinschema/go-bpu v0.0.8 // indirect
 	github.com/bitcoinschema/go-map v0.0.17 // indirect
@@ -55,7 +57,10 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/google/uuid v1.3.0 // indirect
+	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/gorilla/securecookie v1.1.1 // indirect
+	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -82,7 +87,7 @@ require (
 	github.com/matryer/respond v1.0.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
-	github.com/mattn/go-sqlite3 v1.14.16 // indirect
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/miekg/dns v1.1.54 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
@@ -150,7 +155,7 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
-	github.com/pkg/errors v0.9.1
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

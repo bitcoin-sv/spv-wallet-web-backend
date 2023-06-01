@@ -3,6 +3,7 @@ package users
 import (
 	"net/http"
 
+	"bux-wallet/config"
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
 
@@ -10,6 +11,7 @@ import (
 	router "bux-wallet/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 type handler struct {
@@ -17,16 +19,23 @@ type handler struct {
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services) router.ApiEndpoints {
-	return &handler{service: *s.UsersService}
-}
+// NewHandler creates new endpoint handler.
+func NewHandler(s *domain.Services) (router.RootEndpoints, router.ApiEndpoints) {
+	h := &handler{service: *s.UsersService}
 
-// RegisterApiEndpoints registers routes that are part of service API.
-func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
-	user := router.Group("/user")
-	{
-		user.POST("", h.register)
-	}
+	prefix := viper.GetString(config.EnvHttpServerUrlPrefix)
+
+	// Register root endpoints which are athorized by admin token.
+	rootEndpoints := router.RootEndpointsFunc(func(router *gin.RouterGroup) {
+		router.POST(prefix+"/user", h.register)
+	})
+
+	// Register api endpoints which are athorized by session token.
+	apiEndpoints := router.ApiEndpointsFunc(func(router *gin.RouterGroup) {
+		router.GET("/user", h.getUser)
+	})
+
+	return rootEndpoints, apiEndpoints
 }
 
 // register registers new user.
@@ -67,6 +76,24 @@ func (h *handler) register(c *gin.Context) {
 	response := RegisterResponse{
 		Mnemonic: newUser.Mnemonic,
 		Paymail:  newUser.User.Paymail,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+// getUser return information about user from context.
+//
+//	@Summary Get user information
+//	@Tags user
+//	@Accept */*
+//	@Produce json
+//	@Success 200 {object} CheckUserResponse
+//	@Router /user [get]
+func (h *handler) getUser(c *gin.Context) {
+	response := UserResponse{
+		UserId:  c.GetInt("userId"),
+		Token:   c.GetString("token"),
+		Paymail: c.GetString("paymail"),
 	}
 
 	c.JSON(http.StatusOK, response)

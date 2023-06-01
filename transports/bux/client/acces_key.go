@@ -15,3 +15,23 @@ func (c *BuxClient) CreateAccessKey() (string, error) {
 
 	return accessKey.ID, err
 }
+
+// GetAccessKey checks if access key is valid.
+func (c *BuxClient) GetAccessKey(accessKeyId string) error {
+	_, err := c.client.GetAccessKey(context.Background(), accessKeyId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// RevokeAccessKey revokes access key.
+func (c *BuxClient) RevokeAccessKey(accessKeyId string) error {
+	_, err := c.client.RevokeAccessKey(context.Background(), accessKeyId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

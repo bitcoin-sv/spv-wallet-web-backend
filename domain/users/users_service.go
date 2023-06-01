@@ -110,33 +110,58 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 }
 
 // SignInUser signs in user.
-func (s *UserService) SignInUser(email, password string) (string, error) {
+func (s *UserService) SignInUser(email, password string) (*SignInUser, error) {
 	// Check if user exists.
 	user, err := s.repo.GetUserByEmail(context.Background(), email)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
+	// Decrypt xpriv.
 	decryptedXpriv, err := decryptXpriv(password, user.Xpriv)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-
-	fmt.Println("decryptedXpriv", decryptedXpriv)
 
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := buxclient.CreateBuxClientFromRawXpriv(decryptedXpriv)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	// Create access key.
 	accessKeyId, err := buxClient.CreateAccessKey()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return accessKeyId, nil
+	signInUser := &SignInUser{
+		User:        toUser(user),
+		AccessKeyId: accessKeyId,
+	}
+
+	return signInUser, nil
+}
+
+// SignInUser signs in user.
+func (s *UserService) SignOutUser(accessKeyId string) error {
+	// TODO: Revoke access key.
+	//
+	// err := s.BuxClient.RevokeAccessKey(accessKeyId)
+	// if err != nil {
+	// 	return err
+	// }
+	return nil
+}
+
+// GetUserById returns user by id.
+func (s *UserService) GetUserById(userId int) (*User, error) {
+	user, err := s.repo.GetUserById(context.Background(), userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return toUser(user), nil
 }
 
 func (s *UserService) validateUser(email string) error {

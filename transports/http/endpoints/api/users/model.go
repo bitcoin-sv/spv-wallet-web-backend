@@ -12,3 +12,9 @@ type RegisterResponse struct {
 	Mnemonic string `json:"mnemonic"`
 	Paymail  string `json:"paymail"`
 }
+
+type UserResponse struct {
+	UserId  int    `json:"userId"`
+	Token   string `json:"token"`
+	Paymail string `json:"paymail"`
+}

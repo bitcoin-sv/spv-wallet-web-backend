@@ -1,6 +1,7 @@
 package access
 
 import (
+	"bux-wallet/config"
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	router "bux-wallet/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 type handler struct {
@@ -17,16 +19,22 @@ type handler struct {
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services) router.ApiEndpoints {
-	return &handler{service: *s.UsersService}
-}
+func NewHandler(s *domain.Services) (router.RootEndpoints, router.ApiEndpoints) {
+	h := &handler{service: *s.UsersService}
 
-// RegisterApiEndpoints registers routes that are part of service API.
-func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
-	access := router.Group("")
-	{
-		access.POST("sign-in", h.signIn)
-	}
+	prefix := viper.GetString(config.EnvHttpServerUrlPrefix)
+
+	// Register root endpoints which are athorized by admin token.
+	rootEndpoints := router.RootEndpointsFunc(func(router *gin.RouterGroup) {
+		router.POST(prefix+"/sign-in", h.signIn)
+	})
+
+	// Register api endpoints which are athorized by session token.
+	apiEndpoints := router.ApiEndpointsFunc(func(router *gin.RouterGroup) {
+		router.GET("/sign-out", h.signOut)
+	})
+
+	return rootEndpoints, apiEndpoints
 }
 
 // Sign in user.
@@ -48,12 +56,31 @@ func (h *handler) signIn(c *gin.Context) {
 		return
 	}
 
-	accessKeyId, err := h.service.SignInUser(reqUser.Email, reqUser.Password)
+	signInUser, err := h.service.SignInUser(reqUser.Email, reqUser.Password)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return
 	}
 
-	auth.SetAuthCookie(c, accessKeyId)
+	auth.UpdateSession(c, signInUser.AccessKeyId, signInUser.User.Id)
+
+	response := SignInResponse{
+		Paymail: signInUser.User.Paymail,
+	}
+	c.JSON(http.StatusOK, response)
+}
+
+// Sign out user.
+//
+//	@Summary Sign out user
+//	@Tags user
+//	@Accept */*
+//	@Produce json
+//	@Success 200
+//	@Router /sign-out [get]
+func (h *handler) signOut(c *gin.Context) {
+
+	h.service.SignOutUser(c.GetString("token"))
+
 	c.Status(http.StatusOK)
 }

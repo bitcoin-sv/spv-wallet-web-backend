@@ -30,6 +30,8 @@ const (
 	EnvHttpServerUrlPrefix = "http.server.urlPrefix"
 	// EnvHttpServerCookieDomain http server cookie domain parameter.
 	EnvHttpServerCookieDomain = "http.server.cookie.domain"
+	// EnvHttpServerAuthToken http server auth token.
+	EnvHttpServerAuthToken = "http.server.auth.token"
 )
 
 // Define basic bux config.

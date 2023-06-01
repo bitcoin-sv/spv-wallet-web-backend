@@ -12,9 +12,15 @@ const (
 	`
 
 	postgresGetUserByEmail = `
-	SELECT email, xpriv, paymail, created_at
+	SELECT id, email, xpriv, paymail, created_at
 	FROM users
 	WHERE email = $1
+	`
+
+	postgresGetUserById = `
+	SELECT id, email, xpriv, paymail, created_at
+	FROM users
+	WHERE id = $1
 	`
 )
 
@@ -54,7 +60,17 @@ func (r *UsersRepository) InsertUser(ctx context.Context, user *UserDto) error {
 func (r *UsersRepository) GetUserByEmail(ctx context.Context, email string) (*UserDto, error) {
 	var user UserDto
 	row := r.db.QueryRowContext(ctx, postgresGetUserByEmail, email)
-	if err := row.Scan(&user.Email, &user.Xpriv, &user.Paymail, &user.CreatedAt); err != nil {
+	if err := row.Scan(&user.Id, &user.Email, &user.Xpriv, &user.Paymail, &user.CreatedAt); err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+// GetUserById returns user by id.
+func (r *UsersRepository) GetUserById(ctx context.Context, id int) (*UserDto, error) {
+	var user UserDto
+	row := r.db.QueryRowContext(ctx, postgresGetUserById, id)
+	if err := row.Scan(&user.Id, &user.Email, &user.Xpriv, &user.Paymail, &user.CreatedAt); err != nil {
 		return nil, err
 	}
 	return &user, nil
