@@ -28,7 +28,7 @@ func NewZerologLoggerFactory(appName string, level Level) LoggerFactory {
 
 func setupZerologGlobals(level Level) {
 	zerolog.TimestampFunc = func() time.Time {
-		return time.Now().In(time.Local)
+		return time.Now().In(time.Local) // nolint:gosmopolitan // We want local time inside logger.
 	}
 
 	zerolog.SetGlobalLevel(toZerologLevel(level))
