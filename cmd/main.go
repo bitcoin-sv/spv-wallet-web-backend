@@ -18,7 +18,6 @@ import (
 
 	buxclient "bux-wallet/transports/bux/client"
 
-	"github.com/gin-contrib/sessions/postgres"
 	"github.com/spf13/viper"
 )
 
@@ -39,12 +38,6 @@ func main() {
 	db := databases.SetUpDatabase(lf)
 	defer db.Close() // nolint: all
 
-	store, err := postgres.NewStore(db, []byte("secret"))
-	if err != nil {
-		log.Errorf("cannot create postgres store: %v", err)
-		os.Exit(1)
-	}
-
 	repo := db_users.NewUsersRepository(db)
 	buxClient, err := buxclient.CreateAdminBuxClient(lf)
 	if err != nil {
@@ -55,7 +48,7 @@ func main() {
 	s := domain.NewServices(repo, buxClient, lf)
 
 	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort), lf)
-	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, store))
+	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db))
 
 	go func() {
 		if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {

@@ -2,15 +2,22 @@ package auth
 
 import (
 	"bux-wallet/config"
+	"database/sql"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/postgres"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 )
 
 // SetupSessionStore setup session store.
-func SetupSessionStore(store sessions.Store, engine *gin.Engine) {
+func SetupSessionStore(db *sql.DB, engine *gin.Engine) error {
+	store, err := postgres.NewStore(db, []byte("secret"))
+	if err != nil {
+		return err
+	}
+
 	// If we're running on localhost, we need to set domain to empty string.
 	domain := viper.GetString(config.EnvHttpServerCookieDomain)
 	if domain == "localhost" {
@@ -29,6 +36,7 @@ func SetupSessionStore(store sessions.Store, engine *gin.Engine) {
 	store.Options(options)
 	engine.Use(sessions.Sessions("Authorization", store))
 
+	return nil
 }
 
 // UpdateSession updates session with accessKeyId and userId.

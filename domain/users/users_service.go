@@ -110,7 +110,7 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 }
 
 // SignInUser signs in user.
-func (s *UserService) SignInUser(email, password string) (*SignInUser, error) {
+func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, error) {
 	// Check if user exists.
 	user, err := s.repo.GetUserByEmail(context.Background(), email)
 	if err != nil {
@@ -135,7 +135,7 @@ func (s *UserService) SignInUser(email, password string) (*SignInUser, error) {
 		return nil, err
 	}
 
-	signInUser := &SignInUser{
+	signInUser := &AuthenticatedUser{
 		User:        toUser(user),
 		AccessKeyId: accessKeyId,
 	}

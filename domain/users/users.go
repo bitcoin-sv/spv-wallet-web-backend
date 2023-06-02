@@ -20,8 +20,8 @@ type CreatedUser struct {
 	Mnemonic string
 }
 
-// SignInUser is a struct that contains user sign in data.
-type SignInUser struct {
+// AuthenticatedUser is a struct that contains authenticated user data.
+type AuthenticatedUser struct {
 	User        *User
 	AccessKeyId string
 }

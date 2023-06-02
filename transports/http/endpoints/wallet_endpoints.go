@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"database/sql"
 	"errors"
 
 	"bux-wallet/domain"
@@ -11,14 +12,13 @@ import (
 	router "bux-wallet/transports/http/endpoints/routes"
 	httpserver "bux-wallet/transports/http/server"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 // SetupWalletRoutes main point where we're registering endpoints registrars (handlers that will register endpoints in gin engine)
 //
 //	and middlewares. It's returning function that can be used to setup engine of httpserver.HttpServer
-func SetupWalletRoutes(s *domain.Services, store sessions.Store) httpserver.GinEngineOpt {
+func SetupWalletRoutes(s *domain.Services, db *sql.DB) httpserver.GinEngineOpt {
 	accessRootEndpoints, accessApiEndpoints := access.NewHandler(s)
 	usersRootEndpoints, usersApiEndpoints := users.NewHandler(s)
 
@@ -29,14 +29,17 @@ func SetupWalletRoutes(s *domain.Services, store sessions.Store) httpserver.GinE
 		accessApiEndpoints,
 	}
 
-	rootMiddlewares := toHandlers(auth.NewTokenMiddleware())
+	// rootMiddlewares := toHandlers(auth.NewTokenMiddleware())
 	apiMiddlewares := toHandlers(auth.NewSessionMiddleware(), auth.NewAuthMiddleware(s))
 
 	return func(engine *gin.Engine) {
 		// Setup session middleware.
-		auth.SetupSessionStore(store, engine)
+		err := auth.SetupSessionStore(db, engine)
+		if err != nil {
+			panic(err)
+		}
 
-		rootRouter := engine.Group("", rootMiddlewares...)
+		rootRouter := engine.Group("")
 		apiRouter := engine.Group("/api/v1", apiMiddlewares...)
 		for _, r := range routes {
 			switch r := r.(type) {
