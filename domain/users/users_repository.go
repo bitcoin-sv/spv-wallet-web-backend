@@ -9,4 +9,5 @@ import (
 type UsersRepository interface {
 	InsertUser(ctx context.Context, user *users.UserDto) error
 	GetUserByEmail(ctx context.Context, email string) (*users.UserDto, error)
+	GetUserById(ctx context.Context, id int) (*users.UserDto, error)
 }

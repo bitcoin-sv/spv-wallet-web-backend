@@ -17,6 +17,7 @@ type AdminBuxClient struct {
 // BuxClient is a wrapper for Bux Client.
 type BuxClient struct {
 	client *buxclient.BuxClient
+	log    logging.Logger
 }
 
 // CreateAdminBuxClient creates instance of Bux Client with admin keys.
@@ -46,16 +47,16 @@ func CreateAdminBuxClient(lf logging.LoggerFactory) (*AdminBuxClient, error) {
 	}, nil
 }
 
-// CreateBuxClient creates instance of Bux Client with user xpub.
-func CreateBuxClient(xpub string) (*BuxClient, error) {
+// CreateBuxClientFromRawXpriv creates instance of Bux Client with user raw xpriv.
+func CreateBuxClientFromRawXpriv(rawXpriv string) (*BuxClient, error) {
 	// Get env variables.
 	serverUrl := viper.GetString(config.EnvBuxServerUrl)
 	debug := viper.GetBool(config.EnvBuxWithDebug)
 	signRequest := viper.GetBool(config.EnvBuxSignRequest)
 
-	// Init bux client.
+	// Init bux client with generated xpub.
 	buxClient, err := buxclient.New(
-		buxclient.WithXPub(xpub),
+		buxclient.WithXPriv(rawXpriv),
 		buxclient.WithHTTP(serverUrl),
 		buxclient.WithDebugging(debug),
 		buxclient.WithSignRequest(signRequest),
@@ -65,5 +66,10 @@ func CreateBuxClient(xpub string) (*BuxClient, error) {
 		return nil, err
 	}
 
-	return &BuxClient{buxClient}, nil
+	lf := logging.DefaultLoggerFactory()
+
+	return &BuxClient{
+		client: buxClient,
+		log:    lf.NewLogger("bux-client"),
+	}, nil
 }

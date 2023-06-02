@@ -48,7 +48,7 @@ func main() {
 	s := domain.NewServices(repo, buxClient, lf)
 
 	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort), lf)
-	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s))
+	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db))
 
 	go func() {
 		if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {

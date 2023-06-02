@@ -109,6 +109,64 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	return newUSerData, err
 }
 
+// SignInUser signs in user.
+func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, error) {
+	// Check if user exists.
+	user, err := s.repo.GetUserByEmail(context.Background(), email)
+	if err != nil {
+		return nil, err
+	}
+
+	// Decrypt xpriv.
+	decryptedXpriv, err := decryptXpriv(password, user.Xpriv)
+	if err != nil {
+		return nil, err
+	}
+
+	// Try to generate BUX client with decrypted xpriv.
+	buxClient, err := buxclient.CreateBuxClientFromRawXpriv(decryptedXpriv)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create access key.
+	accessKey, err := buxClient.CreateAccessKey()
+	if err != nil {
+		return nil, err
+	}
+
+	signInUser := &AuthenticatedUser{
+		User: toUser(user),
+		AccessKey: AccessKey{
+			Id:  accessKey.Id,
+			Key: accessKey.Key,
+		},
+	}
+
+	return signInUser, nil
+}
+
+// SignOutUser signs out user by removing session and access key.
+func (s *UserService) SignOutUser(accessKeyId string) error {
+	// TODO: Revoke access key.
+	//
+	// err := s.BuxClient.RevokeAccessKey(accessKeyId)
+	// if err != nil {
+	// 	return err
+	// }
+	return nil
+}
+
+// GetUserById returns user by id.
+func (s *UserService) GetUserById(userId int) (*User, error) {
+	user, err := s.repo.GetUserById(context.Background(), userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return toUser(user), nil
+}
+
 func (s *UserService) validateUser(email string) error {
 	//Validate email
 	_, err := mail.ParseAddress(email)
@@ -163,6 +221,23 @@ func encryptXpriv(password, xpriv string) (string, error) {
 	}
 
 	return encryptedXpriv, nil
+}
+
+// decryptXpriv decrypts xpriv with password.
+func decryptXpriv(password, encryptedXpriv string) (string, error) {
+	// Create hash from password
+	hashedPassword, err := encryption.Hash(password)
+	if err != nil {
+		return "", err
+	}
+
+	// Decrypt xpriv with hashed password
+	xpriv := encryption.Decrypt(hashedPassword, encryptedXpriv)
+	if err != nil {
+		return "", err
+	}
+
+	return xpriv, nil
 }
 
 // splitEmail splits email to username and domain.

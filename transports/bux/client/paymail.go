@@ -21,7 +21,6 @@ func (adminBuxClient *AdminBuxClient) RegisterNewPaymail(alias, xpub string) (st
 	err := adminBuxClient.client.NewPaymail(context.Background(), xpub, address, alias, alias, &bux.Metadata{})
 
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 	return address, nil

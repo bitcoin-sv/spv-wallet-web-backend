@@ -12,3 +12,9 @@ type RegisterResponse struct {
 	Mnemonic string `json:"mnemonic"`
 	Paymail  string `json:"paymail"`
 }
+
+// UserResponse is a struct that represents user information.
+type UserResponse struct {
+	UserId  int    `json:"userId"`
+	Paymail string `json:"paymail"`
+}

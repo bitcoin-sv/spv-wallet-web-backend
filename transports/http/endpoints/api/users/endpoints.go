@@ -6,6 +6,7 @@ import (
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
 
+	"bux-wallet/transports/http/auth"
 	"bux-wallet/transports/http/endpoints/api"
 	router "bux-wallet/transports/http/endpoints/routes"
 
@@ -17,16 +18,22 @@ type handler struct {
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services) router.ApiEndpoints {
-	return &handler{service: *s.UsersService}
-}
+func NewHandler(s *domain.Services) (router.RootEndpoints, router.ApiEndpoints) {
+	h := &handler{service: *s.UsersService}
 
-// RegisterApiEndpoints registers routes that are part of service API.
-func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
-	user := router.Group("/user")
-	{
-		user.POST("", h.register)
-	}
+	prefix := "/api/v1"
+
+	// Register root endpoints.
+	rootEndpoints := router.RootEndpointsFunc(func(router *gin.RouterGroup) {
+		router.POST(prefix+"/user", h.register)
+	})
+
+	// Register api endpoints which are athorized by session token.
+	apiEndpoints := router.ApiEndpointsFunc(func(router *gin.RouterGroup) {
+		router.GET("/user", h.getUser)
+	})
+
+	return rootEndpoints, apiEndpoints
 }
 
 // register registers new user.
@@ -67,6 +74,23 @@ func (h *handler) register(c *gin.Context) {
 	response := RegisterResponse{
 		Mnemonic: newUser.Mnemonic,
 		Paymail:  newUser.User.Paymail,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+// getUser return information about user from context.
+//
+//	@Summary Get user information
+//	@Tags user
+//	@Accept */*
+//	@Produce json
+//	@Success 200 {object} CheckUserResponse
+//	@Router /user [get]
+func (h *handler) getUser(c *gin.Context) {
+	response := UserResponse{
+		UserId:  c.GetInt(auth.SessionUserId),
+		Paymail: c.GetString(auth.SessionPaymail),
 	}
 
 	c.JSON(http.StatusOK, response)
