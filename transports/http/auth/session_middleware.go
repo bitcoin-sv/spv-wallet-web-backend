@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Session variables.
 const (
 	SessionToken     = "accessKeyId"
 	SessionAccessKey = "accessKey"
