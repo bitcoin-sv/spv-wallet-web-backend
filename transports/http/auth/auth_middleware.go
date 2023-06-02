@@ -31,14 +31,14 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 	session := sessions.Default(c)
 
 	// Try to retrieve session token.
-	token := session.Get(sessionToken)
+	token := session.Get(SessionToken)
 	if token == nil || token == "" {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, errors.New("unauthorized"))
 		return
 	}
 
 	// Try to retrieve session user id.
-	userId := session.Get(sessionUserId)
+	userId := session.Get(SessionUserId)
 	if userId == nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, errors.New("unauthorized"))
 		return
@@ -56,9 +56,9 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 		return
 	}
 
-	c.Set("token", token)
-	c.Set("userId", userId)
-	c.Set("paymail", user.Paymail)
+	c.Set(SessionToken, token)
+	c.Set(SessionUserId, userId)
+	c.Set(SessionPaymail, user.Paymail)
 }
 
 // checkAccessKey checks if access key is valid by getting it from BUX.

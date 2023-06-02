@@ -1,15 +1,18 @@
 package auth
 
 import (
+	"bux-wallet/domain/users"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 // UpdateSession updates session with accessKeyId and userId.
-func UpdateSession(c *gin.Context, accessKeyId string, userId int) error {
+func UpdateSession(c *gin.Context, accessKey users.AccessKey, userId int) error {
 	session := sessions.Default(c)
-	session.Set(sessionToken, accessKeyId)
-	session.Set(sessionUserId, userId)
+	session.Set(SessionToken, accessKey.Id)
+	session.Set(SessionAccessKey, accessKey.Key)
+	session.Set(SessionUserId, userId)
 	err := session.Save()
 	if err != nil {
 		return err

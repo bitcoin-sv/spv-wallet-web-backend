@@ -130,14 +130,17 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	}
 
 	// Create access key.
-	accessKeyId, err := buxClient.CreateAccessKey()
+	accessKey, err := buxClient.CreateAccessKey()
 	if err != nil {
 		return nil, err
 	}
 
 	signInUser := &AuthenticatedUser{
-		User:        toUser(user),
-		AccessKeyId: accessKeyId,
+		User: toUser(user),
+		AccessKey: AccessKey{
+			Id:  accessKey.Id,
+			Key: accessKey.Key,
+		},
 	}
 
 	return signInUser, nil

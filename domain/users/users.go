@@ -22,8 +22,13 @@ type CreatedUser struct {
 
 // AuthenticatedUser is a struct that contains authenticated user data.
 type AuthenticatedUser struct {
-	User        *User
-	AccessKeyId string
+	User      *User
+	AccessKey AccessKey
+}
+
+type AccessKey struct {
+	Id  string `json:"id"`
+	Key string `json:"key"`
 }
 
 // toUserDto converts User to UserDto.

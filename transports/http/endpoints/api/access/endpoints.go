@@ -60,7 +60,7 @@ func (h *handler) signIn(c *gin.Context) {
 		return
 	}
 
-	err = auth.UpdateSession(c, signInUser.AccessKeyId, signInUser.User.Id)
+	err = auth.UpdateSession(c, signInUser.AccessKey, signInUser.User.Id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 	}
@@ -81,7 +81,7 @@ func (h *handler) signIn(c *gin.Context) {
 //	@Router /sign-out [get]
 func (h *handler) signOut(c *gin.Context) {
 
-	err := h.service.SignOutUser(c.GetString("token"))
+	err := h.service.SignOutUser(c.GetString(auth.SessionToken))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return

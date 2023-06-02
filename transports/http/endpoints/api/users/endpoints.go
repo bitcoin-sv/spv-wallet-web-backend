@@ -6,6 +6,7 @@ import (
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
 
+	"bux-wallet/transports/http/auth"
 	"bux-wallet/transports/http/endpoints/api"
 	router "bux-wallet/transports/http/endpoints/routes"
 
@@ -89,9 +90,9 @@ func (h *handler) register(c *gin.Context) {
 //	@Router /user [get]
 func (h *handler) getUser(c *gin.Context) {
 	response := UserResponse{
-		UserId:  c.GetInt("userId"),
-		Token:   c.GetString("token"),
-		Paymail: c.GetString("paymail"),
+		UserId:  c.GetInt(auth.SessionUserId),
+		Token:   c.GetString(auth.SessionToken),
+		Paymail: c.GetString(auth.SessionPaymail),
 	}
 
 	c.JSON(http.StatusOK, response)
