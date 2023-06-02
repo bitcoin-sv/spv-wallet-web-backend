@@ -18,13 +18,12 @@ type handler struct {
 }
 
 // NewHandler creates new endpoint handler.
-// NewHandler creates new endpoint handler.
 func NewHandler(s *domain.Services) (router.RootEndpoints, router.ApiEndpoints) {
 	h := &handler{service: *s.UsersService}
 
 	prefix := "/api/v1"
 
-	// Register root endpoints which are athorized by admin token.
+	// Register root endpoints.
 	rootEndpoints := router.RootEndpointsFunc(func(router *gin.RouterGroup) {
 		router.POST(prefix+"/user", h.register)
 	})
@@ -91,7 +90,6 @@ func (h *handler) register(c *gin.Context) {
 func (h *handler) getUser(c *gin.Context) {
 	response := UserResponse{
 		UserId:  c.GetInt(auth.SessionUserId),
-		Token:   c.GetString(auth.SessionToken),
 		Paymail: c.GetString(auth.SessionPaymail),
 	}
 

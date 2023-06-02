@@ -5,7 +5,6 @@ import (
 	"bux-wallet/logging"
 
 	"github.com/BuxOrg/go-buxclient"
-	"github.com/libsv/go-bk/bip32"
 	"github.com/spf13/viper"
 )
 
@@ -55,15 +54,9 @@ func CreateBuxClientFromRawXpriv(rawXpriv string) (*BuxClient, error) {
 	debug := viper.GetBool(config.EnvBuxWithDebug)
 	signRequest := viper.GetBool(config.EnvBuxSignRequest)
 
-	// Generate xpub from given xpriv.
-	xpriv, err := bip32.NewKeyFromString(rawXpriv)
-	if err != nil {
-		return nil, err
-	}
-
 	// Init bux client with generated xpub.
 	buxClient, err := buxclient.New(
-		buxclient.WithXPriv(xpriv.String()),
+		buxclient.WithXPriv(rawXpriv),
 		buxclient.WithHTTP(serverUrl),
 		buxclient.WithDebugging(debug),
 		buxclient.WithSignRequest(signRequest),

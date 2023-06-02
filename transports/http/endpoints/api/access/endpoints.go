@@ -29,7 +29,7 @@ func NewHandler(s *domain.Services) (router.RootEndpoints, router.ApiEndpoints) 
 
 	// Register api endpoints which are athorized by session token.
 	apiEndpoints := router.ApiEndpointsFunc(func(router *gin.RouterGroup) {
-		router.GET("/sign-out", h.signOut)
+		router.POST("/sign-out", h.signOut)
 	})
 
 	return rootEndpoints, apiEndpoints
@@ -42,7 +42,7 @@ func NewHandler(s *domain.Services) (router.RootEndpoints, router.ApiEndpoints) 
 //	@Accept */*
 //	@Produce json
 //	@Success 200 {object} SignInResponse
-//	@Router /sign-in [post]
+//	@Router /api/v1/sign-in [post]
 //	@Param data body SignInUser true "User sign in data"
 func (h *handler) signIn(c *gin.Context) {
 	var reqUser SignInUser
@@ -78,7 +78,7 @@ func (h *handler) signIn(c *gin.Context) {
 //	@Accept */*
 //	@Produce json
 //	@Success 200
-//	@Router /sign-out [get]
+//	@Router /api/v1/sign-out [post]
 func (h *handler) signOut(c *gin.Context) {
 
 	err := h.service.SignOutUser(c.GetString(auth.SessionToken))
