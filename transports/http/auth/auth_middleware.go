@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,28 +28,37 @@ func NewAuthMiddleware(s *domain.Services) *AuthMiddleware {
 
 // ApplyToApi is a middleware which checks if the validity of variables in session.
 func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
-	token := c.GetString(sessionToken)
-	userId := c.GetInt(sessionUserId)
+	session := sessions.Default(c)
 
-	if token == "" {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, errors.New("missing auth cookie in gin context"))
+	// Try to retrieve session token.
+	token := session.Get(sessionToken)
+	if token == nil || token == "" {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, errors.New("unauthorized"))
 		return
 	}
 
-	err := h.checkAccessKey(token)
+	// Try to retrieve session user id.
+	userId := session.Get(sessionUserId)
+	if userId == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+
+	err := h.checkAccessKey(token.(string))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 		return
 	}
 
-	user, err := h.checkUser(userId)
+	user, err := h.checkUser(userId.(int))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 		return
 	}
 
+	c.Set("token", token)
+	c.Set("userId", userId)
 	c.Set("paymail", user.Paymail)
-	c.Set("xpriv", user.Xpriv)
 }
 
 // checkAccessKey checks if access key is valid by getting it from BUX.

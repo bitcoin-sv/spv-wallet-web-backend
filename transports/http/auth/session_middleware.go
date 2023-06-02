@@ -1,10 +1,15 @@
 package auth
 
 import (
-	"errors"
+	"bux-wallet/config"
+	router "bux-wallet/transports/http/endpoints/routes"
+	"database/sql"
+	"net/http"
 
 	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/postgres"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -12,33 +17,30 @@ const (
 	sessionUserId = "userId"
 )
 
-// SessionMiddleware middleware that is retrieving auth token from cookie.
-type SessionMiddleware struct{}
-
 // NewSessionMiddleware create Session middleware that is retrieving auth token from cookie.
-func NewSessionMiddleware() *SessionMiddleware {
-	return &SessionMiddleware{}
-}
-
-// ApplyToApi is a middleware which checks if the request has a valid token.
-func (h *SessionMiddleware) ApplyToApi(c *gin.Context) {
-	session := sessions.Default(c)
-
-	// Try to retrieve session token.
-	token := session.Get(sessionToken)
-	if token == nil {
-		c.AbortWithStatusJSON(401, errors.New("missing token in cookie"))
-		return
+func NewSessionMiddleware(db *sql.DB, engine *gin.Engine) router.ApiMiddlewareFunc {
+	store, err := postgres.NewStore(db, []byte("secret"))
+	if err != nil {
+		panic(err)
 	}
 
-	// Try to retrieve session user id.
-	userId := session.Get(sessionUserId)
-	if userId == nil {
-		c.AbortWithStatusJSON(401, errors.New("missing user id in cookie"))
-		return
+	// If we're running on localhost, we need to set domain to empty string.
+	domain := viper.GetString(config.EnvHttpServerCookieDomain)
+	if domain == "localhost" {
+		domain = ""
 	}
 
-	// Set token and user id in gin context.
-	c.Set("token", token)
-	c.Set("userId", userId)
+	options := sessions.Options{
+		MaxAge:   1800,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+		Domain:   domain,
+	}
+
+	store.Options(options)
+	engine.Use(sessions.Sessions("Authorization", store))
+
+	return router.ApiMiddlewareFunc(sessions.Sessions("Authorization", store))
 }

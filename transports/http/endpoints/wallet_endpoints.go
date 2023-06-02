@@ -29,15 +29,11 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB) httpserver.GinEngineOpt {
 		accessApiEndpoints,
 	}
 
-	// rootMiddlewares := toHandlers(auth.NewTokenMiddleware())
-	apiMiddlewares := toHandlers(auth.NewSessionMiddleware(), auth.NewAuthMiddleware(s))
-
 	return func(engine *gin.Engine) {
-		// Setup session middleware.
-		err := auth.SetupSessionStore(db, engine)
-		if err != nil {
-			panic(err)
-		}
+		apiMiddlewares := toHandlers(
+			auth.NewSessionMiddleware(db, engine),
+			auth.NewAuthMiddleware(s),
+		)
 
 		rootRouter := engine.Group("")
 		apiRouter := engine.Group("/api/v1", apiMiddlewares...)
