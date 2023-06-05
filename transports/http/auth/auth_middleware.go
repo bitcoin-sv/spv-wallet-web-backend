@@ -2,10 +2,8 @@ package auth
 
 import (
 	"bux-wallet/domain"
-	"bux-wallet/domain/users"
 	buxclient "bux-wallet/transports/bux/client"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -69,13 +67,4 @@ func (h *AuthMiddleware) checkAccessKey(token string) error {
 	// 	return nil
 	// }
 	return nil
-}
-
-// checkUser checks if user exists in database.
-func (h *AuthMiddleware) checkUser(userId int) (*users.User, error) {
-	user, err := h.services.UsersService.GetUserById(userId)
-	if err != nil {
-		return nil, fmt.Errorf("error during getting user by id: %w", err)
-	}
-	return user, nil
 }
