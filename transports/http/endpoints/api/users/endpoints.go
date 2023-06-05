@@ -95,9 +95,9 @@ func (h *handler) getUser(c *gin.Context) {
 	}
 
 	response := UserResponse{
-		UserId: c.GetInt(auth.SessionUserId),
-		// Paymail: c.GetString(auth.SessionPaymail),
-		Email: user.Email,
+		UserId:  c.GetInt(auth.SessionUserId),
+		Paymail: user.Paymail,
+		Email:   user.Email,
 	}
 
 	c.JSON(http.StatusOK, response)
