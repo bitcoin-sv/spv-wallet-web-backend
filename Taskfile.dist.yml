@@ -86,6 +86,11 @@
     git-hooks:pre-push:
       desc: "task to run before push"
       deps: [ gen:swag,lint:check,build:compiler,test ]
+      cmds:
+        - cmd: |
+            (git status --porcelain | grep -e docs/swagger.json -e docs/swagger.yaml -e docs/docs.go) \
+            && { echo "Uncommitted swagger files. Aborting push."; exit 1; } \
+            || { exit 0; }
 
 ### Standard ###
     start:
