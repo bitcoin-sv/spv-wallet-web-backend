@@ -1,6 +1,7 @@
 package users
 
 import (
+	"bux-wallet/domain/users"
 	"context"
 	"database/sql"
 )
@@ -37,7 +38,7 @@ func NewUsersRepository(db *sql.DB) *UsersRepository {
 }
 
 // InsertUser inserts a user to db.
-func (r *UsersRepository) InsertUser(ctx context.Context, user *UserDto) error {
+func (r *UsersRepository) InsertUser(ctx context.Context, user *users.User) error {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -57,21 +58,21 @@ func (r *UsersRepository) InsertUser(ctx context.Context, user *UserDto) error {
 }
 
 // GetUserByEmail returns user by email.
-func (r *UsersRepository) GetUserByEmail(ctx context.Context, email string) (*UserDto, error) {
+func (r *UsersRepository) GetUserByEmail(ctx context.Context, email string) (*users.User, error) {
 	var user UserDto
 	row := r.db.QueryRowContext(ctx, postgresGetUserByEmail, email)
 	if err := row.Scan(&user.Id, &user.Email, &user.Xpriv, &user.Paymail, &user.CreatedAt); err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return user.toUser(), nil
 }
 
 // GetUserById returns user by id.
-func (r *UsersRepository) GetUserById(ctx context.Context, id int) (*UserDto, error) {
+func (r *UsersRepository) GetUserById(ctx context.Context, id int) (*users.User, error) {
 	var user UserDto
 	row := r.db.QueryRowContext(ctx, postgresGetUserById, id)
 	if err := row.Scan(&user.Id, &user.Email, &user.Xpriv, &user.Paymail, &user.CreatedAt); err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return user.toUser(), nil
 }

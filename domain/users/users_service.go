@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"bux-wallet/data/users"
 	"bux-wallet/encryption"
 	"bux-wallet/logging"
 	buxclient "bux-wallet/transports/bux/client"
@@ -27,7 +26,7 @@ type UserService struct {
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo *users.UsersRepository, buxClient *buxclient.AdminBuxClient, lf logging.LoggerFactory) *UserService {
+func NewUserService(repo UsersRepository, buxClient *buxclient.AdminBuxClient, lf logging.LoggerFactory) *UserService {
 	return &UserService{
 		repo:      repo,
 		BuxClient: buxClient,
@@ -37,7 +36,7 @@ func NewUserService(repo *users.UsersRepository, buxClient *buxclient.AdminBuxCl
 
 // InsertUser inserts user to database.
 func (s *UserService) InsertUser(user *User) error {
-	err := s.repo.InsertUser(context.Background(), user.toUserDto())
+	err := s.repo.InsertUser(context.Background(), user)
 	return err
 }
 
@@ -136,7 +135,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	}
 
 	signInUser := &AuthenticatedUser{
-		User: toUser(user),
+		User: user,
 		AccessKey: AccessKey{
 			Id:  accessKey.Id,
 			Key: accessKey.Key,
@@ -164,7 +163,7 @@ func (s *UserService) GetUserById(userId int) (*User, error) {
 		return nil, err
 	}
 
-	return toUser(user), nil
+	return user, nil
 }
 
 func (s *UserService) validateUser(email string) error {
