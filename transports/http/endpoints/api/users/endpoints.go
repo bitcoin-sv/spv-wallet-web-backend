@@ -88,9 +88,16 @@ func (h *handler) register(c *gin.Context) {
 //	@Success 200 {object} UserResponse
 //	@Router /user [get]
 func (h *handler) getUser(c *gin.Context) {
+	user, err := h.service.GetUserById(c.GetInt(auth.SessionUserId))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		return
+	}
+
 	response := UserResponse{
 		UserId: c.GetInt(auth.SessionUserId),
 		// Paymail: c.GetString(auth.SessionPaymail),
+		Email: user.Email,
 	}
 
 	c.JSON(http.StatusOK, response)

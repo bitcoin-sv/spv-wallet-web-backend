@@ -17,4 +17,5 @@ type RegisterResponse struct {
 type UserResponse struct {
 	UserId  int    `json:"userId"`
 	Paymail string `json:"paymail"`
+	Email   string `json:"email"`
 }
