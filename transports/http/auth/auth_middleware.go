@@ -50,7 +50,6 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 		return
 	}
 
-	user, err := h.checkUser(userId.(int))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 		return
@@ -58,7 +57,6 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 
 	c.Set(SessionToken, token)
 	c.Set(SessionUserId, userId)
-	c.Set(SessionPaymail, user.Paymail)
 }
 
 // checkAccessKey checks if access key is valid by getting it from BUX.

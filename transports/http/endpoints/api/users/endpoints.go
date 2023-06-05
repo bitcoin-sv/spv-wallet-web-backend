@@ -89,8 +89,8 @@ func (h *handler) register(c *gin.Context) {
 //	@Router /user [get]
 func (h *handler) getUser(c *gin.Context) {
 	response := UserResponse{
-		UserId:  c.GetInt(auth.SessionUserId),
-		Paymail: c.GetString(auth.SessionPaymail),
+		UserId: c.GetInt(auth.SessionUserId),
+		// Paymail: c.GetString(auth.SessionPaymail),
 	}
 
 	c.JSON(http.StatusOK, response)
