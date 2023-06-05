@@ -1,8 +1,17 @@
+## Jetbrains
 .idea/
 *.iml
 
+## build
 build/
 dist/
 /release/artifacts/
 
+## database
 /data/sql/db
+
+## Private taskfile
+Taskfile.yml
+
+##Macos
+.DS_Store

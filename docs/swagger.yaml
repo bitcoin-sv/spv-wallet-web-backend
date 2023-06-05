@@ -1,7 +1,21 @@
 definitions:
+  access.SignInResponse:
+    properties:
+      paymail:
+        type: string
+    type: object
+  access.SignInUser:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
   users.RegisterResponse:
     properties:
       mnemonic:
+        type: string
+      paymail:
         type: string
     type: object
   users.RegisterUser:
@@ -13,16 +27,58 @@ definitions:
       passwordConfirmation:
         type: string
     type: object
+  users.UserResponse:
+    properties:
+      paymail:
+        type: string
+      userId:
+        type: integer
+    type: object
 info:
   contact: {}
   description: This is an API for bux wallet.
   title: Bux Wallet API
   version: "1.0"
 paths:
+  /api/v1/sign-in:
+    post:
+      consumes:
+      - '*/*'
+      parameters:
+      - description: User sign in data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/access.SignInUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/access.SignInResponse'
+      summary: Sign in user
+      tags:
+      - user
+  /api/v1/sign-out:
+    post:
+      consumes:
+      - '*/*'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Sign out user
+      tags:
+      - user
   /api/v1/user:
     post:
       consumes:
       - '*/*'
+      description: Register new user with given data, paymail is created based on
+        username from sended email.
       parameters:
       - description: User data
         in: body
@@ -44,7 +100,6 @@ paths:
     get:
       consumes:
       - '*/*'
-      operationId: /status
       produces:
       - application/json
       responses:
@@ -53,4 +108,18 @@ paths:
       summary: Check the status of the server
       tags:
       - status
+  /user:
+    get:
+      consumes:
+      - '*/*'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.UserResponse'
+      summary: Get user information
+      tags:
+      - user
 swagger: "2.0"

@@ -16,6 +16,58 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/sign-in": {
+            "post": {
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Sign in user",
+                "parameters": [
+                    {
+                        "description": "User sign in data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/access.SignInUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/access.SignInResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/sign-out": {
+            "post": {
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Sign out user",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/v1/user": {
             "post": {
                 "description": "Register new user with given data, paymail is created based on username from sended email.",
@@ -68,9 +120,50 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user": {
+            "get": {
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get user information",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.UserResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "access.SignInResponse": {
+            "type": "object",
+            "properties": {
+                "paymail": {
+                    "type": "string"
+                }
+            }
+        },
+        "access.SignInUser": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "users.RegisterResponse": {
             "type": "object",
             "properties": {
@@ -93,6 +186,17 @@ const docTemplate = `{
                 },
                 "passwordConfirmation": {
                     "type": "string"
+                }
+            }
+        },
+        "users.UserResponse": {
+            "type": "object",
+            "properties": {
+                "paymail": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
                 }
             }
         }

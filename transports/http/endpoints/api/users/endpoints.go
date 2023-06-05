@@ -85,7 +85,7 @@ func (h *handler) register(c *gin.Context) {
 //	@Tags user
 //	@Accept */*
 //	@Produce json
-//	@Success 200 {object} CheckUserResponse
+//	@Success 200 {object} UserResponse
 //	@Router /user [get]
 func (h *handler) getUser(c *gin.Context) {
 	response := UserResponse{
