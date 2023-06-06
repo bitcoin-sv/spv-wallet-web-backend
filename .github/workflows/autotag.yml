@@ -1,0 +1,24 @@
+name: Automatic Git Tag
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [ master,main ]
+
+jobs:
+  tag-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+# Because of some github action optimisation [discussed here](https://github.com/orgs/community/discussions/27028)
+# We're using Deploy key
+          ssh-key: "${{ secrets.DEPLOYMENT_KEY }}"
+
+      - name: Create version tag
+        run: ./release/tag-next-version.sh
+
+      - name: Push new tag
+        run: git push --tags
