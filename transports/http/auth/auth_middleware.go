@@ -2,9 +2,10 @@ package auth
 
 import (
 	"bux-wallet/domain"
-	buxclient "bux-wallet/transports/bux/client"
+	"bux-wallet/domain/users"
 	"errors"
 	"net/http"
+	"fmt"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,7 @@ import (
 
 // AuthMiddleware middleware that is checking the variables set in session.
 type AuthMiddleware struct {
-	adminBuxClient buxclient.AdmBuxClient
+	adminBuxClient users.AdmBuxClient
 	services       *domain.Services
 }
 
