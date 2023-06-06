@@ -4,8 +4,8 @@ FROM --platform=$TARGETPLATFORM alpine:3.18
 
 WORKDIR /app
 
-ENV DB_SCHEMA_PATH=./migrations
-COPY ./data/sql/migrations $DB_SCHEMA_PATH
+ENV DB_MIGRATIONSPATH=./migrations
+COPY ./data/sql/migrations $DB_MIGRATIONSPATH
 COPY ./release/entrypoint.sh .
 ARG project_name
 COPY ./$project_name .
