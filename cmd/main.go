@@ -16,8 +16,6 @@ import (
 	"bux-wallet/transports/http/endpoints"
 	httpserver "bux-wallet/transports/http/server"
 
-	buxclient "bux-wallet/transports/bux/client"
-
 	"github.com/spf13/viper"
 )
 
@@ -39,13 +37,12 @@ func main() {
 	defer db.Close() // nolint: all
 
 	repo := db_users.NewUsersRepository(db)
-	buxClient, err := buxclient.CreateAdminBuxClient(lf)
+
+	s, err := domain.NewServices(repo, lf)
 	if err != nil {
-		log.Errorf("cannot create bux client: %v", err)
+		log.Errorf("cannot create services because of an error: ", err)
 		os.Exit(1)
 	}
-
-	s := domain.NewServices(repo, buxClient, lf)
 
 	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort), lf)
 	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db))

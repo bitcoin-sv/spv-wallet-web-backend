@@ -1,0 +1,73 @@
+package buxclient
+
+import (
+	"bux-wallet/config"
+	"bux-wallet/domain/users"
+	"bux-wallet/logging"
+
+	"github.com/BuxOrg/go-buxclient"
+	"github.com/spf13/viper"
+)
+
+type buxclientFactory struct {
+	log logging.Logger
+}
+
+// NewBuxClientFactory creates instance of Bux Client Factory.
+func NewBuxClientFactory(lf logging.LoggerFactory) users.BuxClientFactory {
+	return &buxclientFactory{
+		log: lf.NewLogger("bux-client"),
+	}
+}
+
+// CreateAdminBuxClient creates instance of Bux Client with admin keys.
+func (bf *buxclientFactory) CreateAdminBuxClient() (users.AdmBuxClient, error) {
+	// Get env variables.
+	xpriv := viper.GetString(config.EnvBuxAdminXpriv)
+	serverUrl := viper.GetString(config.EnvBuxServerUrl)
+	debug := viper.GetBool(config.EnvBuxWithDebug)
+	signRequest := viper.GetBool(config.EnvBuxSignRequest)
+
+	// Init bux client.
+	buxClient, err := buxclient.New(
+		buxclient.WithXPriv(xpriv),
+		buxclient.WithAdminKey(xpriv),
+		buxclient.WithHTTP(serverUrl),
+		buxclient.WithDebugging(debug),
+		buxclient.WithSignRequest(signRequest),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &AdminBuxClient{
+		client: buxClient,
+		log:    bf.log,
+	}, nil
+}
+
+// CreateWithXpriv creates instance of Bux Client with given xpriv.
+func (bf *buxclientFactory) CreateWithXpriv(xpriv string) (users.UserBuxClient, error) {
+	// Get env variables.
+	serverUrl := viper.GetString(config.EnvBuxServerUrl)
+	debug := viper.GetBool(config.EnvBuxWithDebug)
+	signRequest := viper.GetBool(config.EnvBuxSignRequest)
+
+	// Init bux client with generated xpub.
+	buxClient, err := buxclient.New(
+		buxclient.WithXPriv(xpriv),
+		buxclient.WithHTTP(serverUrl),
+		buxclient.WithDebugging(debug),
+		buxclient.WithSignRequest(signRequest),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &BuxClient{
+		client: buxClient,
+		log:    bf.log,
+	}, nil
+}

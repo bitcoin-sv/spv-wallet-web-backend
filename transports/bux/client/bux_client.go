@@ -1,18 +1,14 @@
 package buxclient
 
 import (
-	"bux-wallet/config"
+	"context"
+
+	"bux-wallet/domain/users"
 	"bux-wallet/logging"
 
+	"github.com/BuxOrg/bux"
 	"github.com/BuxOrg/go-buxclient"
-	"github.com/spf13/viper"
 )
-
-// AdminBuxClient is a wrapper for Admin Bux Client.
-type AdminBuxClient struct {
-	client *buxclient.BuxClient
-	log    logging.Logger
-}
 
 // BuxClient is a wrapper for Bux Client.
 type BuxClient struct {
@@ -20,56 +16,63 @@ type BuxClient struct {
 	log    logging.Logger
 }
 
-// CreateAdminBuxClient creates instance of Bux Client with admin keys.
-func CreateAdminBuxClient(lf logging.LoggerFactory) (*AdminBuxClient, error) {
-	// Get env variables.
-	xpriv := viper.GetString(config.EnvBuxAdminXpriv)
-	serverUrl := viper.GetString(config.EnvBuxServerUrl)
-	debug := viper.GetBool(config.EnvBuxWithDebug)
-	signRequest := viper.GetBool(config.EnvBuxSignRequest)
-
-	// Init bux client.
-	buxClient, err := buxclient.New(
-		buxclient.WithXPriv(xpriv),
-		buxclient.WithAdminKey(xpriv),
-		buxclient.WithHTTP(serverUrl),
-		buxclient.WithDebugging(debug),
-		buxclient.WithSignRequest(signRequest),
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &AdminBuxClient{
-		client: buxClient,
-		log:    lf.NewLogger("admin-bux-client"),
-	}, nil
+// AccessKey is a struct that contains access key data.
+type AccessKey struct {
+	Id  string `json:"id"`
+	Key string `json:"key"`
 }
 
-// CreateBuxClientFromRawXpriv creates instance of Bux Client with user raw xpriv.
-func CreateBuxClientFromRawXpriv(rawXpriv string) (*BuxClient, error) {
-	// Get env variables.
-	serverUrl := viper.GetString(config.EnvBuxServerUrl)
-	debug := viper.GetBool(config.EnvBuxWithDebug)
-	signRequest := viper.GetBool(config.EnvBuxSignRequest)
+// GetAccessKey returns access key.
+func (a *AccessKey) GetAccessKey() string {
+	return a.Key
+}
 
-	// Init bux client with generated xpub.
-	buxClient, err := buxclient.New(
-		buxclient.WithXPriv(rawXpriv),
-		buxclient.WithHTTP(serverUrl),
-		buxclient.WithDebugging(debug),
-		buxclient.WithSignRequest(signRequest),
-	)
+// GetAccessKeyId returns access key id.
+func (a *AccessKey) GetAccessKeyId() string {
+	return a.Id
+}
 
+// CreateAccessKey creates new access key for user.
+func (c *BuxClient) CreateAccessKey() (users.AccKey, error) {
+	accessKey, err := c.client.CreateAccessKey(context.Background(), &bux.Metadata{})
 	if err != nil {
 		return nil, err
 	}
 
-	lf := logging.DefaultLoggerFactory()
+	accessKeyData := AccessKey{
+		Id:  accessKey.ID,
+		Key: accessKey.Key,
+	}
 
-	return &BuxClient{
-		client: buxClient,
-		log:    lf.NewLogger("bux-client"),
-	}, nil
+	return &accessKeyData, err
+}
+
+// GetAccessKey checks if access key is valid.
+func (c *BuxClient) GetAccessKey(accessKeyId string) (users.AccKey, error) {
+	accessKey, err := c.client.GetAccessKey(context.Background(), accessKeyId)
+	if err != nil {
+		return nil, err
+	}
+
+	accessKeyData := AccessKey{
+		Id:  accessKey.ID,
+		Key: accessKey.Key,
+	}
+
+	return &accessKeyData, nil
+}
+
+// RevokeAccessKey revokes access key.
+func (c *BuxClient) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
+	accessKey, err := c.client.RevokeAccessKey(context.Background(), accessKeyId)
+	if err != nil {
+		return nil, err
+	}
+
+	accessKeyData := AccessKey{
+		Id:  accessKey.ID,
+		Key: accessKey.Key,
+	}
+
+	return &accessKeyData, nil
 }
