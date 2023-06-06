@@ -29,6 +29,8 @@ definitions:
     type: object
   users.UserResponse:
     properties:
+      email:
+        type: string
       paymail:
         type: string
       userId:

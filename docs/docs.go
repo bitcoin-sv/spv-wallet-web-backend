@@ -191,6 +191,9 @@ const docTemplate = `{
         "users.UserResponse": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "paymail": {
                     "type": "string"
                 },
