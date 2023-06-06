@@ -9,11 +9,14 @@ import (
 
 // Services is a struct that contains all services.
 type Services struct {
-	UsersService *users.UserService
+	UsersService     *users.UserService
+	BuxClientFactory users.BuxClientFactory
 }
 
 // NewServices creates services instance.
-func NewServices(usersRepo *db_users.UsersRepository, bf buxclient.BuxClientFactory, lf logging.LoggerFactory) (*Services, error) {
+func NewServices(usersRepo *db_users.UsersRepository, lf logging.LoggerFactory) (*Services, error) {
+	bf := buxclient.NewBuxClientFactory(lf)
+
 	// Create User services.
 	uService, err := users.NewUserService(usersRepo, bf, lf)
 	if err != nil {
@@ -21,6 +24,7 @@ func NewServices(usersRepo *db_users.UsersRepository, bf buxclient.BuxClientFact
 	}
 
 	return &Services{
-		UsersService: uService,
+		UsersService:     uService,
+		BuxClientFactory: bf,
 	}, nil
 }

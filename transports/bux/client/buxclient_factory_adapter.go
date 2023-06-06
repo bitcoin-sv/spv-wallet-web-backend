@@ -2,6 +2,7 @@ package buxclient
 
 import (
 	"bux-wallet/config"
+	"bux-wallet/domain/users"
 	"bux-wallet/logging"
 
 	"github.com/BuxOrg/go-buxclient"
@@ -13,14 +14,14 @@ type buxclientFactory struct {
 }
 
 // NewBuxClientFactory creates instance of Bux Client Factory.
-func NewBuxClientFactory(lf logging.LoggerFactory) BuxClientFactory {
+func NewBuxClientFactory(lf logging.LoggerFactory) users.BuxClientFactory {
 	return &buxclientFactory{
 		log: lf.NewLogger("bux-client"),
 	}
 }
 
 // CreateAdminBuxClient creates instance of Bux Client with admin keys.
-func (bf *buxclientFactory) CreateAdminBuxClient() (AdmBuxClient, error) {
+func (bf *buxclientFactory) CreateAdminBuxClient() (users.AdmBuxClient, error) {
 	// Get env variables.
 	xpriv := viper.GetString(config.EnvBuxAdminXpriv)
 	serverUrl := viper.GetString(config.EnvBuxServerUrl)
@@ -47,7 +48,7 @@ func (bf *buxclientFactory) CreateAdminBuxClient() (AdmBuxClient, error) {
 }
 
 // CreateWithXpriv creates instance of Bux Client with given xpriv.
-func (bf *buxclientFactory) CreateWithXpriv(xpriv string) (UserBuxClient, error) {
+func (bf *buxclientFactory) CreateWithXpriv(xpriv string) (users.UserBuxClient, error) {
 	// Get env variables.
 	serverUrl := viper.GetString(config.EnvBuxServerUrl)
 	debug := viper.GetBool(config.EnvBuxWithDebug)

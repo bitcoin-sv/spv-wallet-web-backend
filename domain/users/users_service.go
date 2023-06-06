@@ -11,7 +11,6 @@ import (
 
 	"bux-wallet/encryption"
 	"bux-wallet/logging"
-	buxclient "bux-wallet/transports/bux/client"
 
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
@@ -20,14 +19,14 @@ import (
 
 // UserService represents User service and provide access to repository.
 type UserService struct {
-	repo      UsersRepository
-	BuxClient buxclient.AdmBuxClient
-	bf        buxclient.BuxClientFactory
-	log       logging.Logger
+	repo             UsersRepository
+	buxClient        AdmBuxClient
+	buxClientFactory BuxClientFactory
+	log              logging.Logger
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo UsersRepository, bf buxclient.BuxClientFactory, lf logging.LoggerFactory) (*UserService, error) {
+func NewUserService(repo UsersRepository, bf BuxClientFactory, lf logging.LoggerFactory) (*UserService, error) {
 	// Generate admin bux client.
 	adminBuxClient, err := bf.CreateAdminBuxClient()
 	if err != nil {
@@ -36,10 +35,10 @@ func NewUserService(repo UsersRepository, bf buxclient.BuxClientFactory, lf logg
 
 	// Create service.
 	s := &UserService{
-		repo:      repo,
-		BuxClient: adminBuxClient,
-		bf:        bf,
-		log:       lf.NewLogger("user-service"),
+		repo:             repo,
+		buxClient:        adminBuxClient,
+		buxClientFactory: bf,
+		log:              lf.NewLogger("user-service"),
 	}
 
 	return s, nil
@@ -84,7 +83,7 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	}
 
 	// Register xpub in BUX.
-	xpub, err := s.BuxClient.RegisterXpub(xpriv)
+	xpub, err := s.buxClient.RegisterXpub(xpriv)
 	if err != nil {
 		return nil, fmt.Errorf("error registering xpub in BUX: %s", err.Error())
 	}
@@ -93,7 +92,7 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	username, _ := splitEmail(email)
 
 	// Register paymail in BUX.
-	paymail, err := s.BuxClient.RegisterPaymail(username, xpub)
+	paymail, err := s.buxClient.RegisterPaymail(username, xpub)
 	if err != nil {
 		return nil, fmt.Errorf("error registering paymail in BUX: %s", err.Error())
 	}
@@ -134,7 +133,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	}
 
 	// Try to generate BUX client with decrypted xpriv.
-	buxClient, err := s.bf.CreateWithXpriv(decryptedXpriv)
+	buxClient, err := s.buxClientFactory.CreateWithXpriv(decryptedXpriv)
 	if err != nil {
 		return nil, err
 	}
@@ -148,8 +147,8 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	signInUser := &AuthenticatedUser{
 		User: user,
 		AccessKey: AccessKey{
-			Id:  accessKey.Id,
-			Key: accessKey.Key,
+			Id:  accessKey.GetAccessKeyId(),
+			Key: accessKey.GetAccessKeyId(),
 		},
 	}
 
