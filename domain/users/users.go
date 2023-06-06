@@ -1,7 +1,6 @@
 package users
 
 import (
-	"bux-wallet/data/users"
 	"time"
 )
 
@@ -30,26 +29,4 @@ type AuthenticatedUser struct {
 type AccessKey struct {
 	Id  string `json:"id"`
 	Key string `json:"key"`
-}
-
-// toUserDto converts User to UserDto.
-func (user *User) toUserDto() *users.UserDto {
-	return &users.UserDto{
-		Id:        user.Id,
-		Email:     user.Email,
-		Xpriv:     user.Xpriv,
-		Paymail:   user.Paymail,
-		CreatedAt: user.CreatedAt,
-	}
-}
-
-// toUser converts UserDto to User.
-func toUser(user *users.UserDto) *User {
-	return &User{
-		Id:        user.Id,
-		Email:     user.Email,
-		Xpriv:     user.Xpriv,
-		Paymail:   user.Paymail,
-		CreatedAt: user.CreatedAt,
-	}
 }

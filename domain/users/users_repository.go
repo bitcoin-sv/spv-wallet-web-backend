@@ -1,13 +1,12 @@
 package users
 
 import (
-	"bux-wallet/data/users"
 	"context"
 )
 
 // UsersRepository is an interface which defines methods for UsersRepository.
 type UsersRepository interface {
-	InsertUser(ctx context.Context, user *users.UserDto) error
-	GetUserByEmail(ctx context.Context, email string) (*users.UserDto, error)
-	GetUserById(ctx context.Context, id int) (*users.UserDto, error)
+	InsertUser(ctx context.Context, user *User) error
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
+	GetUserById(ctx context.Context, id int) (*User, error)
 }
