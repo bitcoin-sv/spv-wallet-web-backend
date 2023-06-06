@@ -2,10 +2,8 @@ package auth
 
 import (
 	"bux-wallet/domain"
-	"bux-wallet/domain/users"
 	buxclient "bux-wallet/transports/bux/client"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -50,7 +48,6 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 		return
 	}
 
-	user, err := h.checkUser(userId.(int))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 		return
@@ -58,7 +55,6 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 
 	c.Set(SessionToken, token)
 	c.Set(SessionUserId, userId)
-	c.Set(SessionPaymail, user.Paymail)
 }
 
 // checkAccessKey checks if access key is valid by getting it from BUX.
@@ -71,13 +67,4 @@ func (h *AuthMiddleware) checkAccessKey(token string) error {
 	// 	return nil
 	// }
 	return nil
-}
-
-// checkUser checks if user exists in database.
-func (h *AuthMiddleware) checkUser(userId int) (*users.User, error) {
-	user, err := h.services.UsersService.GetUserById(userId)
-	if err != nil {
-		return nil, fmt.Errorf("error during getting user by id: %w", err)
-	}
-	return user, nil
 }
