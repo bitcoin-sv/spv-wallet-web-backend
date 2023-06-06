@@ -95,7 +95,7 @@ func (h *handler) getUser(c *gin.Context) {
 	}
 
 	response := UserResponse{
-		UserId:  c.GetInt(auth.SessionUserId),
+		UserId:  user.Id,
 		Paymail: user.Paymail,
 		Email:   user.Email,
 	}
