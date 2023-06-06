@@ -5,6 +5,8 @@ import (
 	"errors"
 
 	"bux-wallet/domain"
+	"bux-wallet/transports/http/endpoints/status"
+	"bux-wallet/transports/http/endpoints/swagger"
 
 	"bux-wallet/transports/http/auth"
 	"bux-wallet/transports/http/endpoints/api/access"
@@ -23,6 +25,8 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB) httpserver.GinEngineOpt {
 	usersRootEndpoints, usersApiEndpoints := users.NewHandler(s)
 
 	routes := []interface{}{
+		swagger.NewHandler(),
+		status.NewHandler(),
 		usersRootEndpoints,
 		usersApiEndpoints,
 		accessRootEndpoints,
