@@ -1,0 +1,155 @@
+  version: '3'
+  tasks:
+    default:
+      cmds:
+        - task -l
+
+#### INSTALL #####
+    install:
+      desc: "Install tools and setup environment for development"
+      cmds:
+        - task: install:macos
+
+    install:macos:
+      internal: true
+      platforms: [darwin]
+      preconditions:
+        - sh: command -v brew
+          msg: | 
+            We use brew to install dependencies. 
+            Check out how to install it on a page https://brew.sh/
+      cmds:
+        - task: install:brew:go
+        - task: install:brew:golint
+        - task: install:go:swag
+
+    install:brew:go:
+      label: "Install Go"
+      internal: true
+      preconditions:
+        - sh: command -v brew
+          msg: "Command 'brew' not found"
+      status:
+        - command -v go
+      cmds:
+        - brew install go
+
+    install:brew:golint:
+      label: "Install golangci-lint"
+      internal: true
+      preconditions:
+        - sh: command -v brew
+          msg: "Command 'brew' not found"
+      status:
+        - command -v golangci-lint
+      cmds:
+        - brew install golangci-lint
+
+    install:go:swag:
+      label: "Install swaggo/swag"
+      internal: true
+      preconditions:
+        - sh: command -v go
+          msg: "Command 'go' not found"
+      status:
+        - command -v swag
+      cmds:
+        - go install github.com/swaggo/swag/cmd/swag@latest
+
+
+### GIT HOOKS ###
+    git-hooks:install:
+      status:
+        - test -f .git/hooks/pre-push
+        - test -x .git/hooks/pre-push
+      cmds:
+        - cmd: echo "{{.PRE_PUSH_HOOK}}" > .git/hooks/pre-push
+          silent: true
+        - cmd: chmod u+x .git/hooks/pre-push
+          silent: true
+        - cmd: 'echo "task: [{{.TASK}}] Hooks installed successfully"'
+          silent: true
+      vars:
+        PRE_PUSH_HOOK: |
+          export PATH=$(go env GOPATH)/bin:\$PATH
+          task git-hooks:pre-push
+
+    git-hooks:uninstall:
+      status:
+        - test ! -f .git/hooks/pre-push
+      cmds:
+        - cmd: rm .git/hooks/pre-push
+          silent: true
+        - cmd: 'echo "task: [{{.TASK}}] Hooks uninstalled successfully"'
+          silent: true
+
+    git-hooks:pre-push:
+      desc: "task to run before push"
+      deps: [ gen:swag,lint:check,build:compiler,test ]
+      cmds:
+        - cmd: |
+            (git status --porcelain | grep -e docs/swagger.json -e docs/swagger.yaml -e docs/docs.go) \
+            && { echo "Uncommitted swagger files. Aborting push."; exit 1; } \
+            || { exit 0; }
+
+### Standard ###
+    start:
+      cmds:
+        - task: verify
+        - task: run
+
+    verify:
+      desc: "Run all verifications (check & test)"
+      cmds:
+        - task: verify:check
+        - task: test
+
+    test:
+      desc: "Run tests"
+      deps: [ gen:swag ]
+      cmds:
+        - go test -v ./... -race
+
+
+### Fine grained tasks ###
+    verify:check:
+      desc: "Run static checks (lint & build:compiler)"
+      deps: [ gen:swag ]
+      cmds:
+        - task: lint:fix
+        - task: build:compiler
+
+    test:clean:
+      desc: "Run tests with clean cache"
+      cmds:
+        - go clean -testcache
+        - task: test
+
+    run:
+      desc: "Run application locally without performing any checks"
+      deps: [gen:swag]
+      cmds:
+        - go run ./cmd/main.go
+
+    build:compiler:
+      desc: "Build application"
+      deps: [ gen:swag ]
+      cmds:
+        - go build -v ./...
+
+    lint:check:
+      desc: "Run linter"
+      cmds:
+        - golangci-lint run {{.CLI_ARGS}}
+
+    lint:fix:
+        desc: "Run linter (with --fix)"
+        cmds:
+          - task: lint:check
+            vars: { CLI_ARGS: '--fix'}
+
+    gen:swag:
+      desc: "Update swagger definitions"
+      run: once
+      cmds:
+        - swag init -g ./cmd/main.go
