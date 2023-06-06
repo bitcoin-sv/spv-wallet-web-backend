@@ -13,8 +13,14 @@ type Services struct {
 }
 
 // NewServices creates services instance.
-func NewServices(usersRepo *db_users.UsersRepository, adminBuxClient *buxclient.AdminBuxClient, lf logging.LoggerFactory) *Services {
-	return &Services{
-		UsersService: users.NewUserService(usersRepo, adminBuxClient, lf),
+func NewServices(usersRepo *db_users.UsersRepository, bf buxclient.BuxClientFactory, lf logging.LoggerFactory) (*Services, error) {
+	// Create User services.
+	uService, err := users.NewUserService(usersRepo, bf, lf)
+	if err != nil {
+		return nil, err
 	}
+
+	return &Services{
+		UsersService: uService,
+	}, nil
 }

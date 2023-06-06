@@ -12,7 +12,7 @@ import (
 
 // AuthMiddleware middleware that is checking the variables set in session.
 type AuthMiddleware struct {
-	adminBuxClient *buxclient.AdminBuxClient
+	adminBuxClient buxclient.AdmBuxClient
 	services       *domain.Services
 }
 

@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-// RegisterNewPaymail registers new paymail in bux.
-func (adminBuxClient *AdminBuxClient) RegisterNewPaymail(alias, xpub string) (string, error) {
+// RegisterPaymail registers new paymail in bux.
+func (adminBuxClient *AdminBuxClient) RegisterPaymail(alias, xpub string) (string, error) {
 	// Get paymail domain from env.
 	domain := viper.GetString(config.EnvBuxPaymailDomain)
 
