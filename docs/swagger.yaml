@@ -45,7 +45,7 @@ paths:
   /api/v1/sign-in:
     post:
       consumes:
-      - '*/*'
+      - application/json
       parameters:
       - description: User sign in data
         in: body
@@ -78,7 +78,7 @@ paths:
   /api/v1/user:
     post:
       consumes:
-      - '*/*'
+      - application/json
       description: Register new user with given data, paymail is created based on
         username from sended email.
       parameters:

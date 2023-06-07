@@ -41,7 +41,7 @@ func NewHandler(s *domain.Services) (router.RootEndpoints, router.ApiEndpoints) 
 //
 //	@Summary Register new user
 //	@Tags user
-//	@Accept */*
+//	@Accept json
 //	@Produce json
 //	@Success 200 {object} RegisterResponse
 //	@Router /api/v1/user [post]
