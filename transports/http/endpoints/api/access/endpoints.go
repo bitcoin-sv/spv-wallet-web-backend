@@ -39,7 +39,7 @@ func NewHandler(s *domain.Services) (router.RootEndpoints, router.ApiEndpoints) 
 //
 //	@Summary Sign in user
 //	@Tags user
-//	@Accept */*
+//	@Accept json
 //	@Produce json
 //	@Success 200 {object} SignInResponse
 //	@Router /api/v1/sign-in [post]

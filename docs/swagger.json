@@ -10,7 +10,7 @@
         "/api/v1/sign-in": {
             "post": {
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -63,7 +63,7 @@
             "post": {
                 "description": "Register new user with given data, paymail is created based on username from sended email.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
