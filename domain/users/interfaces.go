@@ -33,6 +33,7 @@ type (
 	// BuxClientFactory defines methods for bux client factory.
 	BuxClientFactory interface {
 		CreateWithXpriv(xpriv string) (UserBuxClient, error)
+		CreateWithAccessKey(accessKey string) (UserBuxClient, error)
 		CreateAdminBuxClient() (AdmBuxClient, error)
 	}
 )
