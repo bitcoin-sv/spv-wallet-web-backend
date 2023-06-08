@@ -3,8 +3,11 @@ package users
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"net/mail"
 	"strings"
 	"time"
@@ -144,12 +147,23 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, err
 	}
 
+	xpub, err := buxClient.GetXPub()
+	if err != nil {
+		return nil, err
+	}
+
+	balance, err := calculateBalance(xpub.GetCurrentBalance())
+	if err != nil {
+		return nil, err
+	}
+
 	signInUser := &AuthenticatedUser{
 		User: user,
 		AccessKey: AccessKey{
 			Id:  accessKey.GetAccessKeyId(),
 			Key: accessKey.GetAccessKeyId(),
 		},
+		Balance: *balance,
 	}
 
 	return signInUser, nil
@@ -265,4 +279,43 @@ func validatePassword(password string) error {
 	}
 
 	return nil
+}
+
+func calculateBalance(satoshis uint64) (*Balance, error) {
+	// Create request.
+	req, error := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://api.whatsonchain.com/v1/bsv/main/exchangerate", nil)
+	if error != nil {
+		return nil, fmt.Errorf("error during creating exchange rate request: %s", error.Error())
+	}
+
+	// Send request.
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error during getting exchange rate: %s", err.Error())
+	}
+	defer res.Body.Close() // nolint: all
+
+	// Parse response body.
+	var exchangeRate ExchangeRate
+	bodyBytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error during reading response body: %s", err.Error())
+	}
+
+	err = json.Unmarshal(bodyBytes, &exchangeRate)
+	if err != nil {
+		return nil, fmt.Errorf("error during unmarshaling response body: %s", err.Error())
+	}
+
+	// Calculate balance.
+	balanceBSV := float64(satoshis) / 100000000
+	balanceUSD := balanceBSV * exchangeRate.Rate
+
+	balance := &Balance{
+		Bsv:      balanceBSV,
+		Usd:      balanceUSD,
+		Satoshis: satoshis,
+	}
+
+	return balance, nil
 }

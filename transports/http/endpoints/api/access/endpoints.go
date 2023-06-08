@@ -67,6 +67,7 @@ func (h *handler) signIn(c *gin.Context) {
 
 	response := SignInResponse{
 		Paymail: signInUser.User.Paymail,
+		Balance: signInUser.Balance,
 	}
 	c.JSON(http.StatusOK, response)
 }

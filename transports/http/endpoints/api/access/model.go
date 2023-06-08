@@ -1,5 +1,7 @@
 package access
 
+import "bux-wallet/domain/users"
+
 // SignInUser is a struct that contains user sign in data.
 type SignInUser struct {
 	Email    string `json:"email"`
@@ -8,5 +10,6 @@ type SignInUser struct {
 
 // SignInResponse is a struct that represents struct sended after user sign in.
 type SignInResponse struct {
-	Paymail string `json:"paymail"`
+	Paymail string        `json:"paymail"`
+	Balance users.Balance `json:"balance"`
 }

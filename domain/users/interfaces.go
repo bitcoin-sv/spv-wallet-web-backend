@@ -8,12 +8,20 @@ type (
 		GetAccessKey() string
 		GetAccessKeyId() string
 	}
+	// PubKey is an interface that defines xpub key data and methods.
+	PubKey interface {
+		GetId() string
+		GetXPub() string
+		GetCurrentBalance() uint64
+	}
 	// UserBuxClient defines methods for bux client with user key.
 	UserBuxClient interface {
 		// Access Key methods
 		CreateAccessKey() (AccKey, error)
 		GetAccessKey(accessKeyId string) (AccKey, error)
 		RevokeAccessKey(accessKeyId string) (AccKey, error)
+		// XPub Key methods
+		GetXPub() (PubKey, error)
 	}
 
 	// AdmBuxClient defines methods for bux client with admin key.
