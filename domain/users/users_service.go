@@ -161,7 +161,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		User: user,
 		AccessKey: AccessKey{
 			Id:  accessKey.GetAccessKeyId(),
-			Key: accessKey.GetAccessKeyId(),
+			Key: accessKey.GetAccessKey(),
 		},
 		Balance: *balance,
 	}
@@ -188,6 +188,29 @@ func (s *UserService) GetUserById(userId int) (*User, error) {
 	}
 
 	return user, nil
+}
+
+// GetUserBalance returns user balance. Bux client is created with access key.
+func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
+	// Create BUX client with access key.
+	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get xpub.
+	xpub, err := buxClient.GetXPub()
+	if err != nil {
+		return nil, err
+	}
+
+	// Calculate balance.
+	balance, err := calculateBalance(xpub.GetCurrentBalance())
+	if err != nil {
+		return nil, err
+	}
+
+	return balance, nil
 }
 
 func (s *UserService) validateUser(email string) error {

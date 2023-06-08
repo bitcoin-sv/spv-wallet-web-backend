@@ -94,10 +94,17 @@ func (h *handler) getUser(c *gin.Context) {
 		return
 	}
 
+	currentBalance, err := h.service.GetUserBalance(c.GetString(auth.SessionAccessKey))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		return
+	}
+
 	response := UserResponse{
 		UserId:  user.Id,
 		Paymail: user.Paymail,
 		Email:   user.Email,
+		Balance: *currentBalance,
 	}
 
 	c.JSON(http.StatusOK, response)

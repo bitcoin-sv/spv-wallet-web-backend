@@ -1,5 +1,7 @@
 package users
 
+import "bux-wallet/domain/users"
+
 // RegisterUser is a struct that contains user register data.
 type RegisterUser struct {
 	Email                string `json:"email"`
@@ -15,7 +17,8 @@ type RegisterResponse struct {
 
 // UserResponse is a struct that represents user information.
 type UserResponse struct {
-	UserId  int    `json:"userId"`
-	Paymail string `json:"paymail"`
-	Email   string `json:"email"`
+	UserId  int           `json:"userId"`
+	Paymail string        `json:"paymail"`
+	Email   string        `json:"email"`
+	Balance users.Balance `json:"balance"`
 }
