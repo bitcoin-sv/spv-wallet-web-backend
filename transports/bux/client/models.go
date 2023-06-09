@@ -13,6 +13,11 @@ type XPub struct {
 	CurrentBalance uint64 `json:"current_balance"`
 }
 
+// Transaction is a struct that contains transaction data.
+type Transaction struct {
+	Id string `json:"id"`
+}
+
 // GetAccessKey returns access key.
 func (a *AccessKey) GetAccessKey() string {
 	return a.Key
@@ -36,4 +41,9 @@ func (x *XPub) GetXPub() string {
 // GetCurrentBalance returns current balance.
 func (x *XPub) GetCurrentBalance() uint64 {
 	return x.CurrentBalance
+}
+
+// GetTransactionId returns transaction id.
+func (t *Transaction) GetTransactionId() string {
+	return t.Id
 }

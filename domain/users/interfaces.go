@@ -17,6 +17,12 @@ type (
 		GetXPub() string
 		GetCurrentBalance() uint64
 	}
+
+	// Transaction is an interface that defines transaction data and methods.
+	Transaction interface {
+		GetTransactionId() string
+	}
+
 	// UserBuxClient defines methods for bux client with user key.
 	UserBuxClient interface {
 		// Access Key methods
@@ -27,6 +33,8 @@ type (
 		GetXPub() (PubKey, error)
 		// Transaction methods
 		SendToRecipents(recipients []*transports.Recipients) (string, error)
+		GetAllTransactions() ([]Transaction, error)
+		GetTransaction(transactionId string) (Transaction, error)
 	}
 
 	// AdmBuxClient defines methods for bux client with admin key.

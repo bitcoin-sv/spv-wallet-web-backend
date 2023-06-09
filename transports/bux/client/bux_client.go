@@ -86,3 +86,36 @@ func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients) (string
 	}
 	return transaction.ID, nil
 }
+
+// GetAllTransactions returns all transactions.
+func (c *BuxClient) GetAllTransactions() ([]users.Transaction, error) {
+	conditions := make(map[string]interface{})
+	transactions, err := c.client.GetTransactions(context.Background(), conditions, &bux.Metadata{})
+	if err != nil {
+		return nil, err
+	}
+
+	var transactionsData []users.Transaction
+	for _, transaction := range transactions {
+		transactionData := Transaction{
+			Id: transaction.ID,
+		}
+		transactionsData = append(transactionsData, &transactionData)
+	}
+
+	return transactionsData, nil
+}
+
+// GetTransaction returns transaction by id.
+func (c *BuxClient) GetTransaction(transactionId string) (users.Transaction, error) {
+	transaction, err := c.client.GetTransaction(context.Background(), transactionId)
+	if err != nil {
+		return nil, err
+	}
+
+	transactionData := Transaction{
+		Id: transaction.ID,
+	}
+
+	return &transactionData, nil
+}
