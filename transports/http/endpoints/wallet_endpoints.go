@@ -10,6 +10,7 @@ import (
 
 	"bux-wallet/transports/http/auth"
 	"bux-wallet/transports/http/endpoints/api/access"
+	"bux-wallet/transports/http/endpoints/api/transactions"
 	"bux-wallet/transports/http/endpoints/api/users"
 	router "bux-wallet/transports/http/endpoints/routes"
 	httpserver "bux-wallet/transports/http/server"
@@ -31,6 +32,7 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB) httpserver.GinEngineOpt {
 		usersApiEndpoints,
 		accessRootEndpoints,
 		accessApiEndpoints,
+		transactions.NewHandler(s),
 	}
 
 	return func(engine *gin.Engine) {

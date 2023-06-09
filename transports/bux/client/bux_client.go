@@ -8,6 +8,7 @@ import (
 
 	"github.com/BuxOrg/bux"
 	"github.com/BuxOrg/go-buxclient"
+	"github.com/BuxOrg/go-buxclient/transports"
 )
 
 // BuxClient is a wrapper for Bux Client.
@@ -75,4 +76,13 @@ func (c *BuxClient) GetXPub() (users.PubKey, error) {
 	}
 
 	return &xPub, nil
+}
+
+// SendToRecipents sends satoshis to recipients.
+func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients) (string, error) {
+	transaction, err := c.client.SendToRecipients(context.Background(), recipients, &bux.Metadata{})
+	if err != nil {
+		return "", err
+	}
+	return transaction.ID, nil
 }

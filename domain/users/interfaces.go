@@ -1,6 +1,9 @@
 package users
 
-import "github.com/libsv/go-bk/bip32"
+import (
+	"github.com/BuxOrg/go-buxclient/transports"
+	"github.com/libsv/go-bk/bip32"
+)
 
 type (
 	// AccKey is an interface that defianes access key data and methods.
@@ -22,6 +25,8 @@ type (
 		RevokeAccessKey(accessKeyId string) (AccKey, error)
 		// XPub Key methods
 		GetXPub() (PubKey, error)
+		// Transaction methods
+		SendToRecipents(recipients []*transports.Recipients) (string, error)
 	}
 
 	// AdmBuxClient defines methods for bux client with admin key.
