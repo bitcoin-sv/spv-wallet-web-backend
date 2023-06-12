@@ -50,3 +50,35 @@ func (s *TransactionService) CreateTransaction(xpriv, recipient string, satoshis
 
 	return transaction, nil
 }
+
+// GetTransaction returns transaction by id.
+func (s *TransactionService) GetTransaction(accessKey, id string) (users.Transaction, error) {
+	// Try to generate BUX client with decrypted xpriv.
+	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return nil, err
+	}
+
+	transaction, err := buxClient.GetTransaction(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return transaction, nil
+}
+
+// GetTransactions returns transactions by access key.
+func (s *TransactionService) GetTransactions(accessKey string) ([]users.Transaction, error) {
+	// Try to generate BUX client with decrypted xpriv.
+	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return nil, err
+	}
+
+	transactions, err := buxClient.GetTransactions()
+	if err != nil {
+		return nil, err
+	}
+
+	return transactions, nil
+}

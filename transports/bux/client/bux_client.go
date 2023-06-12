@@ -87,8 +87,8 @@ func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients) (string
 	return transaction.ID, nil
 }
 
-// GetAllTransactions returns all transactions.
-func (c *BuxClient) GetAllTransactions() ([]users.Transaction, error) {
+// GetTransactions returns all transactions.
+func (c *BuxClient) GetTransactions() ([]users.Transaction, error) {
 	conditions := make(map[string]interface{})
 	transactions, err := c.client.GetTransactions(context.Background(), conditions, &bux.Metadata{})
 	if err != nil {

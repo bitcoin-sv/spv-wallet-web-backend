@@ -33,7 +33,7 @@ type (
 		GetXPub() (PubKey, error)
 		// Transaction methods
 		SendToRecipents(recipients []*transports.Recipients) (string, error)
-		GetAllTransactions() ([]Transaction, error)
+		GetTransactions() ([]Transaction, error)
 		GetTransaction(transactionId string) (Transaction, error)
 	}
 

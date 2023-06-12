@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"bux-wallet/transports/http/auth"
 	"bux-wallet/transports/http/endpoints/api"
 	router "bux-wallet/transports/http/endpoints/routes"
 
@@ -31,6 +32,8 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 	user := router.Group("/transaction")
 	{
 		user.POST("", h.createTransaction)
+		user.GET("", h.getTransactions)
+		user.GET("/:id", h.getTransaction)
 	}
 }
 
@@ -41,8 +44,6 @@ func (h *handler) createTransaction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return
 	}
-
-	fmt.Println("Request: ", reqTransaction)
 
 	// Validate user.
 	xpriv, err := h.uService.GetUserXpriv(c.GetInt("userId"), reqTransaction.Password)
@@ -59,5 +60,28 @@ func (h *handler) createTransaction(c *gin.Context) {
 	}
 
 	fmt.Println("Transaction: ", transaction)
+}
 
+func (h *handler) getTransactions(c *gin.Context) {
+	// Get user transactions.
+	transactions, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, transactions)
+}
+
+func (h *handler) getTransaction(c *gin.Context) {
+	transactionId := c.Param("id")
+
+	// Get user transactions.
+	transactions, err := h.tService.GetTransaction(c.GetString(auth.SessionAccessKey), transactionId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, transactions)
 }
