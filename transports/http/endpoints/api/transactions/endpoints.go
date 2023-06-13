@@ -4,7 +4,6 @@ import (
 	"bux-wallet/domain"
 	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
-	"fmt"
 	"net/http"
 
 	"bux-wallet/transports/http/auth"
@@ -31,37 +30,18 @@ func NewHandler(s *domain.Services) router.ApiEndpoints {
 func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 	user := router.Group("/transaction")
 	{
-		user.POST("", h.createTransaction)
 		user.GET("", h.getTransactions)
 		user.GET("/:id", h.getTransaction)
 	}
 }
 
-func (h *handler) createTransaction(c *gin.Context) {
-	var reqTransaction CreateTransaction
-	err := c.Bind(&reqTransaction)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
-		return
-	}
-
-	// Validate user.
-	xpriv, err := h.uService.GetUserXpriv(c.GetInt("userId"), reqTransaction.Password)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
-		return
-	}
-
-	// Create transaction.
-	transaction, err := h.tService.CreateTransaction(xpriv, reqTransaction.Recipient, reqTransaction.Satoshis)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
-		return
-	}
-
-	fmt.Println("Transaction: ", transaction)
-}
-
+// Get all user transactions.
+//
+//	@Summary Get all transactions.
+//	@Tags transaction
+//	@Produce json
+//	@Success 200 {object} []buxclient.Transaction
+//	@Router /api/v1/transaction [get]
 func (h *handler) getTransactions(c *gin.Context) {
 	// Get user transactions.
 	transactions, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey))
@@ -73,15 +53,23 @@ func (h *handler) getTransactions(c *gin.Context) {
 	c.JSON(http.StatusOK, transactions)
 }
 
+// Get specific transactions.
+//
+//	@Summary Get transaction by id.
+//	@Tags transaction
+//	@Produce json
+//	@Success 200 {object} buxclient.FullTransaction
+//	@Router /api/v1/transaction/{id} [get]
+//	@Param id path string true "Transaction id"
 func (h *handler) getTransaction(c *gin.Context) {
 	transactionId := c.Param("id")
 
-	// Get user transactions.
-	transactions, err := h.tService.GetTransaction(c.GetString(auth.SessionAccessKey), transactionId)
+	// Get transaction by id.
+	transaction, err := h.tService.GetTransaction(c.GetString(auth.SessionAccessKey), transactionId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return
 	}
 
-	c.JSON(http.StatusOK, transactions)
+	c.JSON(http.StatusOK, transaction)
 }

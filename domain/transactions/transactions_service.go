@@ -3,7 +3,6 @@ package transactions
 import (
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
-	"fmt"
 
 	"github.com/BuxOrg/go-buxclient/transports"
 )
@@ -32,8 +31,6 @@ func (s *TransactionService) CreateTransaction(xpriv, recipient string, satoshis
 		return "", err
 	}
 
-	fmt.Println(buxClient)
-
 	// Create recipients.
 	var recipients = []*transports.Recipients{
 		{
@@ -42,7 +39,7 @@ func (s *TransactionService) CreateTransaction(xpriv, recipient string, satoshis
 		},
 	}
 
-	// Create transaction.
+	// Send transaction.
 	transaction, err := buxClient.SendToRecipents(recipients)
 	if err != nil {
 		return "", err
@@ -52,7 +49,7 @@ func (s *TransactionService) CreateTransaction(xpriv, recipient string, satoshis
 }
 
 // GetTransaction returns transaction by id.
-func (s *TransactionService) GetTransaction(accessKey, id string) (users.Transaction, error) {
+func (s *TransactionService) GetTransaction(accessKey, id string) (users.FullTransaction, error) {
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {

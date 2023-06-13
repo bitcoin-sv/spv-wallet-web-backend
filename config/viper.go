@@ -45,12 +45,12 @@ func setHttpServerDefaults() {
 	viper.SetDefault(EnvHttpServerWriteTimeout, 10)
 	viper.SetDefault(EnvHttpServerPort, 8080)
 	viper.SetDefault(EnvHttpServerCookieDomain, "localhost")
-	viper.SetDefault(EnvHttpServerAuthToken, "PxhYFPgnJ4UfG8ED")
+	viper.SetDefault(EnvHttpServerCookieSecure, false)
 }
 
 // setBuxDefaults sets default values for bux connection.
 func setBuxDefaults() {
-	viper.SetDefault(EnvBuxAdminXpriv, "xprv")
+	viper.SetDefault(EnvBuxAdminXpriv, "xprv9s21ZrQH143K3CbJXirfrtpLvhT3Vgusdo8coBritQ3rcS7Jy7sxWhatuxG5h2y1Cqj8FKmPp69536gmjYRpfga2MJdsGyBsnB12E19CESK")
 	viper.SetDefault(EnvBuxServerUrl, "http://localhost:3003/v1")
 	viper.SetDefault(EnvBuxWithDebug, true)
 	viper.SetDefault(EnvBuxSignRequest, true)

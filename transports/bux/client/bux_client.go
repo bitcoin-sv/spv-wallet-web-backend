@@ -2,6 +2,7 @@ package buxclient
 
 import (
 	"context"
+	"fmt"
 
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
@@ -95,10 +96,12 @@ func (c *BuxClient) GetTransactions() ([]users.Transaction, error) {
 		return nil, err
 	}
 
-	var transactionsData []users.Transaction
+	var transactionsData = make([]users.Transaction, 0)
 	for _, transaction := range transactions {
 		transactionData := Transaction{
-			Id: transaction.ID,
+			Id:         transaction.ID,
+			Direction:  fmt.Sprint(transaction.Direction),
+			TotalValue: transaction.TotalValue,
 		}
 		transactionsData = append(transactionsData, &transactionData)
 	}
@@ -107,14 +110,23 @@ func (c *BuxClient) GetTransactions() ([]users.Transaction, error) {
 }
 
 // GetTransaction returns transaction by id.
-func (c *BuxClient) GetTransaction(transactionId string) (users.Transaction, error) {
+func (c *BuxClient) GetTransaction(transactionId string) (users.FullTransaction, error) {
 	transaction, err := c.client.GetTransaction(context.Background(), transactionId)
 	if err != nil {
 		return nil, err
 	}
 
-	transactionData := Transaction{
-		Id: transaction.ID,
+	transactionData := FullTransaction{
+		Id:              transaction.ID,
+		BlockHash:       transaction.BlockHash,
+		BlockHeight:     transaction.BlockHeight,
+		TotalValue:      transaction.TotalValue,
+		Direction:       fmt.Sprint(transaction.Direction),
+		Status:          transaction.Status.String(),
+		Fee:             transaction.Fee,
+		NumberOfInputs:  transaction.NumberOfInputs,
+		NumberOfOutputs: transaction.NumberOfOutputs,
+		CreatedAt:       transaction.CreatedAt,
 	}
 
 	return &transactionData, nil
