@@ -184,5 +184,3 @@ replace github.com/bsm/redislock => github.com/bsm/redislock v0.7.2
 
 // Bad version of go-bob, failing tests etc
 replace github.com/bitcoinschema/go-bob => github.com/bitcoinschema/go-bob v0.2.1
-
-replace github.com/BuxOrg/go-buxclient => ../go-buxclient
