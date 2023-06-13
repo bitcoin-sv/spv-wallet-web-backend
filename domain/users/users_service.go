@@ -12,12 +12,14 @@ import (
 	"strings"
 	"time"
 
+	"bux-wallet/config"
 	"bux-wallet/encryption"
 	"bux-wallet/logging"
 
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
 	"github.com/libsv/go-bk/chaincfg"
+	"github.com/spf13/viper"
 )
 
 // UserService represents User service and provide access to repository.
@@ -306,7 +308,8 @@ func validatePassword(password string) error {
 
 func calculateBalance(satoshis uint64) (*Balance, error) {
 	// Create request.
-	req, error := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://api.whatsonchain.com/v1/bsv/main/exchangerate", nil)
+	exchangeRateUrl := viper.GetString(config.EnvEndpointsExchangeRate)
+	req, error := http.NewRequestWithContext(context.Background(), http.MethodGet, exchangeRateUrl, nil)
 	if error != nil {
 		return nil, fmt.Errorf("error during creating exchange rate request: %s", error.Error())
 	}

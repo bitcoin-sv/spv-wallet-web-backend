@@ -74,7 +74,7 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 
 // checkAccessKey checks if access key is valid by getting it from BUX.
 func (h *AuthMiddleware) checkAccessKey(accessKey, accessKeyId string) error {
-	// Create bux vlient with keys from session
+	// Create bux client with keys from session
 	buxClient, err := h.buxClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return fmt.Errorf("unauthorized, error during checking access key in BUX")
