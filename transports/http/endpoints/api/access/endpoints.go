@@ -67,6 +67,7 @@ func (h *handler) signIn(c *gin.Context) {
 
 	response := SignInResponse{
 		Paymail: signInUser.User.Paymail,
+		Balance: signInUser.Balance,
 	}
 	c.JSON(http.StatusOK, response)
 }
@@ -81,7 +82,7 @@ func (h *handler) signIn(c *gin.Context) {
 //	@Router /api/v1/sign-out [post]
 func (h *handler) signOut(c *gin.Context) {
 
-	err := h.service.SignOutUser(c.GetString(auth.SessionToken))
+	err := h.service.SignOutUser(c.GetString(auth.SessionAccessKeyId))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return

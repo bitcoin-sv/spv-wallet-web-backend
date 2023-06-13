@@ -16,22 +16,6 @@ type BuxClient struct {
 	log    logging.Logger
 }
 
-// AccessKey is a struct that contains access key data.
-type AccessKey struct {
-	Id  string `json:"id"`
-	Key string `json:"key"`
-}
-
-// GetAccessKey returns access key.
-func (a *AccessKey) GetAccessKey() string {
-	return a.Key
-}
-
-// GetAccessKeyId returns access key id.
-func (a *AccessKey) GetAccessKeyId() string {
-	return a.Id
-}
-
 // CreateAccessKey creates new access key for user.
 func (c *BuxClient) CreateAccessKey() (users.AccKey, error) {
 	accessKey, err := c.client.CreateAccessKey(context.Background(), &bux.Metadata{})
@@ -75,4 +59,20 @@ func (c *BuxClient) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
 	}
 
 	return &accessKeyData, nil
+}
+
+// GetXPub returns xpub.
+func (c *BuxClient) GetXPub() (users.PubKey, error) {
+	xpub, err := c.client.GetXPub(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	xPub := XPub{
+		Id:             xpub.ID,
+		XPub:           xpub.Model.RawXpub(),
+		CurrentBalance: xpub.CurrentBalance,
+	}
+
+	return &xPub, nil
 }

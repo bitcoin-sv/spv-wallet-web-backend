@@ -54,6 +54,11 @@ const (
 	EnvLoggingLevel = "logging.level"
 )
 
+const (
+	// EnvEndpointsExchangeRate define the exchange rate endpoint.
+	EnvEndpointsExchangeRate = "endpoints.exchangeRate"
+)
+
 // Config returns strongly typed config values.
 type Config struct {
 	Db *Db

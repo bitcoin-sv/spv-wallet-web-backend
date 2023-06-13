@@ -24,9 +24,7 @@ func NewBuxClientFactory(lf logging.LoggerFactory) users.BuxClientFactory {
 func (bf *buxclientFactory) CreateAdminBuxClient() (users.AdmBuxClient, error) {
 	// Get env variables.
 	xpriv := viper.GetString(config.EnvBuxAdminXpriv)
-	serverUrl := viper.GetString(config.EnvBuxServerUrl)
-	debug := viper.GetBool(config.EnvBuxWithDebug)
-	signRequest := viper.GetBool(config.EnvBuxSignRequest)
+	serverUrl, debug, signRequest := getServerData()
 
 	// Init bux client.
 	buxClient, err := buxclient.New(
@@ -50,9 +48,7 @@ func (bf *buxclientFactory) CreateAdminBuxClient() (users.AdmBuxClient, error) {
 // CreateWithXpriv creates instance of Bux Client with given xpriv.
 func (bf *buxclientFactory) CreateWithXpriv(xpriv string) (users.UserBuxClient, error) {
 	// Get env variables.
-	serverUrl := viper.GetString(config.EnvBuxServerUrl)
-	debug := viper.GetBool(config.EnvBuxWithDebug)
-	signRequest := viper.GetBool(config.EnvBuxSignRequest)
+	serverUrl, debug, signRequest := getServerData()
 
 	// Init bux client with generated xpub.
 	buxClient, err := buxclient.New(
@@ -70,4 +66,36 @@ func (bf *buxclientFactory) CreateWithXpriv(xpriv string) (users.UserBuxClient, 
 		client: buxClient,
 		log:    bf.log,
 	}, nil
+}
+
+// CreateWithXpriv creates instance of Bux Client with given xpriv.
+func (bf *buxclientFactory) CreateWithAccessKey(accessKey string) (users.UserBuxClient, error) {
+	// Get env variables.
+	serverUrl, debug, signRequest := getServerData()
+
+	// Init bux client with generated xpub.
+	buxClient, err := buxclient.New(
+		buxclient.WithAccessKey(accessKey),
+		buxclient.WithHTTP(serverUrl),
+		buxclient.WithDebugging(debug),
+		buxclient.WithSignRequest(signRequest),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &BuxClient{
+		client: buxClient,
+		log:    bf.log,
+	}, nil
+}
+
+func getServerData() (serverUrl string, debug, signRequest bool) {
+	// Get env variables.
+	serverUrl = viper.GetString(config.EnvBuxServerUrl)
+	debug = viper.GetBool(config.EnvBuxWithDebug)
+	signRequest = viper.GetBool(config.EnvBuxSignRequest)
+
+	return serverUrl, debug, signRequest
 }

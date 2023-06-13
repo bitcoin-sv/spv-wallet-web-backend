@@ -3,18 +3,23 @@ package users
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"net/mail"
 	"strings"
 	"time"
 
+	"bux-wallet/config"
 	"bux-wallet/encryption"
 	"bux-wallet/logging"
 
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
 	"github.com/libsv/go-bk/chaincfg"
+	"github.com/spf13/viper"
 )
 
 // UserService represents User service and provide access to repository.
@@ -144,12 +149,23 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, err
 	}
 
+	xpub, err := buxClient.GetXPub()
+	if err != nil {
+		return nil, err
+	}
+
+	balance, err := calculateBalance(xpub.GetCurrentBalance())
+	if err != nil {
+		return nil, err
+	}
+
 	signInUser := &AuthenticatedUser{
 		User: user,
 		AccessKey: AccessKey{
 			Id:  accessKey.GetAccessKeyId(),
-			Key: accessKey.GetAccessKeyId(),
+			Key: accessKey.GetAccessKey(),
 		},
+		Balance: *balance,
 	}
 
 	return signInUser, nil
@@ -174,6 +190,29 @@ func (s *UserService) GetUserById(userId int) (*User, error) {
 	}
 
 	return user, nil
+}
+
+// GetUserBalance returns user balance. Bux client is created with access key.
+func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
+	// Create BUX client with access key.
+	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get xpub.
+	xpub, err := buxClient.GetXPub()
+	if err != nil {
+		return nil, err
+	}
+
+	// Calculate balance.
+	balance, err := calculateBalance(xpub.GetCurrentBalance())
+	if err != nil {
+		return nil, err
+	}
+
+	return balance, nil
 }
 
 func (s *UserService) validateUser(email string) error {
@@ -265,4 +304,44 @@ func validatePassword(password string) error {
 	}
 
 	return nil
+}
+
+func calculateBalance(satoshis uint64) (*Balance, error) {
+	// Create request.
+	exchangeRateUrl := viper.GetString(config.EnvEndpointsExchangeRate)
+	req, error := http.NewRequestWithContext(context.Background(), http.MethodGet, exchangeRateUrl, nil)
+	if error != nil {
+		return nil, fmt.Errorf("error during creating exchange rate request: %s", error.Error())
+	}
+
+	// Send request.
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error during getting exchange rate: %s", err.Error())
+	}
+	defer res.Body.Close() // nolint: all
+
+	// Parse response body.
+	var exchangeRate ExchangeRate
+	bodyBytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error during reading response body: %s", err.Error())
+	}
+
+	err = json.Unmarshal(bodyBytes, &exchangeRate)
+	if err != nil {
+		return nil, fmt.Errorf("error during unmarshaling response body: %s", err.Error())
+	}
+
+	// Calculate balance.
+	balanceBSV := float64(satoshis) / 100000000
+	balanceUSD := balanceBSV * exchangeRate.Rate
+
+	balance := &Balance{
+		Bsv:      balanceBSV,
+		Usd:      balanceUSD,
+		Satoshis: satoshis,
+	}
+
+	return balance, nil
 }

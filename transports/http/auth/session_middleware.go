@@ -14,9 +14,9 @@ import (
 
 // Session variables.
 const (
-	SessionToken     = "accessKeyId"
-	SessionAccessKey = "accessKey"
-	SessionUserId    = "userId"
+	SessionAccessKeyId = "accessKeyId"
+	SessionAccessKey   = "accessKey"
+	SessionUserId      = "userId"
 )
 
 // NewSessionMiddleware create Session middleware that is retrieving auth token from cookie.

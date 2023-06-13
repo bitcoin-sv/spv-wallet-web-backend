@@ -10,7 +10,7 @@ import (
 // UpdateSession updates session with accessKeyId and userId.
 func UpdateSession(c *gin.Context, accessKey users.AccessKey, userId int) error {
 	session := sessions.Default(c)
-	session.Set(SessionToken, accessKey.Id)
+	session.Set(SessionAccessKeyId, accessKey.Id)
 	session.Set(SessionAccessKey, accessKey.Key)
 	session.Set(SessionUserId, userId)
 	err := session.Save()
