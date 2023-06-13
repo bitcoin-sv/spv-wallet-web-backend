@@ -1,6 +1,11 @@
 package users
 
-import "github.com/libsv/go-bk/bip32"
+import (
+	"time"
+
+	"github.com/BuxOrg/go-buxclient/transports"
+	"github.com/libsv/go-bk/bip32"
+)
 
 type (
 	// AccKey is an interface that defianes access key data and methods.
@@ -14,6 +19,28 @@ type (
 		GetXPub() string
 		GetCurrentBalance() uint64
 	}
+
+	// Transaction is an interface that defines transaction data and methods.
+	Transaction interface {
+		GetTransactionId() string
+		GetTransactionDirection() string
+		GetTransactionTotalValue() uint64
+	}
+
+	// FullTransaction is an interface that defines extended transaction data and methods.
+	FullTransaction interface {
+		GetTransactionId() string
+		GetTransactionBlockHash() string
+		GetTransactionBlockHeight() uint64
+		GetTransactionTotalValue() uint64
+		GetTransactionDirection() string
+		GetTransactionStatus() string
+		GetTransactionFee() uint64
+		GetTransactionNumberOfInputs() uint32
+		GetTransactionNumberOfOutputs() uint32
+		GetTrandsactionCreatedDate() time.Time
+	}
+
 	// UserBuxClient defines methods for bux client with user key.
 	UserBuxClient interface {
 		// Access Key methods
@@ -22,6 +49,10 @@ type (
 		RevokeAccessKey(accessKeyId string) (AccKey, error)
 		// XPub Key methods
 		GetXPub() (PubKey, error)
+		// Transaction methods
+		SendToRecipents(recipients []*transports.Recipients) (string, error)
+		GetTransactions() ([]Transaction, error)
+		GetTransaction(transactionId string) (FullTransaction, error)
 	}
 
 	// AdmBuxClient defines methods for bux client with admin key.

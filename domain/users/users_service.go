@@ -31,13 +31,7 @@ type UserService struct {
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo UsersRepository, bf BuxClientFactory, lf logging.LoggerFactory) (*UserService, error) {
-	// Generate admin bux client.
-	adminBuxClient, err := bf.CreateAdminBuxClient()
-	if err != nil {
-		return nil, err
-	}
-
+func NewUserService(repo UsersRepository, adminBuxClient AdmBuxClient, bf BuxClientFactory, lf logging.LoggerFactory) *UserService {
 	// Create service.
 	s := &UserService{
 		repo:             repo,
@@ -46,7 +40,7 @@ func NewUserService(repo UsersRepository, bf BuxClientFactory, lf logging.Logger
 		log:              lf.NewLogger("user-service"),
 	}
 
-	return s, nil
+	return s
 }
 
 // InsertUser inserts user to database.
@@ -215,6 +209,22 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 	return balance, nil
 }
 
+// GetUserXpriv gets user by id and decrypt xpriv.
+func (s *UserService) GetUserXpriv(userId int, password string) (string, error) {
+	user, err := s.repo.GetUserById(context.Background(), userId)
+	if err != nil {
+		return "", err
+	}
+
+	// Decrypt xpriv.
+	decryptedXpriv, err := decryptXpriv(password, user.Xpriv)
+	if err != nil {
+		return "", err
+	}
+
+	return decryptedXpriv, nil
+}
+
 func (s *UserService) validateUser(email string) error {
 	//Validate email
 	_, err := mail.ParseAddress(email)
@@ -256,17 +266,23 @@ func generateXpriv(seed []byte) (*bip32.ExtendedKey, error) {
 
 // encryptXpriv encrypts xpriv with password.
 func encryptXpriv(password, xpriv string) (string, error) {
+	fmt.Println("xpriv", xpriv)
+	fmt.Println("password", password)
 	// Create hash from password
 	hashedPassword, err := encryption.Hash(password)
 	if err != nil {
 		return "", err
 	}
 
+	fmt.Println("hashedPassword", hashedPassword)
+
 	// Encrypt xpriv with hashed password
 	encryptedXpriv, err := encryption.Encrypt(hashedPassword, xpriv)
 	if err != nil {
 		return "", err
 	}
+
+	fmt.Println("encryptedXpriv", encryptedXpriv)
 
 	return encryptedXpriv, nil
 }

@@ -2,6 +2,7 @@ package domain
 
 import (
 	db_users "bux-wallet/data/users"
+	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
 	buxclient "bux-wallet/transports/bux/client"
@@ -9,22 +10,25 @@ import (
 
 // Services is a struct that contains all services.
 type Services struct {
-	UsersService     *users.UserService
-	BuxClientFactory users.BuxClientFactory
+	UsersService        *users.UserService
+	TransactionsService *transactions.TransactionService
+	BuxClientFactory    users.BuxClientFactory
 }
 
 // NewServices creates services instance.
 func NewServices(usersRepo *db_users.UsersRepository, lf logging.LoggerFactory) (*Services, error) {
 	bf := buxclient.NewBuxClientFactory(lf)
-
-	// Create User services.
-	uService, err := users.NewUserService(usersRepo, bf, lf)
+	adminBuxClient, err := bf.CreateAdminBuxClient()
 	if err != nil {
 		return nil, err
 	}
 
+	// Create User services.
+	uService := users.NewUserService(usersRepo, adminBuxClient, bf, lf)
+
 	return &Services{
-		UsersService:     uService,
-		BuxClientFactory: bf,
+		UsersService:        uService,
+		TransactionsService: transactions.NewTransactionService(adminBuxClient, bf, lf),
+		BuxClientFactory:    bf,
 	}, nil
 }

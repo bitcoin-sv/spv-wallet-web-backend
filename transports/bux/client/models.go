@@ -1,5 +1,7 @@
 package buxclient
 
+import "time"
+
 // AccessKey is a struct that contains access key data.
 type AccessKey struct {
 	Id  string `json:"id"`
@@ -11,6 +13,27 @@ type XPub struct {
 	Id             string `json:"id"`
 	XPub           string `json:"xpub"`
 	CurrentBalance uint64 `json:"current_balance"`
+}
+
+// Transaction is a struct that contains transaction data.
+type Transaction struct {
+	Id         string `json:"id"`
+	Direction  string `json:"direction"`
+	TotalValue uint64 `json:"totalValue"`
+}
+
+// FullTransaction is a struct that contains extended transaction data.
+type FullTransaction struct {
+	Id              string    `json:"id"`
+	BlockHash       string    `json:"blockHash"`
+	BlockHeight     uint64    `json:"blockHeight"`
+	TotalValue      uint64    `json:"totalValue"`
+	Direction       string    `json:"direction"`
+	Status          string    `json:"status"`
+	Fee             uint64    `json:"fee"`
+	NumberOfInputs  uint32    `json:"numberOfInputs"`
+	NumberOfOutputs uint32    `json:"numberOfOutputs"`
+	CreatedAt       time.Time `json:"createdAt"`
 }
 
 // GetAccessKey returns access key.
@@ -36,4 +59,69 @@ func (x *XPub) GetXPub() string {
 // GetCurrentBalance returns current balance.
 func (x *XPub) GetCurrentBalance() uint64 {
 	return x.CurrentBalance
+}
+
+// GetTransactionId returns transaction id.
+func (t *Transaction) GetTransactionId() string {
+	return t.Id
+}
+
+// GetTransactionDirection returns transaction direction.
+func (t *Transaction) GetTransactionDirection() string {
+	return t.Direction
+}
+
+// GetTransactionTotalValue returns transaction total value.
+func (t *Transaction) GetTransactionTotalValue() uint64 {
+	return t.TotalValue
+}
+
+// GetTransactionId returns transaction id.
+func (t *FullTransaction) GetTransactionId() string {
+	return t.Id
+}
+
+// GetTransactionBlockHash returns transaction block hash.
+func (t *FullTransaction) GetTransactionBlockHash() string {
+	return t.BlockHash
+}
+
+// GetTransactionBlockHeight returns transaction block height.
+func (t *FullTransaction) GetTransactionBlockHeight() uint64 {
+	return t.BlockHeight
+}
+
+// GetTransactionTotalValue returns transaction total value.
+func (t *FullTransaction) GetTransactionTotalValue() uint64 {
+	return t.TotalValue
+}
+
+// GetTransactionDirection returns transaction direction.
+func (t *FullTransaction) GetTransactionDirection() string {
+	return t.Direction
+}
+
+// GetTransactionStatus returns transaction status.
+func (t *FullTransaction) GetTransactionStatus() string {
+	return t.Status
+}
+
+// GetTransactionFee returns transaction fee.
+func (t *FullTransaction) GetTransactionFee() uint64 {
+	return t.Fee
+}
+
+// GetTransactionNumberOfInputs returns transaction number of inputs.
+func (t *FullTransaction) GetTransactionNumberOfInputs() uint32 {
+	return t.NumberOfInputs
+}
+
+// GetTransactionNumberOfOutputs returns transaction number of outputs.
+func (t *FullTransaction) GetTransactionNumberOfOutputs() uint32 {
+	return t.NumberOfOutputs
+}
+
+// GetTrandsactionCreatedDate returns transaction created date.
+func (t *FullTransaction) GetTrandsactionCreatedDate() time.Time {
+	return t.CreatedAt
 }

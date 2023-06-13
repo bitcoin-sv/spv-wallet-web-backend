@@ -1,6 +1,8 @@
 definitions:
   access.SignInResponse:
     properties:
+      balance:
+        $ref: '#/definitions/users.Balance'
       paymail:
         type: string
     type: object
@@ -10,6 +12,47 @@ definitions:
         type: string
       password:
         type: string
+    type: object
+  buxclient.FullTransaction:
+    properties:
+      blockHash:
+        type: string
+      blockHeight:
+        type: integer
+      createdAt:
+        type: string
+      direction:
+        type: string
+      fee:
+        type: integer
+      id:
+        type: string
+      numberOfInputs:
+        type: integer
+      numberOfOutputs:
+        type: integer
+      status:
+        type: string
+      totalValue:
+        type: integer
+    type: object
+  buxclient.Transaction:
+    properties:
+      direction:
+        type: string
+      id:
+        type: string
+      totalValue:
+        type: integer
+    type: object
+  users.Balance:
+    properties:
+      bsv:
+        type: number
+      satoshis:
+        type: integer
+      usd:
+        type: number
     type: object
   users.RegisterResponse:
     properties:
@@ -29,6 +72,8 @@ definitions:
     type: object
   users.UserResponse:
     properties:
+      balance:
+        $ref: '#/definitions/users.Balance'
       email:
         type: string
       paymail:
@@ -75,6 +120,38 @@ paths:
       summary: Sign out user
       tags:
       - user
+  /api/v1/transaction:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/buxclient.Transaction'
+            type: array
+      summary: Get all transactions.
+      tags:
+      - transaction
+  /api/v1/transaction/{id}:
+    get:
+      parameters:
+      - description: Transaction id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/buxclient.FullTransaction'
+      summary: Get transaction by id.
+      tags:
+      - transaction
   /api/v1/user:
     post:
       consumes:

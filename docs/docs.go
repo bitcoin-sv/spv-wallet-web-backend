@@ -68,6 +68,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/transaction": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transaction"
+                ],
+                "summary": "Get all transactions.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/buxclient.Transaction"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/transaction/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transaction"
+                ],
+                "summary": "Get transaction by id.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Transaction id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/buxclient.FullTransaction"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user": {
             "post": {
                 "description": "Register new user with given data, paymail is created based on username from sended email.",
@@ -148,6 +198,9 @@ const docTemplate = `{
         "access.SignInResponse": {
             "type": "object",
             "properties": {
+                "balance": {
+                    "$ref": "#/definitions/users.Balance"
+                },
                 "paymail": {
                     "type": "string"
                 }
@@ -161,6 +214,69 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "buxclient.FullTransaction": {
+            "type": "object",
+            "properties": {
+                "blockHash": {
+                    "type": "string"
+                },
+                "blockHeight": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "direction": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "numberOfInputs": {
+                    "type": "integer"
+                },
+                "numberOfOutputs": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "totalValue": {
+                    "type": "integer"
+                }
+            }
+        },
+        "buxclient.Transaction": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "totalValue": {
+                    "type": "integer"
+                }
+            }
+        },
+        "users.Balance": {
+            "type": "object",
+            "properties": {
+                "bsv": {
+                    "type": "number"
+                },
+                "satoshis": {
+                    "type": "integer"
+                },
+                "usd": {
+                    "type": "number"
                 }
             }
         },
@@ -192,6 +308,9 @@ const docTemplate = `{
         "users.UserResponse": {
             "type": "object",
             "properties": {
+                "balance": {
+                    "$ref": "#/definitions/users.Balance"
+                },
                 "email": {
                     "type": "string"
                 },

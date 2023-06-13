@@ -28,8 +28,8 @@ const (
 	EnvHttpServerPort = "http.server.port"
 	// EnvHttpServerCookieDomain http server cookie domain parameter.
 	EnvHttpServerCookieDomain = "http.server.cookie.domain"
-	// EnvHttpServerAuthToken http server auth token.
-	EnvHttpServerAuthToken = "http.server.auth.token" //nolint:gosec // false positive (hardcoded credentials
+	// EnvHttpServerCookieSecure http server cookie secure parameter.
+	EnvHttpServerCookieSecure = "http.server.cookie.secure"
 )
 
 // Define basic bux config.

@@ -32,11 +32,13 @@ func NewSessionMiddleware(db *sql.DB, engine *gin.Engine) router.ApiMiddlewareFu
 		domain = ""
 	}
 
+	secure := viper.GetBool(config.EnvHttpServerCookieSecure)
+
 	options := sessions.Options{
 		MaxAge:   1800,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   secure,
 		SameSite: http.SameSiteStrictMode,
 		Domain:   domain,
 	}
