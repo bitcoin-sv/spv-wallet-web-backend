@@ -14,6 +14,7 @@ func NewViperConfig(appname string) *Config {
 	setBuxDefaults()
 	setHashDefaults()
 	setLoggingDefaults()
+	setEndpointsDefaults()
 	return &Config{}
 }
 
@@ -55,7 +56,6 @@ func setBuxDefaults() {
 	viper.SetDefault(EnvBuxWithDebug, true)
 	viper.SetDefault(EnvBuxSignRequest, true)
 	viper.SetDefault(EnvBuxPaymailDomain, "bux.com")
-
 }
 
 // setHashDefaults sets default values for hash.
@@ -65,4 +65,9 @@ func setHashDefaults() {
 
 func setLoggingDefaults() {
 	viper.SetDefault(EnvLoggingLevel, "Debug")
+}
+
+// setEndpointsDefaults sets default values for endpoints used in app.
+func setEndpointsDefaults() {
+	viper.SetDefault(EnvEndpointsExchangeRate, "https://api.whatsonchain.com/v1/bsv/main/exchangerate")
 }
