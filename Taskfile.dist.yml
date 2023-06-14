@@ -56,7 +56,47 @@
       cmds:
         - go install github.com/swaggo/swag/cmd/swag@latest
 
+#### INSTALL LINUX #####
+    install-linux:
+      desc: "Install tools and setup environment for development on Linux (WSL)"
+      cmds:
+        - task: install:linux
 
+    install:linux:
+      internal: true
+      platforms: [linux]
+      preconditions:
+        - sh: command -v snap
+          msg: | 
+            We use snap to install dependencies. 
+      cmds:
+        - task: install:snap:go
+        - task: install:snap:golint
+        - task: install:go:swag
+
+    install:snap:go:
+      label: "Install Go"
+      internal: true
+      preconditions:
+        - sh: command -v snap
+          msg: "Command 'snap' not found"
+      status:
+        - command -v go
+      cmds:
+        - sudu snap install go --classic
+        - export PATH=$(go env GOPATH)/bin:$PATH
+
+    install:snap:golint:
+      label: "Install golangci-lint"
+      internal: true
+      preconditions:
+        - sh: command -v snap
+          msg: "Command 'snap' not found"
+      status:
+        - command -v golangci-lint
+      cmds:
+        - sudo snap install golangci-lint
+        
 ### GIT HOOKS ###
     git-hooks:install:
       status:
