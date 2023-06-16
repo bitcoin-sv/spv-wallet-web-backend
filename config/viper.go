@@ -47,6 +47,7 @@ func setHttpServerDefaults() {
 	viper.SetDefault(EnvHttpServerPort, 8080)
 	viper.SetDefault(EnvHttpServerCookieDomain, "localhost")
 	viper.SetDefault(EnvHttpServerCookieSecure, false)
+	viper.SetDefault(EnvHttpServerCorsAllowedDomains, []string{})
 }
 
 // setBuxDefaults sets default values for bux connection.
