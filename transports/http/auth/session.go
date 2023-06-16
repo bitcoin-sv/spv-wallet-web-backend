@@ -20,3 +20,16 @@ func UpdateSession(c *gin.Context, accessKey users.AccessKey, userId int) error 
 	c.Header("Access-Control-Allow-Credentials", "true")
 	return nil
 }
+
+// TerminateSession terminates current (default) session.
+func TerminateSession(c *gin.Context) error {
+	session := sessions.Default(c)
+	session.Clear()
+
+	err := session.Save()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
