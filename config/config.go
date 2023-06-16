@@ -30,6 +30,8 @@ const (
 	EnvHttpServerCookieDomain = "http.server.cookie.domain"
 	// EnvHttpServerCookieSecure http server cookie secure parameter.
 	EnvHttpServerCookieSecure = "http.server.cookie.secure"
+	// EnvHttpServerCorsAllowedDomains http server cors origin allowed domains.
+	EnvHttpServerCorsAllowedDomains = "http.server.cors.allowedDomains"
 )
 
 // Define basic bux config.

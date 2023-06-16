@@ -9,6 +9,7 @@ import (
 
 	"bux-wallet/config"
 	"bux-wallet/logging"
+	"bux-wallet/transports/http/endpoints/api/cors"
 	"bux-wallet/util"
 
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,7 @@ type HttpServer struct {
 func NewHttpServer(port int, lf logging.LoggerFactory) *HttpServer {
 	engine := gin.New()
 	engine.Use(gin.LoggerWithWriter(debugWriter(lf.NewLogger("gin"))), gin.Recovery())
+	engine.Use(cors.CorsMiddleware())
 
 	return &HttpServer{
 		httpServer: &http.Server{
