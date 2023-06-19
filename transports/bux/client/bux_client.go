@@ -98,11 +98,15 @@ func (c *BuxClient) GetTransactions() ([]users.Transaction, error) {
 
 	var transactionsData = make([]users.Transaction, 0)
 	for _, transaction := range transactions {
+		status := "unconfirmed"
+		if transaction.BlockHeight > 0 {
+			status = "confirmed"
+		}
 		transactionData := Transaction{
 			Id:         transaction.ID,
 			Direction:  fmt.Sprint(transaction.Direction),
 			TotalValue: transaction.TotalValue,
-			Status:     transaction.Status.String(),
+			Status:     status,
 			CreatedAt:  transaction.CreatedAt,
 		}
 		transactionsData = append(transactionsData, &transactionData)
