@@ -165,14 +165,21 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	return signInUser, nil
 }
 
-// SignOutUser signs out user by removing session and access key.
-func (s *UserService) SignOutUser(accessKeyId string) error {
-	// TODO: Revoke access key.
-	//
-	// err := s.BuxClient.RevokeAccessKey(accessKeyId)
+// SignOutUser signs out user by revoking access key. (Not possible at the moment, method is just a mock.)
+func (s *UserService) SignOutUser(accessKeyId, accessKey string) error {
+
+	/// Right now we cannot revoke access key without Bux Client authentication with XPriv, which is impossible here.
+
+	// buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
 	// if err != nil {
 	// 	return err
 	// }
+
+	// _, err = buxClient.RevokeAccessKey(accessKeyId)
+	// if err != nil {
+	// 	return err
+	// }
+
 	return nil
 }
 

@@ -81,8 +81,13 @@ func (h *handler) signIn(c *gin.Context) {
 //	@Success 200
 //	@Router /api/v1/sign-out [post]
 func (h *handler) signOut(c *gin.Context) {
+	err := h.service.SignOutUser(c.GetString(auth.SessionAccessKeyId), c.GetString(auth.SessionAccessKey))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		return
+	}
 
-	err := h.service.SignOutUser(c.GetString(auth.SessionAccessKeyId))
+	err = auth.TerminateSession(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return

@@ -62,11 +62,6 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 		return
 	}
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
-		return
-	}
-
 	c.Set(SessionAccessKeyId, accessKeyId)
 	c.Set(SessionAccessKey, accessKey)
 	c.Set(SessionUserId, userId)
