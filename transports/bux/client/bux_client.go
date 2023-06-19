@@ -102,6 +102,8 @@ func (c *BuxClient) GetTransactions() ([]users.Transaction, error) {
 			Id:         transaction.ID,
 			Direction:  fmt.Sprint(transaction.Direction),
 			TotalValue: transaction.TotalValue,
+			Status:     transaction.Status.String(),
+			CreatedAt:  transaction.CreatedAt,
 		}
 		transactionsData = append(transactionsData, &transactionData)
 	}

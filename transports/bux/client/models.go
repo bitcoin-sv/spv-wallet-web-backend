@@ -17,9 +17,11 @@ type XPub struct {
 
 // Transaction is a struct that contains transaction data.
 type Transaction struct {
-	Id         string `json:"id"`
-	Direction  string `json:"direction"`
-	TotalValue uint64 `json:"totalValue"`
+	Id         string    `json:"id"`
+	Direction  string    `json:"direction"`
+	TotalValue uint64    `json:"totalValue"`
+	Status     string    `json:"status"`
+	CreatedAt  time.Time `json:"createdAt"`
 }
 
 // FullTransaction is a struct that contains extended transaction data.
@@ -74,6 +76,16 @@ func (t *Transaction) GetTransactionDirection() string {
 // GetTransactionTotalValue returns transaction total value.
 func (t *Transaction) GetTransactionTotalValue() uint64 {
 	return t.TotalValue
+}
+
+// GetTransactionStatus returns transaction status.
+func (t *Transaction) GetTransactionStatus() string {
+	return t.Status
+}
+
+// GetTransactionCreatedAt returns transaction created at.
+func (t *Transaction) GetTrandsactionCreatedDate() time.Time {
+	return t.CreatedAt
 }
 
 // GetTransactionId returns transaction id.

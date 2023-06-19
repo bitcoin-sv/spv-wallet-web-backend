@@ -25,6 +25,8 @@ type (
 		GetTransactionId() string
 		GetTransactionDirection() string
 		GetTransactionTotalValue() uint64
+		GetTransactionStatus() string
+		GetTrandsactionCreatedDate() time.Time
 	}
 
 	// FullTransaction is an interface that defines extended transaction data and methods.
