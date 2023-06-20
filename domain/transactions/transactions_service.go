@@ -5,6 +5,7 @@ import (
 	"bux-wallet/logging"
 
 	"github.com/BuxOrg/go-buxclient/transports"
+	"github.com/mrz1836/go-datastore"
 )
 
 // TransactionService represents service whoch contains methods linked with transactions.
@@ -65,14 +66,14 @@ func (s *TransactionService) GetTransaction(accessKey, id string) (users.FullTra
 }
 
 // GetTransactions returns transactions by access key.
-func (s *TransactionService) GetTransactions(accessKey string) ([]users.Transaction, error) {
+func (s *TransactionService) GetTransactions(accessKey string, queryParam datastore.QueryParams) ([]users.Transaction, error) {
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
 	}
 
-	transactions, err := buxClient.GetTransactions()
+	transactions, err := buxClient.GetTransactions(queryParam)
 	if err != nil {
 		return nil, err
 	}
