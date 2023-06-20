@@ -5,12 +5,14 @@ import (
 	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
 	"net/http"
+	"strconv"
 
 	"bux-wallet/transports/http/auth"
 	"bux-wallet/transports/http/endpoints/api"
 	router "bux-wallet/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mrz1836/go-datastore"
 )
 
 type handler struct {
@@ -43,8 +45,30 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 //	@Success 200 {object} []buxclient.Transaction
 //	@Router /api/v1/transaction [get]
 func (h *handler) getTransactions(c *gin.Context) {
+	page := c.Query("page")
+	pageSize := c.Query("page_size")
+	orderBy := c.Query("order")
+	sort := c.Query("sort")
+
+	pageNumber, err := strconv.Atoi(page)
+	if err != nil {
+		pageNumber = 1
+	}
+
+	pageSizeNumber, err := strconv.Atoi(pageSize)
+	if err != nil {
+		pageSizeNumber = 10
+	}
+
+	queryParam := datastore.QueryParams{
+		Page:          pageNumber,
+		PageSize:      pageSizeNumber,
+		OrderByField:  orderBy,
+		SortDirection: sort,
+	}
+
 	// Get user transactions.
-	transactions, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey))
+	transactions, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey), queryParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return

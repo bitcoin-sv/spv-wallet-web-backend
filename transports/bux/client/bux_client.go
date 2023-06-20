@@ -10,6 +10,7 @@ import (
 	"github.com/BuxOrg/bux"
 	"github.com/BuxOrg/go-buxclient"
 	"github.com/BuxOrg/go-buxclient/transports"
+	"github.com/mrz1836/go-datastore"
 )
 
 // BuxClient is a wrapper for Bux Client.
@@ -89,9 +90,18 @@ func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients) (string
 }
 
 // GetTransactions returns all transactions.
-func (c *BuxClient) GetTransactions() ([]users.Transaction, error) {
+func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams) ([]users.Transaction, error) {
 	conditions := make(map[string]interface{})
-	transactions, err := c.client.GetTransactions(context.Background(), conditions, &bux.Metadata{})
+
+	if queryParam.OrderByField == "" {
+		queryParam.OrderByField = "created_at"
+	}
+
+	if queryParam.SortDirection == "" {
+		queryParam.SortDirection = "desc"
+	}
+
+	transactions, err := c.client.GetTransactions(context.Background(), conditions, &bux.Metadata{}, &queryParam)
 	if err != nil {
 		return nil, err
 	}

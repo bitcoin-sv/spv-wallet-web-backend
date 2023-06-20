@@ -5,6 +5,7 @@ import (
 
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/libsv/go-bk/bip32"
+	"github.com/mrz1836/go-datastore"
 )
 
 type (
@@ -53,7 +54,7 @@ type (
 		GetXPub() (PubKey, error)
 		// Transaction methods
 		SendToRecipents(recipients []*transports.Recipients) (string, error)
-		GetTransactions() ([]Transaction, error)
+		GetTransactions(queryParam datastore.QueryParams) ([]Transaction, error)
 		GetTransaction(transactionId string) (FullTransaction, error)
 	}
 
