@@ -87,7 +87,7 @@ func (t *Transaction) GetTransactionStatus() string {
 	return t.Status
 }
 
-// GetTrandsactionCreatedDate returns transaction created at.
+// GetTransactionCreatedDate returns transaction created at.
 func (t *Transaction) GetTransactionCreatedDate() time.Time {
 	return t.CreatedAt
 }
