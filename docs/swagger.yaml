@@ -38,11 +38,24 @@ definitions:
     type: object
   buxclient.Transaction:
     properties:
+      createdAt:
+        type: string
       direction:
         type: string
       id:
         type: string
+      status:
+        type: string
       totalValue:
+        type: integer
+    type: object
+  transactions.CreateTransaction:
+    properties:
+      password:
+        type: string
+      recipent:
+        type: string
+      satoshis:
         type: integer
     type: object
   users.Balance:
@@ -132,6 +145,24 @@ paths:
               $ref: '#/definitions/buxclient.Transaction'
             type: array
       summary: Get all transactions.
+      tags:
+      - transaction
+    post:
+      parameters:
+      - description: Create transaction data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/transactions.CreateTransaction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/buxclient.FullTransaction'
+      summary: Create transaction.
       tags:
       - transaction
   /api/v1/transaction/{id}:
