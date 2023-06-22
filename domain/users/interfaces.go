@@ -27,7 +27,9 @@ type (
 		GetTransactionDirection() string
 		GetTransactionTotalValue() uint64
 		GetTransactionStatus() string
-		GetTrandsactionCreatedDate() time.Time
+		GetTransactionCreatedDate() time.Time
+		GetTransactionSender() string
+		GetTransactionReceiver() string
 	}
 
 	// FullTransaction is an interface that defines extended transaction data and methods.
@@ -42,6 +44,8 @@ type (
 		GetTransactionNumberOfInputs() uint32
 		GetTransactionNumberOfOutputs() uint32
 		GetTrandsactionCreatedDate() time.Time
+		GetTransactionSender() string
+		GetTransactionReceiver() string
 	}
 
 	// UserBuxClient defines methods for bux client with user key.
@@ -53,9 +57,9 @@ type (
 		// XPub Key methods
 		GetXPub() (PubKey, error)
 		// Transaction methods
-		SendToRecipents(recipients []*transports.Recipients) (Transaction, error)
-		GetTransactions(queryParam datastore.QueryParams) ([]Transaction, error)
-		GetTransaction(transactionId string) (FullTransaction, error)
+		SendToRecipents(recipients []*transports.Recipients, senderPaymail string) (Transaction, error)
+		GetTransactions(queryParam datastore.QueryParams, userPaymail string) ([]Transaction, error)
+		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 	}
 
 	// AdmBuxClient defines methods for bux client with admin key.

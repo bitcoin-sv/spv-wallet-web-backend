@@ -69,7 +69,7 @@ func (h *handler) getTransactions(c *gin.Context) {
 	}
 
 	// Get user transactions.
-	transactions, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey), queryParam)
+	transactions, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey), c.GetString(auth.SessionUserPaymail), queryParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return
@@ -90,7 +90,7 @@ func (h *handler) getTransaction(c *gin.Context) {
 	transactionId := c.Param("id")
 
 	// Get transaction by id.
-	transaction, err := h.tService.GetTransaction(c.GetString(auth.SessionAccessKey), transactionId)
+	transaction, err := h.tService.GetTransaction(c.GetString(auth.SessionAccessKey), transactionId, c.GetString(auth.SessionUserPaymail))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return
@@ -116,14 +116,14 @@ func (h *handler) createTransaction(c *gin.Context) {
 	}
 
 	// Validate user.
-	xpriv, err := h.uService.GetUserXpriv(c.GetInt("userId"), reqTransaction.Password)
+	xpriv, err := h.uService.GetUserXpriv(c.GetInt(auth.SessionUserId), reqTransaction.Password)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return
 	}
 
 	// Create transaction.
-	transaction, err := h.tService.CreateTransaction(xpriv, reqTransaction.Recipient, reqTransaction.Satoshis)
+	transaction, err := h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, reqTransaction.Satoshis)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return

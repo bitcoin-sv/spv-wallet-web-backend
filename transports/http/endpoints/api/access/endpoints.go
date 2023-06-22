@@ -60,7 +60,7 @@ func (h *handler) signIn(c *gin.Context) {
 		return
 	}
 
-	err = auth.UpdateSession(c, signInUser.AccessKey, signInUser.User.Id)
+	err = auth.UpdateSession(c, signInUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 	}

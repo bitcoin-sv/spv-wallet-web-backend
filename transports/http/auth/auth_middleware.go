@@ -56,6 +56,13 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 		return
 	}
 
+	// Try to retrieve session user id.
+	paymail := session.Get(SessionUserPaymail)
+	if paymail == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, errors.New("unauthorized"))
+		return
+	}
+
 	err := h.checkAccessKey(accessKey.(string), accessKeyId.(string))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
@@ -65,6 +72,7 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 	c.Set(SessionAccessKeyId, accessKeyId)
 	c.Set(SessionAccessKey, accessKey)
 	c.Set(SessionUserId, userId)
+	c.Set(SessionUserPaymail, paymail)
 }
 
 // checkAccessKey checks if access key is valid by getting it from BUX.

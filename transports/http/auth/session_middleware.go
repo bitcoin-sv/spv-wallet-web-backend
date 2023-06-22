@@ -17,6 +17,7 @@ const (
 	SessionAccessKeyId = "accessKeyId"
 	SessionAccessKey   = "accessKey"
 	SessionUserId      = "userId"
+	SessionUserPaymail = "paymail"
 )
 
 // NewSessionMiddleware create Session middleware that is retrieving auth token from cookie.
