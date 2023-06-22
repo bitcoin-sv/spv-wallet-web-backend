@@ -198,7 +198,7 @@ func getPaymailsFromMetadata(transaction *bux.Transaction, fallbackPaymail strin
 
 	if transaction.Direction == "incoming" && receiverPaymail == "" {
 		receiverPaymail = fallbackPaymail
-	} else if fmt.Sprint(transaction.Direction) == "outgoing" && senderPaymail == "" {
+	} else if transaction.Direction == "outgoing" && senderPaymail == "" {
 		senderPaymail = fallbackPaymail
 	}
 
