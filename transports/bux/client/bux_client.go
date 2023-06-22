@@ -171,7 +171,8 @@ func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.Ful
 }
 
 // getPaymailsFromMetadata returns sender and receiver paymails from metadata.
-func getPaymailsFromMetadata(transaction *bux.Transaction, userPaymail string) (string, string) {
+// If no paymail was found in metadata, fallback paymail is returned.
+func getPaymailsFromMetadata(transaction *bux.Transaction, fallbackPaymail string) (string, string) {
 	senderPaymail := ""
 	receiverPaymail := ""
 
@@ -195,10 +196,10 @@ func getPaymailsFromMetadata(transaction *bux.Transaction, userPaymail string) (
 		}
 	}
 
-	if fmt.Sprint(transaction.Direction) == "incoming" && receiverPaymail == "" {
-		receiverPaymail = userPaymail
+	if transaction.Direction == "incoming" && receiverPaymail == "" {
+		receiverPaymail = fallbackPaymail
 	} else if fmt.Sprint(transaction.Direction) == "outgoing" && senderPaymail == "" {
-		senderPaymail = userPaymail
+		senderPaymail = fallbackPaymail
 	}
 
 	return senderPaymail, receiverPaymail
