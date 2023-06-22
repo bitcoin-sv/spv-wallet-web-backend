@@ -25,11 +25,11 @@ func NewTransactionService(buxClient users.AdmBuxClient, bf users.BuxClientFacto
 }
 
 // CreateTransaction creates transaction.
-func (s *TransactionService) CreateTransaction(xpriv, recipient string, satoshis uint64) (string, error) {
+func (s *TransactionService) CreateTransaction(xpriv, recipient string, satoshis uint64) (users.Transaction, error) {
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithXpriv(xpriv)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	// Create recipients.
@@ -43,7 +43,7 @@ func (s *TransactionService) CreateTransaction(xpriv, recipient string, satoshis
 	// Send transaction.
 	transaction, err := buxClient.SendToRecipents(recipients)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	return transaction, nil

@@ -88,6 +88,34 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transaction"
+                ],
+                "summary": "Create transaction.",
+                "parameters": [
+                    {
+                        "description": "Create transaction data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transactions.CreateTransaction"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/buxclient.FullTransaction"
+                        }
+                    }
+                }
             }
         },
         "/api/v1/transaction/{id}": {
@@ -255,13 +283,33 @@ const docTemplate = `{
         "buxclient.Transaction": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
                 "direction": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
+                "status": {
+                    "type": "string"
+                },
                 "totalValue": {
+                    "type": "integer"
+                }
+            }
+        },
+        "transactions.CreateTransaction": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "recipent": {
+                    "type": "string"
+                },
+                "satoshis": {
                     "type": "integer"
                 }
             }

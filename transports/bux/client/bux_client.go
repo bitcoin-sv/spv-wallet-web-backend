@@ -81,12 +81,20 @@ func (c *BuxClient) GetXPub() (users.PubKey, error) {
 }
 
 // SendToRecipents sends satoshis to recipients.
-func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients) (string, error) {
+func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients) (users.Transaction, error) {
 	transaction, err := c.client.SendToRecipients(context.Background(), recipients, &bux.Metadata{})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return transaction.ID, nil
+
+	t := &Transaction{
+		Id:         transaction.ID,
+		Direction:  fmt.Sprint(transaction.Direction),
+		TotalValue: transaction.TotalValue,
+		Status:     transaction.Status.String(),
+		CreatedAt:  transaction.CreatedAt,
+	}
+	return t, nil
 }
 
 // GetTransactions returns all transactions.

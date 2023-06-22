@@ -53,7 +53,7 @@ type (
 		// XPub Key methods
 		GetXPub() (PubKey, error)
 		// Transaction methods
-		SendToRecipents(recipients []*transports.Recipients) (string, error)
+		SendToRecipents(recipients []*transports.Recipients) (Transaction, error)
 		GetTransactions(queryParam datastore.QueryParams) ([]Transaction, error)
 		GetTransaction(transactionId string) (FullTransaction, error)
 	}

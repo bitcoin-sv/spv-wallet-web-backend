@@ -33,6 +33,7 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 	user := router.Group("/transaction")
 	{
 		user.GET("", h.getTransactions)
+		user.POST("", h.createTransaction)
 		user.GET("/:id", h.getTransaction)
 	}
 }
@@ -90,6 +91,39 @@ func (h *handler) getTransaction(c *gin.Context) {
 
 	// Get transaction by id.
 	transaction, err := h.tService.GetTransaction(c.GetString(auth.SessionAccessKey), transactionId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, transaction)
+}
+
+// Create transactions.
+//
+//	@Summary Create transaction.
+//	@Tags transaction
+//	@Produce json
+//	@Success 200 {object} buxclient.FullTransaction
+//	@Router /api/v1/transaction [post]
+//	@Param data body CreateTransaction true "Create transaction data"
+func (h *handler) createTransaction(c *gin.Context) {
+	var reqTransaction CreateTransaction
+	err := c.Bind(&reqTransaction)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		return
+	}
+
+	// Validate user.
+	xpriv, err := h.uService.GetUserXpriv(c.GetInt("userId"), reqTransaction.Password)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		return
+	}
+
+	// Create transaction.
+	transaction, err := h.tService.CreateTransaction(xpriv, reqTransaction.Recipient, reqTransaction.Satoshis)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return
