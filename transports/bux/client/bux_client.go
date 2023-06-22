@@ -81,8 +81,15 @@ func (c *BuxClient) GetXPub() (users.PubKey, error) {
 }
 
 // SendToRecipents sends satoshis to recipients.
-func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients) (users.Transaction, error) {
-	transaction, err := c.client.SendToRecipients(context.Background(), recipients, &bux.Metadata{})
+func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
+	// Create matadata with sender and receiver paymails.
+	metadata := &bux.Metadata{
+		"receiver": recipients[0].To,
+		"sender":   senderPaymail,
+	}
+
+	// Send transaction.
+	transaction, err := c.client.SendToRecipients(context.Background(), recipients, metadata)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +105,7 @@ func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients) (users.
 }
 
 // GetTransactions returns all transactions.
-func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams) ([]users.Transaction, error) {
+func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams, userPaymail string) ([]users.Transaction, error) {
 	conditions := make(map[string]interface{})
 
 	if queryParam.OrderByField == "" {
@@ -116,6 +123,7 @@ func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams) ([]users.T
 
 	var transactionsData = make([]users.Transaction, 0)
 	for _, transaction := range transactions {
+		sender, receiver := getPaymailsFromMetadata(transaction, userPaymail)
 		status := "unconfirmed"
 		if transaction.BlockHeight > 0 {
 			status = "confirmed"
@@ -126,6 +134,8 @@ func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams) ([]users.T
 			TotalValue: transaction.TotalValue,
 			Status:     status,
 			CreatedAt:  transaction.CreatedAt,
+			Sender:     sender,
+			Receiver:   receiver,
 		}
 		transactionsData = append(transactionsData, &transactionData)
 	}
@@ -134,11 +144,13 @@ func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams) ([]users.T
 }
 
 // GetTransaction returns transaction by id.
-func (c *BuxClient) GetTransaction(transactionId string) (users.FullTransaction, error) {
+func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.FullTransaction, error) {
 	transaction, err := c.client.GetTransaction(context.Background(), transactionId)
 	if err != nil {
 		return nil, err
 	}
+
+	sender, receiver := getPaymailsFromMetadata(transaction, userPaymail)
 
 	transactionData := FullTransaction{
 		Id:              transaction.ID,
@@ -151,7 +163,43 @@ func (c *BuxClient) GetTransaction(transactionId string) (users.FullTransaction,
 		NumberOfInputs:  transaction.NumberOfInputs,
 		NumberOfOutputs: transaction.NumberOfOutputs,
 		CreatedAt:       transaction.CreatedAt,
+		Sender:          sender,
+		Receiver:        receiver,
 	}
 
 	return &transactionData, nil
+}
+
+// getPaymailsFromMetadata returns sender and receiver paymails from metadata.
+func getPaymailsFromMetadata(transaction *bux.Transaction, userPaymail string) (string, string) {
+	senderPaymail := ""
+	receiverPaymail := ""
+
+	if transaction.Metadata != nil {
+		// Try to get paymails from metadata if the transaction was made in BUX.
+		if transaction.Metadata["sender"] != nil {
+			senderPaymail = transaction.Metadata["sender"].(string)
+		}
+		if transaction.Metadata["receiver"] != nil {
+			receiverPaymail = transaction.Metadata["receiver"].(string)
+		}
+
+		if senderPaymail == "" {
+			// Try to get paymails from metadata if the transaction was made outside BUX.
+			if transaction.Metadata["p2p_tx_metadata"] != nil {
+				p2pTxMetadata := transaction.Metadata["p2p_tx_metadata"].(map[string]interface{})
+				if p2pTxMetadata["sender"] != nil {
+					senderPaymail = p2pTxMetadata["sender"].(string)
+				}
+			}
+		}
+	}
+
+	if fmt.Sprint(transaction.Direction) == "incoming" && receiverPaymail == "" {
+		receiverPaymail = userPaymail
+	} else if fmt.Sprint(transaction.Direction) == "outgoing" && senderPaymail == "" {
+		senderPaymail = userPaymail
+	}
+
+	return senderPaymail, receiverPaymail
 }

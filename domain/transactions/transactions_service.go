@@ -25,7 +25,7 @@ func NewTransactionService(buxClient users.AdmBuxClient, bf users.BuxClientFacto
 }
 
 // CreateTransaction creates transaction.
-func (s *TransactionService) CreateTransaction(xpriv, recipient string, satoshis uint64) (users.Transaction, error) {
+func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, satoshis uint64) (users.Transaction, error) {
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithXpriv(xpriv)
 	if err != nil {
@@ -41,7 +41,7 @@ func (s *TransactionService) CreateTransaction(xpriv, recipient string, satoshis
 	}
 
 	// Send transaction.
-	transaction, err := buxClient.SendToRecipents(recipients)
+	transaction, err := buxClient.SendToRecipents(recipients, userPaymail)
 	if err != nil {
 		return nil, err
 	}
@@ -50,14 +50,14 @@ func (s *TransactionService) CreateTransaction(xpriv, recipient string, satoshis
 }
 
 // GetTransaction returns transaction by id.
-func (s *TransactionService) GetTransaction(accessKey, id string) (users.FullTransaction, error) {
+func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (users.FullTransaction, error) {
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
 	}
 
-	transaction, err := buxClient.GetTransaction(id)
+	transaction, err := buxClient.GetTransaction(id, userPaymail)
 	if err != nil {
 		return nil, err
 	}
@@ -66,14 +66,14 @@ func (s *TransactionService) GetTransaction(accessKey, id string) (users.FullTra
 }
 
 // GetTransactions returns transactions by access key.
-func (s *TransactionService) GetTransactions(accessKey string, queryParam datastore.QueryParams) ([]users.Transaction, error) {
+func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam datastore.QueryParams) ([]users.Transaction, error) {
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
 	}
 
-	transactions, err := buxClient.GetTransactions(queryParam)
+	transactions, err := buxClient.GetTransactions(queryParam, userPaymail)
 	if err != nil {
 		return nil, err
 	}

@@ -22,6 +22,8 @@ type Transaction struct {
 	TotalValue uint64    `json:"totalValue"`
 	Status     string    `json:"status"`
 	CreatedAt  time.Time `json:"createdAt"`
+	Sender     string    `json:"sender"`
+	Receiver   string    `json:"receiver"`
 }
 
 // FullTransaction is a struct that contains extended transaction data.
@@ -36,6 +38,8 @@ type FullTransaction struct {
 	NumberOfInputs  uint32    `json:"numberOfInputs"`
 	NumberOfOutputs uint32    `json:"numberOfOutputs"`
 	CreatedAt       time.Time `json:"createdAt"`
+	Sender          string    `json:"sender"`
+	Receiver        string    `json:"receiver"`
 }
 
 // GetAccessKey returns access key.
@@ -84,8 +88,18 @@ func (t *Transaction) GetTransactionStatus() string {
 }
 
 // GetTrandsactionCreatedDate returns transaction created at.
-func (t *Transaction) GetTrandsactionCreatedDate() time.Time {
+func (t *Transaction) GetTransactionCreatedDate() time.Time {
 	return t.CreatedAt
+}
+
+// GetTransactionSender returns transaction sender.
+func (t *Transaction) GetTransactionSender() string {
+	return t.Sender
+}
+
+// GetTransactionReceiver returns transaction receiver.
+func (t *Transaction) GetTransactionReceiver() string {
+	return t.Receiver
 }
 
 // GetTransactionId returns transaction id.
@@ -136,4 +150,14 @@ func (t *FullTransaction) GetTransactionNumberOfOutputs() uint32 {
 // GetTrandsactionCreatedDate returns transaction created date.
 func (t *FullTransaction) GetTrandsactionCreatedDate() time.Time {
 	return t.CreatedAt
+}
+
+// GetTransactionSender returns transaction sender.
+func (t *FullTransaction) GetTransactionSender() string {
+	return t.Sender
+}
+
+// GetTransactionReceiver returns transaction receiver.
+func (t *FullTransaction) GetTransactionReceiver() string {
+	return t.Receiver
 }

@@ -8,11 +8,12 @@ import (
 )
 
 // UpdateSession updates session with accessKeyId and userId.
-func UpdateSession(c *gin.Context, accessKey users.AccessKey, userId int) error {
+func UpdateSession(c *gin.Context, user *users.AuthenticatedUser) error {
 	session := sessions.Default(c)
-	session.Set(SessionAccessKeyId, accessKey.Id)
-	session.Set(SessionAccessKey, accessKey.Key)
-	session.Set(SessionUserId, userId)
+	session.Set(SessionAccessKeyId, user.AccessKey.Id)
+	session.Set(SessionAccessKey, user.AccessKey.Key)
+	session.Set(SessionUserId, user.User.Id)
+	session.Set(SessionUserPaymail, user.User.Paymail)
 	err := session.Save()
 	if err != nil {
 		return err
