@@ -170,6 +170,17 @@ func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.Ful
 	return &transactionData, nil
 }
 
+// GetTransactionsCount returns number of transactions.
+func (c *BuxClient) GetTransactionsCount() (int64, error) {
+	conditions := make(map[string]interface{})
+
+	count, err := c.client.GetTransactionsCount(context.Background(), conditions, &bux.Metadata{})
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // getPaymailsFromMetadata returns sender and receiver paymails from metadata.
 // If no paymail was found in metadata, fallback paymail is returned.
 func getPaymailsFromMetadata(transaction *bux.Transaction, fallbackPaymail string) (string, string) {
