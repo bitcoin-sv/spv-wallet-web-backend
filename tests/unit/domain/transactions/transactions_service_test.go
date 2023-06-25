@@ -24,10 +24,13 @@ func TestCreateTransaction(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
+		paymail := "paymail@4chain.com"
+		tr := buxclient.Transaction{}
+
 		buxClientMq := mock.NewMockUserBuxClient(ctrl)
 		buxClientMq.EXPECT().
-			SendToRecipents(gomock.Any()).
-			Return(gomock.Any().String(), nil)
+			SendToRecipents(gomock.Any(), paymail).
+			Return(&tr, nil)
 
 		clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
 		clientFctrMq.EXPECT().
@@ -37,7 +40,7 @@ func TestCreateTransaction(t *testing.T) {
 		sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.DefaultLoggerFactory())
 
 		// Act
-		result, _ := sut.CreateTransaction(gomock.Any().String(), gomock.Any().String(), gofakeit.Uint64())
+		result, _ := sut.CreateTransaction(paymail, gomock.Any().String(), gomock.Any().String(), gofakeit.Uint64())
 
 		// Assert
 		assert.NotNil(t, result)
@@ -71,7 +74,7 @@ func TestGetTransaction(t *testing.T) {
 
 			buxClientMq := mock.NewMockUserBuxClient(ctrl)
 			buxClientMq.EXPECT().
-				GetTransaction(tc.transactionId).
+				GetTransaction(tc.transactionId, gomock.Any().String()).
 				Return(findById(ts, tc.transactionId))
 
 			clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
@@ -82,7 +85,7 @@ func TestGetTransaction(t *testing.T) {
 			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.DefaultLoggerFactory())
 
 			// Act
-			result, err := sut.GetTransaction("fake-access-key", tc.transactionId)
+			result, err := sut.GetTransaction("fake-access-key", tc.transactionId, gomock.Any().String())
 
 			// Assert
 			if err != nil {
@@ -96,7 +99,7 @@ func TestGetTransaction(t *testing.T) {
 }
 
 func findById(collection []buxclient.FullTransaction, id string) (users.FullTransaction, error) {
-	result := utils.Find(collection, func(t *buxclient.FullTransaction) bool { return t.Id == id })
+	result := utils.Find(collection, func(t buxclient.FullTransaction) bool { return t.Id == id })
 
 	if result == nil {
 		return nil, errors.New("Not found")

@@ -1,8 +1,9 @@
 package utils
 
-func Find[E any](collection []E, f func(*E) bool) *E {
+// Find the first element in a collection that satisfies a specified condition.
+func Find[E any](collection []E, predicate func(E) bool) *E {
 	for _, v := range collection {
-		if f(&v) {
+		if predicate(v) {
 			return &v
 		}
 	}

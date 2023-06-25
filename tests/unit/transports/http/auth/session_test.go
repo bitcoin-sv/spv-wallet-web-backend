@@ -40,22 +40,27 @@ func TestUpdateSession(t *testing.T) {
 	// Arrange
 	ctx := setupTest()
 
-	accessKey := users.AccessKey{
-		Id:  gofakeit.HexUint256(),
-		Key: gofakeit.HexUint256(),
+	user := users.AuthenticatedUser{
+		AccessKey: users.AccessKey{
+			Id:  gofakeit.HexUint256(),
+			Key: gofakeit.HexUint256(),
+		},
+		User: &users.User{
+			Id:      gofakeit.IntRange(0, 1000),
+			Paymail: gofakeit.HexUint256(),
+		},
 	}
 
-	userId := gofakeit.IntRange(0, 1000)
-
 	// Act
-	auth.UpdateSession(ctx, accessKey, int(userId))
+	auth.UpdateSession(ctx, &user)
 
 	// Assert
 	session := sessions.Default(ctx)
 
-	assert.Equal(t, accessKey.Id, session.Get(auth.SessionAccessKeyId))
-	assert.Equal(t, accessKey.Key, session.Get(auth.SessionAccessKey))
-	assert.Equal(t, userId, session.Get(auth.SessionUserId))
+	assert.Equal(t, user.AccessKey.Id, session.Get(auth.SessionAccessKeyId))
+	assert.Equal(t, user.AccessKey.Key, session.Get(auth.SessionAccessKey))
+	assert.Equal(t, user.User.Id, session.Get(auth.SessionUserId))
+	assert.Equal(t, user.User.Paymail, session.Get(auth.SessionUserPaymail))
 }
 
 func setupTest() (ctx *gin.Context) {

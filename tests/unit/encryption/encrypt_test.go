@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestEncryptionDecryption tests if we use same algorithm for encryption and decryption data
+// TestEncryptionDecryption tests if we use same algorithm for encryption and decryption data.
 func TestEncryptionDecryption(t *testing.T) {
 	cases := []struct {
 		name                           string
@@ -49,7 +49,7 @@ func TestEncryptionDecryption(t *testing.T) {
 	}
 }
 
-// TestHash tests if SHA256 is used correctly
+// TestHash tests if SHA256 is used correctly.
 func TestHash(t *testing.T) {
 	tc := struct {
 		name         string
