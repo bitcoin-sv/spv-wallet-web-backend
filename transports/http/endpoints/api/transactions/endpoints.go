@@ -129,5 +129,5 @@ func (h *handler) createTransaction(c *gin.Context) {
 		return
 	}
 
-	c.Status(200)
+	c.Status(http.StatusOK)
 }
