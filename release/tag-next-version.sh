@@ -3,11 +3,11 @@
 minorChangesTypes='feat|perf|refactor|revert'
 
 function latestVersion() {
-    git describe --tags --match 'v[0-9].[0-9].[0-9]' --abbrev=0
+    git describe --tags --match 'v*' --abbrev=0
 }
 
 function aheadLatestVersion() {
-    git describe --tags --match 'v[0-9].[0-9].[0-9]' --long | cut -d '-' -f2
+    git describe --tags --match 'v*' --long | cut -d '-' -f2
 }
 
 function minorChangesCount() {
