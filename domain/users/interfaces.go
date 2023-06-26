@@ -3,6 +3,7 @@ package users
 import (
 	"time"
 
+	"github.com/BuxOrg/bux"
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/libsv/go-bk/bip32"
 	"github.com/mrz1836/go-datastore"
@@ -48,6 +49,12 @@ type (
 		GetTransactionReceiver() string
 	}
 
+	// DraftTransaction is an interface that defines draft transaction data and methods.
+	DraftTransaction interface {
+		GetDraftTransactionHex() string
+		GetDraftTransactionId() string
+	}
+
 	// UserBuxClient defines methods for bux client with user key.
 	UserBuxClient interface {
 		// Access Key methods
@@ -61,6 +68,8 @@ type (
 		GetTransactions(queryParam datastore.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
+		CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *bux.Metadata) (DraftTransaction, error)
+		RecordTransaction(hex, draftTxId string, metadata *bux.Metadata)
 	}
 
 	// AdmBuxClient defines methods for bux client with admin key.

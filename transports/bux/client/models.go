@@ -42,6 +42,12 @@ type FullTransaction struct {
 	Receiver        string    `json:"receiver"`
 }
 
+// DraftTransaction is a struct that contains draft transaction data.
+type DraftTransaction struct {
+	TxDraftId string `json:"txDraftId"`
+	TxHex     string `json:"txHex"`
+}
+
 // GetAccessKey returns access key.
 func (a *AccessKey) GetAccessKey() string {
 	return a.Key
@@ -160,4 +166,14 @@ func (t *FullTransaction) GetTransactionSender() string {
 // GetTransactionReceiver returns transaction receiver.
 func (t *FullTransaction) GetTransactionReceiver() string {
 	return t.Receiver
+}
+
+// GetDraftTransactionId returns draft transaction id.
+func (t *DraftTransaction) GetDraftTransactionId() string {
+	return t.TxDraftId
+}
+
+// GetDraftTransactionHex returns draft transaction hex.
+func (t *DraftTransaction) GetDraftTransactionHex() string {
+	return t.TxHex
 }
