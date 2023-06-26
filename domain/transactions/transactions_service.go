@@ -5,6 +5,7 @@ import (
 	"bux-wallet/logging"
 	"math"
 
+	"github.com/BuxOrg/bux"
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/mrz1836/go-datastore"
 )
@@ -26,11 +27,11 @@ func NewTransactionService(buxClient users.AdmBuxClient, bf users.BuxClientFacto
 }
 
 // CreateTransaction creates transaction.
-func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, satoshis uint64) (users.Transaction, error) {
+func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, satoshis uint64) error {
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithXpriv(xpriv)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// Create recipients.
@@ -41,13 +42,21 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		},
 	}
 
-	// Send transaction.
-	transaction, err := buxClient.SendToRecipents(recipients, userPaymail)
-	if err != nil {
-		return nil, err
+	metadata := &bux.Metadata{
+		"receiver": recipients[0].To,
+		"sender":   userPaymail,
 	}
 
-	return transaction, nil
+	draftTransaction, err := buxClient.CreateAndFinalizeTransaction(recipients, metadata)
+	if err != nil {
+		return err
+	}
+
+	// Send transaction.
+	// go buxClient.SendToRecipents(recipients, userPaymail)
+	go buxClient.RecordTransaction(draftTransaction.GetDraftTransactionHex(), draftTransaction.GetDraftTransactionId(), metadata)
+
+	return nil
 }
 
 // GetTransaction returns transaction by id.

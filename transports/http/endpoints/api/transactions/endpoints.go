@@ -123,11 +123,11 @@ func (h *handler) createTransaction(c *gin.Context) {
 	}
 
 	// Create transaction.
-	transaction, err := h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, reqTransaction.Satoshis)
+	err = h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, reqTransaction.Satoshis)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return
 	}
 
-	c.JSON(http.StatusOK, transaction)
+	c.Status(200)
 }

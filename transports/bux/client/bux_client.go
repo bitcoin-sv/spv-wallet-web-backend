@@ -104,6 +104,33 @@ func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients, senderP
 	return t, nil
 }
 
+// CreateAndFinalizeTransaction creates draft transaction and finalizes it.
+func (c *BuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *bux.Metadata) (users.DraftTransaction, error) {
+	// Create draft transaction.
+	draftTx, err := c.client.DraftToRecipients(context.Background(), recipients, metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	// Finalize draft transaction.
+	hex, err := c.client.FinalizeTransaction(draftTx)
+	if err != nil {
+		return nil, err
+	}
+
+	draftTransaction := DraftTransaction{
+		TxDraftId: draftTx.ID,
+		TxHex:     hex,
+	}
+
+	return &draftTransaction, nil
+}
+
+// RecordTransaction records transaction in BUX.
+func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *bux.Metadata) {
+	c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata) // nolint: all // TODO: handle error in correct way.
+}
+
 // GetTransactions returns all transactions.
 func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams, userPaymail string) ([]users.Transaction, error) {
 	conditions := make(map[string]interface{})
