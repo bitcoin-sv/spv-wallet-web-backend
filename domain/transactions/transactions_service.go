@@ -43,7 +43,7 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 	}
 
 	metadata := &bux.Metadata{
-		"receiver": recipients[0].To,
+		"receiver": recipient,
 		"sender":   userPaymail,
 	}
 
