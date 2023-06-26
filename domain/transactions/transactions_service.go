@@ -3,6 +3,7 @@ package transactions
 import (
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
+	"math"
 
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/mrz1836/go-datastore"
@@ -66,9 +67,14 @@ func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (
 }
 
 // GetTransactions returns transactions by access key.
-func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam datastore.QueryParams) ([]users.Transaction, error) {
+func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam datastore.QueryParams) (*PaginatedTransactions, error) {
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return nil, err
+	}
+
+	count, err := buxClient.GetTransactionsCount()
 	if err != nil {
 		return nil, err
 	}
@@ -78,5 +84,14 @@ func (s *TransactionService) GetTransactions(accessKey, userPaymail string, quer
 		return nil, err
 	}
 
-	return transactions, nil
+	// Calculate pages.
+	pages := int(math.Ceil(float64(count) / float64(queryParam.PageSize)))
+
+	pTransactions := &PaginatedTransactions{
+		Count:        count,
+		Pages:        pages,
+		Transactions: transactions,
+	}
+
+	return pTransactions, nil
 }

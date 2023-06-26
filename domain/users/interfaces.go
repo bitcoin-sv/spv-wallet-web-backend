@@ -60,6 +60,7 @@ type (
 		SendToRecipents(recipients []*transports.Recipients, senderPaymail string) (Transaction, error)
 		GetTransactions(queryParam datastore.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
+		GetTransactionsCount() (int64, error)
 	}
 
 	// AdmBuxClient defines methods for bux client with admin key.
