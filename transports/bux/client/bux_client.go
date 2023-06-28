@@ -152,7 +152,6 @@ func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams, userPaymai
 	var transactionsData = make([]users.Transaction, 0)
 	for _, transaction := range transactions {
 		sender, receiver := getPaymailsFromMetadata(transaction, userPaymail)
-		absTotalValue := uint64(math.Abs(float64(transaction.OutputValue)))
 		status := "unconfirmed"
 		if transaction.BlockHeight > 0 {
 			status = "confirmed"
@@ -160,7 +159,7 @@ func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams, userPaymai
 		transactionData := Transaction{
 			Id:         transaction.ID,
 			Direction:  fmt.Sprint(transaction.Direction),
-			TotalValue: absTotalValue,
+			TotalValue: getAbsoluteValue(transaction.OutputValue),
 			Fee:        transaction.Fee,
 			Status:     status,
 			CreatedAt:  transaction.CreatedAt,
@@ -181,13 +180,12 @@ func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.Ful
 	}
 
 	sender, receiver := getPaymailsFromMetadata(transaction, userPaymail)
-	absTotalValue := uint64(math.Abs(float64(transaction.OutputValue)))
 
 	transactionData := FullTransaction{
 		Id:              transaction.ID,
 		BlockHash:       transaction.BlockHash,
 		BlockHeight:     transaction.BlockHeight,
-		TotalValue:      absTotalValue,
+		TotalValue:      getAbsoluteValue(transaction.OutputValue),
 		Direction:       fmt.Sprint(transaction.Direction),
 		Status:          transaction.Status.String(),
 		Fee:             transaction.Fee,
@@ -245,4 +243,8 @@ func getPaymailsFromMetadata(transaction *bux.Transaction, fallbackPaymail strin
 	}
 
 	return senderPaymail, receiverPaymail
+}
+
+func getAbsoluteValue(value int64) uint64 {
+	return uint64(math.Abs(float64(value)))
 }
