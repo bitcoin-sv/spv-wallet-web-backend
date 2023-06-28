@@ -27,6 +27,7 @@ type (
 		GetTransactionId() string
 		GetTransactionDirection() string
 		GetTransactionTotalValue() uint64
+		GetTransactionFee() uint64
 		GetTransactionStatus() string
 		GetTransactionCreatedDate() time.Time
 		GetTransactionSender() string
@@ -44,7 +45,7 @@ type (
 		GetTransactionFee() uint64
 		GetTransactionNumberOfInputs() uint32
 		GetTransactionNumberOfOutputs() uint32
-		GetTrandsactionCreatedDate() time.Time
+		GetTransactionCreatedDate() time.Time
 		GetTransactionSender() string
 		GetTransactionReceiver() string
 	}
@@ -64,7 +65,7 @@ type (
 		// XPub Key methods
 		GetXPub() (PubKey, error)
 		// Transaction methods
-		SendToRecipents(recipients []*transports.Recipients, senderPaymail string) (Transaction, error)
+		SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (Transaction, error)
 		GetTransactions(queryParam datastore.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)

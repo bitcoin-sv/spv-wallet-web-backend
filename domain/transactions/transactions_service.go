@@ -53,7 +53,6 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 	}
 
 	// Send transaction.
-	// go buxClient.SendToRecipents(recipients, userPaymail)
 	go buxClient.RecordTransaction(draftTransaction.GetDraftTransactionHex(), draftTransaction.GetDraftTransactionId(), metadata)
 
 	return nil

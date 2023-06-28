@@ -3,6 +3,7 @@ package buxclient
 import (
 	"context"
 	"fmt"
+	"math"
 
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
@@ -80,8 +81,8 @@ func (c *BuxClient) GetXPub() (users.PubKey, error) {
 	return &xPub, nil
 }
 
-// SendToRecipents sends satoshis to recipients.
-func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
+// SendToRecipients sends satoshis to recipients.
+func (c *BuxClient) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
 	// Create matadata with sender and receiver paymails.
 	metadata := &bux.Metadata{
 		"receiver": recipients[0].To,
@@ -158,7 +159,8 @@ func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams, userPaymai
 		transactionData := Transaction{
 			Id:         transaction.ID,
 			Direction:  fmt.Sprint(transaction.Direction),
-			TotalValue: transaction.TotalValue,
+			TotalValue: getAbsoluteValue(transaction.OutputValue),
+			Fee:        transaction.Fee,
 			Status:     status,
 			CreatedAt:  transaction.CreatedAt,
 			Sender:     sender,
@@ -183,7 +185,7 @@ func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.Ful
 		Id:              transaction.ID,
 		BlockHash:       transaction.BlockHash,
 		BlockHeight:     transaction.BlockHeight,
-		TotalValue:      transaction.TotalValue,
+		TotalValue:      getAbsoluteValue(transaction.OutputValue),
 		Direction:       fmt.Sprint(transaction.Direction),
 		Status:          transaction.Status.String(),
 		Fee:             transaction.Fee,
@@ -241,4 +243,8 @@ func getPaymailsFromMetadata(transaction *bux.Transaction, fallbackPaymail strin
 	}
 
 	return senderPaymail, receiverPaymail
+}
+
+func getAbsoluteValue(value int64) uint64 {
+	return uint64(math.Abs(float64(value)))
 }
