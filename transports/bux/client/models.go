@@ -20,6 +20,7 @@ type Transaction struct {
 	Id         string    `json:"id"`
 	Direction  string    `json:"direction"`
 	TotalValue uint64    `json:"totalValue"`
+	Fee        uint64    `json:"fee"`
 	Status     string    `json:"status"`
 	CreatedAt  time.Time `json:"createdAt"`
 	Sender     string    `json:"sender"`
@@ -88,6 +89,11 @@ func (t *Transaction) GetTransactionTotalValue() uint64 {
 	return t.TotalValue
 }
 
+// GetTransactionFee returns transaction fee.
+func (t *Transaction) GetTransactionFee() uint64 {
+	return t.Fee
+}
+
 // GetTransactionStatus returns transaction status.
 func (t *Transaction) GetTransactionStatus() string {
 	return t.Status
@@ -153,8 +159,8 @@ func (t *FullTransaction) GetTransactionNumberOfOutputs() uint32 {
 	return t.NumberOfOutputs
 }
 
-// GetTrandsactionCreatedDate returns transaction created date.
-func (t *FullTransaction) GetTrandsactionCreatedDate() time.Time {
+// GetTransactionCreatedDate returns transaction created date.
+func (t *FullTransaction) GetTransactionCreatedDate() time.Time {
 	return t.CreatedAt
 }
 

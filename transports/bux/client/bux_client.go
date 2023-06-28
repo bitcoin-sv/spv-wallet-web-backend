@@ -3,6 +3,7 @@ package buxclient
 import (
 	"context"
 	"fmt"
+	"math"
 
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
@@ -80,8 +81,8 @@ func (c *BuxClient) GetXPub() (users.PubKey, error) {
 	return &xPub, nil
 }
 
-// SendToRecipents sends satoshis to recipients.
-func (c *BuxClient) SendToRecipents(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
+// SendToRecipients sends satoshis to recipients.
+func (c *BuxClient) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
 	// Create matadata with sender and receiver paymails.
 	metadata := &bux.Metadata{
 		"receiver": recipients[0].To,
@@ -151,6 +152,7 @@ func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams, userPaymai
 	var transactionsData = make([]users.Transaction, 0)
 	for _, transaction := range transactions {
 		sender, receiver := getPaymailsFromMetadata(transaction, userPaymail)
+		absTotalValue := uint64(math.Abs(float64(transaction.OutputValue)))
 		status := "unconfirmed"
 		if transaction.BlockHeight > 0 {
 			status = "confirmed"
@@ -158,7 +160,8 @@ func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams, userPaymai
 		transactionData := Transaction{
 			Id:         transaction.ID,
 			Direction:  fmt.Sprint(transaction.Direction),
-			TotalValue: transaction.TotalValue,
+			TotalValue: absTotalValue,
+			Fee:        transaction.Fee,
 			Status:     status,
 			CreatedAt:  transaction.CreatedAt,
 			Sender:     sender,
@@ -178,12 +181,13 @@ func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.Ful
 	}
 
 	sender, receiver := getPaymailsFromMetadata(transaction, userPaymail)
+	absTotalValue := uint64(math.Abs(float64(transaction.OutputValue)))
 
 	transactionData := FullTransaction{
 		Id:              transaction.ID,
 		BlockHash:       transaction.BlockHash,
 		BlockHeight:     transaction.BlockHeight,
-		TotalValue:      transaction.TotalValue,
+		TotalValue:      absTotalValue,
 		Direction:       fmt.Sprint(transaction.Direction),
 		Status:          transaction.Status.String(),
 		Fee:             transaction.Fee,
