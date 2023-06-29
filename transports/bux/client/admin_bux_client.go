@@ -48,8 +48,11 @@ func (c *AdminBuxClient) RegisterPaymail(alias, xpub string) (string, error) {
 	// Create paymail address.
 	address := fmt.Sprintf("%s@%s", alias, domain)
 
+	// Get avatar url from env.
+	avatar := viper.GetString(config.EnvBuxPaymailAvatar)
+
 	// Register new xpub in BUX.
-	err := c.client.NewPaymail(context.Background(), xpub, address, alias, alias, &bux.Metadata{})
+	err := c.client.NewPaymail(context.Background(), xpub, address, avatar, alias, &bux.Metadata{})
 
 	if err != nil {
 		return "", err

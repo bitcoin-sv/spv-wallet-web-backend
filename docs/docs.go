@@ -272,6 +272,12 @@ const docTemplate = `{
                 "numberOfOutputs": {
                     "type": "integer"
                 },
+                "receiver": {
+                    "type": "string"
+                },
+                "sender": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 },
@@ -289,7 +295,16 @@ const docTemplate = `{
                 "direction": {
                     "type": "string"
                 },
+                "fee": {
+                    "type": "integer"
+                },
                 "id": {
+                    "type": "string"
+                },
+                "receiver": {
+                    "type": "string"
+                },
+                "sender": {
                     "type": "string"
                 },
                 "status": {
@@ -306,7 +321,7 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "recipent": {
+                "recipient": {
                     "type": "string"
                 },
                 "satoshis": {

@@ -57,6 +57,7 @@ func setBuxDefaults() {
 	viper.SetDefault(EnvBuxWithDebug, true)
 	viper.SetDefault(EnvBuxSignRequest, true)
 	viper.SetDefault(EnvBuxPaymailDomain, "bux.com")
+	viper.SetDefault(EnvBuxPaymailAvatar, "http://localhost:3003/static/paymail/avatar.jpg")
 }
 
 // setHashDefaults sets default values for hash.
