@@ -3,6 +3,7 @@ package access
 import (
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
+	"database/sql"
 	"net/http"
 
 	"bux-wallet/transports/http/auth"
@@ -56,6 +57,13 @@ func (h *handler) signIn(c *gin.Context) {
 
 	signInUser, err := h.service.SignInUser(reqUser.Email, reqUser.Password)
 	if err != nil {
+		// sql.ErrNoRows says that we don't have such user in db
+		// users.WrongUserPassword is an our internal error which will be returned if xpriv wasn't decrypted by the provided password
+		// "no keys available" error is a custom bux-client error which says that bux-client can't be provided(in our case due to wrong xpriv)
+		if err == sql.ErrNoRows || err == users.WrongUserPassword || err.Error() == "no keys available" {
+			c.JSON(http.StatusBadRequest, "Sorry, your username or password is incorrect. Please try again.")
+			return
+		}
 		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
 		return
 	}

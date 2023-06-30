@@ -22,6 +22,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var WrongUserPassword = errors.New("Wrong Password")
+
 // UserService represents User service and provide access to repository.
 type UserService struct {
 	repo             UsersRepository
@@ -304,8 +306,8 @@ func decryptXpriv(password, encryptedXpriv string) (string, error) {
 
 	// Decrypt xpriv with hashed password
 	xpriv := encryption.Decrypt(hashedPassword, encryptedXpriv)
-	if err != nil {
-		return "", err
+	if xpriv == "" {
+		return "", WrongUserPassword
 	}
 
 	return xpriv, nil
