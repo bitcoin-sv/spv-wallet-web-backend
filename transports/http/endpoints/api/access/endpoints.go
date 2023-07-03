@@ -56,7 +56,12 @@ func (h *handler) signIn(c *gin.Context) {
 
 	signInUser, err := h.service.SignInUser(reqUser.Email, reqUser.Password)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		if err == users.ErrInvalidCredentials {
+			c.JSON(http.StatusBadRequest, "Sorry, your username or password is incorrect. Please try again.")
+			return
+		}
+		
+		c.JSON(http.StatusInternalServerError, "Something went wrong. Please try again later.")
 		return
 	}
 

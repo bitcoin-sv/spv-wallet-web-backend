@@ -22,6 +22,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+// ErrInvalidCredentials is throwing when invalid credentials were used.
+var ErrInvalidCredentials = errors.New("Invalid Credentials")
+
 // UserService represents User service and provide access to repository.
 type UserService struct {
 	repo             UsersRepository
@@ -122,34 +125,47 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	// Check if user exists.
 	user, err := s.repo.GetUserByEmail(context.Background(), email)
 	if err != nil {
+		s.log.Error(fmt.Sprintf("User wasn't found by email: %s", err.Error()))
+		if err == sql.ErrNoRows {
+			return nil, ErrInvalidCredentials
+		}
 		return nil, err
 	}
 
 	// Decrypt xpriv.
 	decryptedXpriv, err := decryptXpriv(password, user.Xpriv)
 	if err != nil {
+		s.log.Error(fmt.Sprintf("xPriv wasn't decrypted: %s", err.Error()))
 		return nil, err
 	}
 
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithXpriv(decryptedXpriv)
 	if err != nil {
+		s.log.Error(fmt.Sprintf("Bux client can't be provided: %s", err.Error()))
+		// "no keys available" error is a custom bux-client error which says that bux-client can't be provided(in our case due to wrong xpriv)
+		if err.Error() == "no keys available" {
+			return nil, ErrInvalidCredentials
+		}
 		return nil, err
 	}
 
 	// Create access key.
 	accessKey, err := buxClient.CreateAccessKey()
 	if err != nil {
+		s.log.Error(fmt.Sprintf("Access Key wasn't created: %s", err.Error()))
 		return nil, err
 	}
 
 	xpub, err := buxClient.GetXPub()
 	if err != nil {
+		s.log.Error(fmt.Sprintf("xPub wasn't found: %s", err.Error()))
 		return nil, err
 	}
 
 	balance, err := calculateBalance(xpub.GetCurrentBalance())
 	if err != nil {
+		s.log.Error(fmt.Sprintf("An error occurred on balance calculation: %s", err.Error()))
 		return nil, err
 	}
 
@@ -304,8 +320,8 @@ func decryptXpriv(password, encryptedXpriv string) (string, error) {
 
 	// Decrypt xpriv with hashed password
 	xpriv := encryption.Decrypt(hashedPassword, encryptedXpriv)
-	if err != nil {
-		return "", err
+	if xpriv == "" {
+		return "", ErrInvalidCredentials
 	}
 
 	return xpriv, nil
