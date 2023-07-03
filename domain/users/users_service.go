@@ -321,7 +321,7 @@ func decryptXpriv(password, encryptedXpriv string) (string, error) {
 	// Decrypt xpriv with hashed password
 	xpriv := encryption.Decrypt(hashedPassword, encryptedXpriv)
 	if xpriv == "" {
-		return "", InvalidCredentialsError
+		return "", ErrInvalidCredentials
 	}
 
 	return xpriv, nil
