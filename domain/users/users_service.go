@@ -22,6 +22,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// WrongUserPassword is throwing when password is wrong.
 var WrongUserPassword = errors.New("Wrong Password")
 
 // UserService represents User service and provide access to repository.
