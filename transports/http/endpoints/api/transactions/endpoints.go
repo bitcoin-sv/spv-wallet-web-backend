@@ -4,11 +4,11 @@ import (
 	"bux-wallet/domain"
 	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
+	"bux-wallet/logging"
 	"net/http"
 	"strconv"
 
 	"bux-wallet/transports/http/auth"
-	"bux-wallet/transports/http/endpoints/api"
 	router "bux-wallet/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
@@ -18,13 +18,15 @@ import (
 type handler struct {
 	uService users.UserService
 	tService transactions.TransactionService
+	log      logging.Logger
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services) router.ApiEndpoints {
+func NewHandler(s *domain.Services, lf logging.LoggerFactory) router.ApiEndpoints {
 	return &handler{
 		uService: *s.UsersService,
 		tService: *s.TransactionsService,
+		log:      lf.NewLogger("transactions-handler"),
 	}
 }
 
@@ -71,7 +73,8 @@ func (h *handler) getTransactions(c *gin.Context) {
 	// Get user transactions.
 	transactions, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey), c.GetString(auth.SessionUserPaymail), queryParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		h.log.Errorf("An error occurred while trying to get a list of transactions: %s", err)
+		c.JSON(http.StatusInternalServerError, "An error occurred while trying to get a list of transactions")
 		return
 	}
 
@@ -92,7 +95,8 @@ func (h *handler) getTransaction(c *gin.Context) {
 	// Get transaction by id.
 	transaction, err := h.tService.GetTransaction(c.GetString(auth.SessionAccessKey), transactionId, c.GetString(auth.SessionUserPaymail))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		h.log.Errorf("An error occurred while trying to get transaction details: %s", err)
+		c.JSON(http.StatusInternalServerError, "An error occurred while trying to get transaction details")
 		return
 	}
 
@@ -111,21 +115,24 @@ func (h *handler) createTransaction(c *gin.Context) {
 	var reqTransaction CreateTransaction
 	err := c.Bind(&reqTransaction)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		h.log.Errorf("Invalid payload: %s", err)
+		c.JSON(http.StatusBadRequest, "Invalid request. Please check transaction details")
 		return
 	}
 
 	// Validate user.
 	xpriv, err := h.uService.GetUserXpriv(c.GetInt(auth.SessionUserId), reqTransaction.Password)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		h.log.Errorf("Invalid password: %s", err)
+		c.JSON(http.StatusBadRequest, "Invalid password.")
 		return
 	}
 
 	// Create transaction.
 	err = h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, reqTransaction.Satoshis)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		h.log.Errorf("An error occurred while creating a transaction: %s", err)
+		c.JSON(http.StatusBadRequest, "An error occurred while creating a transaction.")
 		return
 	}
 

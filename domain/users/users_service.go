@@ -87,7 +87,7 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	// Register xpub in BUX.
 	xpub, err := s.buxClient.RegisterXpub(xpriv)
 	if err != nil {
-		return nil, fmt.Errorf("error registering xpub in BUX: %s", err.Error())
+		return nil, fmt.Errorf("error registering xpub in BUX: %s", err)
 	}
 
 	// Get username from email which will be used as paymail alias.
@@ -96,7 +96,7 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	// Register paymail in BUX.
 	paymail, err := s.buxClient.RegisterPaymail(username, xpub)
 	if err != nil {
-		return nil, fmt.Errorf("error registering paymail in BUX: %s", err.Error())
+		return nil, fmt.Errorf("error registering paymail in BUX: %s", err)
 	}
 
 	// Create and save new user.
@@ -125,7 +125,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	// Check if user exists.
 	user, err := s.repo.GetUserByEmail(context.Background(), email)
 	if err != nil {
-		s.log.Error(fmt.Sprintf("User wasn't found by email: %s", err.Error()))
+		s.log.Errorf("User wasn't found by email: %s", err)
 		if err == sql.ErrNoRows {
 			return nil, ErrInvalidCredentials
 		}
@@ -135,14 +135,14 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	// Decrypt xpriv.
 	decryptedXpriv, err := decryptXpriv(password, user.Xpriv)
 	if err != nil {
-		s.log.Error(fmt.Sprintf("xPriv wasn't decrypted: %s", err.Error()))
+		s.log.Errorf("xPriv wasn't decrypted: %s", err)
 		return nil, err
 	}
 
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithXpriv(decryptedXpriv)
 	if err != nil {
-		s.log.Error(fmt.Sprintf("Bux client can't be provided: %s", err.Error()))
+		s.log.Errorf("Bux client can't be provided: %s", err)
 		// "no keys available" error is a custom bux-client error which says that bux-client can't be provided(in our case due to wrong xpriv)
 		if err.Error() == "no keys available" {
 			return nil, ErrInvalidCredentials
@@ -153,19 +153,19 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	// Create access key.
 	accessKey, err := buxClient.CreateAccessKey()
 	if err != nil {
-		s.log.Error(fmt.Sprintf("Access Key wasn't created: %s", err.Error()))
+		s.log.Errorf("Access Key wasn't created: %s", err)
 		return nil, err
 	}
 
 	xpub, err := buxClient.GetXPub()
 	if err != nil {
-		s.log.Error(fmt.Sprintf("xPub wasn't found: %s", err.Error()))
+		s.log.Errorf("xPub wasn't found: %s", err)
 		return nil, err
 	}
 
 	balance, err := calculateBalance(xpub.GetCurrentBalance())
 	if err != nil {
-		s.log.Error(fmt.Sprintf("An error occurred on balance calculation: %s", err.Error()))
+		s.log.Errorf("An error occurred on balance calculation: %s", err)
 		return nil, err
 	}
 

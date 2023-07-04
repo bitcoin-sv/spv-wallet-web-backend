@@ -5,9 +5,9 @@ import (
 
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
+	"bux-wallet/logging"
 
 	"bux-wallet/transports/http/auth"
-	"bux-wallet/transports/http/endpoints/api"
 	router "bux-wallet/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
@@ -15,11 +15,15 @@ import (
 
 type handler struct {
 	service users.UserService
+	log     logging.Logger
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services) (router.RootEndpoints, router.ApiEndpoints) {
-	h := &handler{service: *s.UsersService}
+func NewHandler(s *domain.Services, lf logging.LoggerFactory) (router.RootEndpoints, router.ApiEndpoints) {
+	h := &handler{
+		service: *s.UsersService,
+		log:     lf.NewLogger("users-handler"),
+	}
 
 	prefix := "/api/v1"
 
@@ -52,13 +56,14 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if request body is valid JSON
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		h.log.Errorf("Invalid payload: %s", err)
+		c.JSON(http.StatusBadRequest, "Invalid request.")
 		return
 	}
 
 	// Check if sended passwords match
 	if reqUser.Password != reqUser.PasswordConfirmation {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("passwords do not match"))
+		c.JSON(http.StatusBadRequest, "Passwords do not match.")
 		return
 	}
 
@@ -66,7 +71,7 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if user with this email already exists or there is another error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		c.JSON(http.StatusBadRequest, "The email address is already associated with another user")
 		return
 	}
 
@@ -90,13 +95,15 @@ func (h *handler) register(c *gin.Context) {
 func (h *handler) getUser(c *gin.Context) {
 	user, err := h.service.GetUserById(c.GetInt(auth.SessionUserId))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		h.log.Errorf("User not found: %s", err)
+		c.JSON(http.StatusBadRequest, "An error occurred while getting user details")
 		return
 	}
 
 	currentBalance, err := h.service.GetUserBalance(c.GetString(auth.SessionAccessKey))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		h.log.Errorf("Balance not found: %s", err)
+		c.JSON(http.StatusBadRequest, "An error occurred while getting user details")
 		return
 	}
 
