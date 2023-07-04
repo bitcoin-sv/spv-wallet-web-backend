@@ -42,10 +42,12 @@ const (
 	EnvBuxServerUrl = "bux.server.url"
 	// EnvBuxWithDebug define whether to turn debugging on.
 	EnvBuxWithDebug = "bux.withDebug"
-	// EnvBuxWithSignRequest define whether to sign all requests.
+	// EnvBuxSignRequest define whether to sign all requests.
 	EnvBuxSignRequest = "bux.sign.request"
 	// EnvBuxPaymailDomain define the bux paymail domain.
 	EnvBuxPaymailDomain = "bux.paymail.domain"
+	// EnvBuxPaymailAvatar define the bux paymail avatar url.
+	EnvBuxPaymailAvatar = "bux.paymail.avatar"
 )
 
 // EnvHashSalt define the hash salt.

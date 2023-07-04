@@ -263,6 +263,12 @@
                 "numberOfOutputs": {
                     "type": "integer"
                 },
+                "receiver": {
+                    "type": "string"
+                },
+                "sender": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 },
@@ -280,7 +286,16 @@
                 "direction": {
                     "type": "string"
                 },
+                "fee": {
+                    "type": "integer"
+                },
                 "id": {
+                    "type": "string"
+                },
+                "receiver": {
+                    "type": "string"
+                },
+                "sender": {
                     "type": "string"
                 },
                 "status": {
@@ -297,7 +312,7 @@
                 "password": {
                     "type": "string"
                 },
-                "recipent": {
+                "recipient": {
                     "type": "string"
                 },
                 "satoshis": {
