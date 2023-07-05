@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ErrorUnauthorized is thrown if authorization failed.
 var ErrorUnauthorized = errors.New("unauthorized")
 
 // AuthMiddleware middleware that is checking the variables set in session.
