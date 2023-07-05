@@ -24,6 +24,7 @@ import (
 
 // ErrInvalidCredentials is throwing when invalid credentials were used.
 var ErrInvalidCredentials = errors.New("invalid credentials")
+// ErrUserAlreadyExists is throwing when we try to register a user with already used email.
 var ErrUserAlreadyExists = errors.New("user already exists")
 
 // UserService represents User service and provide access to repository.
