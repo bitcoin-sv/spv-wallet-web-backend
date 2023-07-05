@@ -23,7 +23,8 @@ import (
 )
 
 // ErrInvalidCredentials is throwing when invalid credentials were used.
-var ErrInvalidCredentials = errors.New("Invalid Credentials")
+var ErrInvalidCredentials = errors.New("invalid credentials")
+var ErrUserAlreadyExists = errors.New("user already exists")
 
 // UserService represents User service and provide access to repository.
 type UserService struct {
@@ -265,7 +266,7 @@ func (s *UserService) validateUser(email string) error {
 		return err
 	}
 
-	return fmt.Errorf("user with email %s already exists", email)
+	return ErrUserAlreadyExists
 }
 
 // generateMnemonic generates mnemonic and seed.

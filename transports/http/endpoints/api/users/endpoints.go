@@ -71,7 +71,11 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if user with this email already exists or there is another error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "The email address is already associated with another user")
+		if err == users.ErrUserAlreadyExists {
+			c.JSON(http.StatusBadRequest, "The email address is already associated with another user.")
+			return
+		}
+		c.JSON(http.StatusInternalServerError, "Something went wrong. Please try again later.")
 		return
 	}
 
