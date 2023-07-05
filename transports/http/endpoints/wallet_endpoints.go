@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"bux-wallet/domain"
+	"bux-wallet/logging"
 	"bux-wallet/transports/http/endpoints/status"
 	"bux-wallet/transports/http/endpoints/swagger"
 
@@ -21,9 +22,9 @@ import (
 // SetupWalletRoutes main point where we're registering endpoints registrars (handlers that will register endpoints in gin engine)
 //
 //	and middlewares. It's returning function that can be used to setup engine of httpserver.HttpServer
-func SetupWalletRoutes(s *domain.Services, db *sql.DB) httpserver.GinEngineOpt {
-	accessRootEndpoints, accessApiEndpoints := access.NewHandler(s)
-	usersRootEndpoints, usersApiEndpoints := users.NewHandler(s)
+func SetupWalletRoutes(s *domain.Services, db *sql.DB, lf logging.LoggerFactory) httpserver.GinEngineOpt {
+	accessRootEndpoints, accessApiEndpoints := access.NewHandler(s, lf)
+	usersRootEndpoints, usersApiEndpoints := users.NewHandler(s, lf)
 
 	routes := []interface{}{
 		swagger.NewHandler(),
@@ -32,7 +33,7 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB) httpserver.GinEngineOpt {
 		usersApiEndpoints,
 		accessRootEndpoints,
 		accessApiEndpoints,
-		transactions.NewHandler(s),
+		transactions.NewHandler(s, lf),
 	}
 
 	return func(engine *gin.Engine) {

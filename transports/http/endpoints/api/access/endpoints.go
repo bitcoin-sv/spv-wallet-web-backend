@@ -3,10 +3,10 @@ package access
 import (
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
+	"bux-wallet/logging"
 	"net/http"
 
 	"bux-wallet/transports/http/auth"
-	"bux-wallet/transports/http/endpoints/api"
 	router "bux-wallet/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
@@ -14,11 +14,15 @@ import (
 
 type handler struct {
 	service users.UserService
+	log     logging.Logger
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services) (router.RootEndpoints, router.ApiEndpoints) {
-	h := &handler{service: *s.UsersService}
+func NewHandler(s *domain.Services, lf logging.LoggerFactory) (router.RootEndpoints, router.ApiEndpoints) {
+	h := &handler{
+		service: *s.UsersService,
+		log:     lf.NewLogger("access-handler"),
+	}
 
 	prefix := "/api/v1"
 
@@ -50,7 +54,8 @@ func (h *handler) signIn(c *gin.Context) {
 
 	// Check if request body is valid JSON
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		h.log.Errorf("Invalid payload. Error: %s", err)
+		c.JSON(http.StatusBadRequest, "Invalid request.")
 		return
 	}
 
@@ -60,14 +65,16 @@ func (h *handler) signIn(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, "Sorry, your username or password is incorrect. Please try again.")
 			return
 		}
-		
+
+		h.log.Errorf("Sign-in error: %s", err)
 		c.JSON(http.StatusInternalServerError, "Something went wrong. Please try again later.")
 		return
 	}
 
 	err = auth.UpdateSession(c, signInUser)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		h.log.Errorf("Sign-in error. Session wasn't saved: %s", err)
+		c.JSON(http.StatusBadRequest, "Something went wrong. Please try again later.")
 	}
 
 	response := SignInResponse{
@@ -88,13 +95,15 @@ func (h *handler) signIn(c *gin.Context) {
 func (h *handler) signOut(c *gin.Context) {
 	err := h.service.SignOutUser(c.GetString(auth.SessionAccessKeyId), c.GetString(auth.SessionAccessKey))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		h.log.Errorf("Sign-out error: %s", err)
+		c.JSON(http.StatusInternalServerError, "An error occurred during the logout process.")
 		return
 	}
 
 	err = auth.TerminateSession(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromError(err))
+		h.log.Errorf("Sign-out error. Session wasn't terminated: %s", err)
+		c.JSON(http.StatusInternalServerError, "An error occurred during the logout process.")
 		return
 	}
 
