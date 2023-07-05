@@ -25,29 +25,83 @@ func TestCreateTransaction(t *testing.T) {
 		defer ctrl.Finish()
 
 		paymail := "paymail@4chain.com"
-		tr := buxclient.Transaction{}
+		xpriv := gofakeit.HexUint256()
+		recipient := "recipient.paymail@4chain.com"
+		txValueInSatoshis := uint64(500)
+
+		tr := buxclient.DraftTransaction{}
 
 		buxClientMq := mock.NewMockUserBuxClient(ctrl)
 		buxClientMq.EXPECT().
-			SendToRecipents(gomock.Any(), paymail).
+			CreateAndFinalizeTransaction(gomock.Any(), gomock.Any()).
 			Return(&tr, nil)
+
+		buxClientMq.EXPECT().
+			RecordTransaction(gomock.Any(), gomock.Any(), gomock.Any()).
+			AnyTimes()
 
 		clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
 		clientFctrMq.EXPECT().
-			CreateWithXpriv(gomock.Any()).
+			CreateWithXpriv(xpriv).
 			Return(buxClientMq, nil)
 
 		sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.DefaultLoggerFactory())
 
 		// Act
-		result, _ := sut.CreateTransaction(paymail, gomock.Any().String(), gomock.Any().String(), gofakeit.Uint64())
-
-		// Assert
-		assert.NotNil(t, result)
+		err := sut.CreateTransaction(paymail, xpriv, recipient, txValueInSatoshis)
+		if err != nil {
+			t.Fatal(err)
+		}
 	})
 }
 
-func TestGetTransaction(t *testing.T) {
+func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
+	ts := data.CreateTestTransactions(10)
+
+	cases := []struct {
+		name          string
+		transactionId string
+	}{
+		{
+			name:          "Get transaction, return transaction details",
+			transactionId: ts[0].GetTransactionId(),
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Arrange
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			paymail := "paymail@4chain.com"
+			accessKey := gofakeit.HexUint256()
+
+			buxClientMq := mock.NewMockUserBuxClient(ctrl)
+			buxClientMq.EXPECT().
+				GetTransaction(tc.transactionId, paymail).
+				Return(findById(ts, tc.transactionId))
+
+			clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
+			clientFctrMq.EXPECT().
+				CreateWithAccessKey(accessKey).
+				Return(buxClientMq, nil)
+
+			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.DefaultLoggerFactory())
+
+			// Act
+			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// Assert
+			assert.Equal(t, tc.transactionId, result.GetTransactionId())
+		})
+	}
+}
+
+func TestGetTransaction_ReturnsError(t *testing.T) {
 	ts := data.CreateTestTransactions(10)
 
 	cases := []struct {
@@ -55,10 +109,6 @@ func TestGetTransaction(t *testing.T) {
 		transactionId string
 		expectdErr    error
 	}{
-		{
-			name:          "Get transaction, return transaction details",
-			transactionId: ts[0].GetTransactionId(),
-		},
 		{
 			name:          "Transaction doesn't exist",
 			transactionId: "imnothere",
@@ -72,28 +122,27 @@ func TestGetTransaction(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
+			paymail := "paymail@4chain.com"
+			accessKey := gofakeit.HexUint256()
+
 			buxClientMq := mock.NewMockUserBuxClient(ctrl)
 			buxClientMq.EXPECT().
-				GetTransaction(tc.transactionId, gomock.Any().String()).
+				GetTransaction(tc.transactionId, paymail).
 				Return(findById(ts, tc.transactionId))
 
 			clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
 			clientFctrMq.EXPECT().
-				CreateWithAccessKey(gomock.Any()).
+				CreateWithAccessKey(accessKey).
 				Return(buxClientMq, nil)
 
 			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.DefaultLoggerFactory())
 
 			// Act
-			result, err := sut.GetTransaction("fake-access-key", tc.transactionId, gomock.Any().String())
+			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
 
 			// Assert
-			if err != nil {
-				assert.EqualError(t, tc.expectdErr, err.Error())
-			} else {
-				assert.Equal(t, tc.transactionId, result.GetTransactionId())
-			}
-
+			assert.EqualError(t, tc.expectdErr, err.Error())
+			assert.Nil(t, result)
 		})
 	}
 }

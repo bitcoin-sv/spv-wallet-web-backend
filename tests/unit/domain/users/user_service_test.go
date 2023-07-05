@@ -13,13 +13,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateNewUser(t *testing.T) {
+func TestCreateNewUser_ReturnsUser(t *testing.T) {
 	cases := []struct {
 		name         string
 		userEmail    string
 		userPswd     string
 		expectedUser *users.CreatedUser
-		expectedErr  error
 	}{
 		{
 			name:      "Insert valid user",
@@ -31,21 +30,6 @@ func TestCreateNewUser(t *testing.T) {
 					Paymail: "homer.simpson@homer.simpson.space",
 				},
 			},
-			expectedErr: nil,
-		},
-		{
-			name:         "User already exists",
-			userEmail:    "marge.simpson@4chain.com",
-			userPswd:     "strongP4$$word",
-			expectedUser: nil,
-			expectedErr:  errors.New("user with email marge.simpson@4chain.com already exists"),
-		},
-		{
-			name:         "Invalid password",
-			userEmail:    "ned.flanders@4chain.com",
-			userPswd:     "",
-			expectedUser: nil,
-			expectedErr:  errors.New("correct password is required"),
 		},
 	}
 
@@ -58,26 +42,73 @@ func TestCreateNewUser(t *testing.T) {
 			repoMq := mock.NewMockUsersRepository(ctrl)
 			buxClientMq := mock.NewMockAdmBuxClient(ctrl)
 
-			if tc.expectedUser != nil {
-				repoMq.EXPECT().
-					GetUserByEmail(gomock.Any(), tc.userEmail).
-					Return(nil, sql.ErrNoRows)
+			repoMq.EXPECT().
+				GetUserByEmail(gomock.Any(), tc.userEmail).
+				Return(nil, sql.ErrNoRows)
 
-				repoMq.EXPECT().InsertUser(gomock.Any(), gomock.Any())
+			repoMq.EXPECT().InsertUser(gomock.Any(), gomock.Any())
 
-				buxClientMq.EXPECT().
-					RegisterXpub(gomock.Any()).
-					Return(gomock.Any().String(), nil)
-				buxClientMq.EXPECT().
-					RegisterPaymail(gomock.Any(), gomock.Any()).
-					Return(tc.expectedUser.User.Paymail, nil)
+			buxClientMq.EXPECT().
+				RegisterXpub(gomock.Any()).
+				Return(gomock.Any().String(), nil)
+			buxClientMq.EXPECT().
+				RegisterPaymail(gomock.Any(), gomock.Any()).
+				Return(tc.expectedUser.User.Paymail, nil)
 
-			} else {
-				repoMq.EXPECT().
-					GetUserByEmail(gomock.Any(), tc.userEmail).
-					Return(nil, nil).
-					AnyTimes()
+			sut := users.NewUserService(repoMq, buxClientMq, nil, logging.DefaultLoggerFactory())
+
+			// Act
+			result, err := sut.CreateNewUser(tc.userEmail, tc.userPswd)
+			if err != nil {
+				t.Fatal(err)
 			}
+
+			// Assert
+			assertNewUser(t, tc.expectedUser, result)
+		})
+	}
+}
+
+func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
+	cases := []struct {
+		name        string
+		userEmail   string
+		userPswd    string
+		expectedErr error
+	}{
+		{
+			name:        "User already exists",
+			userEmail:   "marge.simpson@4chain.com",
+			userPswd:    "strongP4$$word",
+			expectedErr: users.ErrUserAlreadyExists,
+		},
+		{
+			name:        "Invalid email",
+			userEmail:   "bart.simpson_4chain.com",
+			userPswd:    "strongP4$$word",
+			expectedErr: errors.New("invalid email address"),
+		},
+		{
+			name:        "Invalid password",
+			userEmail:   "ned.flanders@4chain.com",
+			userPswd:    "",
+			expectedErr: errors.New("correct password is required"),
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Arrange
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			repoMq := mock.NewMockUsersRepository(ctrl)
+			buxClientMq := mock.NewMockAdmBuxClient(ctrl)
+
+			repoMq.EXPECT().
+				GetUserByEmail(gomock.Any(), tc.userEmail).
+				Return(nil, nil).
+				AnyTimes()
 
 			sut := users.NewUserService(repoMq, buxClientMq, nil, logging.DefaultLoggerFactory())
 
@@ -85,11 +116,8 @@ func TestCreateNewUser(t *testing.T) {
 			result, err := sut.CreateNewUser(tc.userEmail, tc.userPswd)
 
 			// Assert
-			if err == nil {
-				assertNewUser(t, tc.expectedUser, result)
-			} else {
-				assert.EqualError(t, err, tc.expectedErr.Error())
-			}
+			assert.EqualError(t, err, tc.expectedErr.Error())
+			assert.Nil(t, result)
 		})
 	}
 }

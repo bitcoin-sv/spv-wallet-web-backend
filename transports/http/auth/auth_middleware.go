@@ -11,6 +11,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var ErrorUnauthorized = errors.New("unauthorized")
+
 // AuthMiddleware middleware that is checking the variables set in session.
 type AuthMiddleware struct {
 	adminBuxClient   users.AdmBuxClient
@@ -57,12 +59,12 @@ func (h *AuthMiddleware) authorizeSession(s sessions.Session) (accessKeyId, acce
 		isNilOrEmpty(accessKey) ||
 		userId == nil ||
 		paymail == nil {
-		return nil, nil, nil, nil, errors.New("unauthorized")
+		return nil, nil, nil, nil, ErrorUnauthorized
 	}
 
 	err = h.checkAccessKey(accessKey.(string), accessKeyId.(string))
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, fmt.Errorf("%w: %w", ErrorUnauthorized, err)
 	}
 
 	return
@@ -77,12 +79,12 @@ func (h *AuthMiddleware) checkAccessKey(accessKey, accessKeyId string) error {
 	// Create bux client with keys from session
 	buxClient, err := h.buxClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
-		return errors.New("unauthorized, error during checking access key in BUX")
+		return err
 	}
 
 	_, err = buxClient.GetAccessKey(accessKeyId)
 	if err != nil {
-		return errors.New("unauthorized, error during checking access key in BUX")
+		return err
 	}
 
 	return nil
