@@ -11,6 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ErrorUnauthorized is thrown if authorization failed.
+var ErrorUnauthorized = errors.New("unauthorized")
+
 // AuthMiddleware middleware that is checking the variables set in session.
 type AuthMiddleware struct {
 	adminBuxClient   users.AdmBuxClient
@@ -35,35 +38,7 @@ func NewAuthMiddleware(s *domain.Services) *AuthMiddleware {
 func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 	session := sessions.Default(c)
 
-	// Try to retrieve session access key id.
-	accessKeyId := session.Get(SessionAccessKeyId)
-	if accessKeyId == nil || accessKeyId == "" {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, errors.New("unauthorized"))
-		return
-	}
-
-	// Try to retrieve session access key.
-	accessKey := session.Get(SessionAccessKey)
-	if accessKey == nil || accessKey == "" {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, errors.New("unauthorized"))
-		return
-	}
-
-	// Try to retrieve session user id.
-	userId := session.Get(SessionUserId)
-	if userId == nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, errors.New("unauthorized"))
-		return
-	}
-
-	// Try to retrieve session user id.
-	paymail := session.Get(SessionUserPaymail)
-	if paymail == nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, errors.New("unauthorized"))
-		return
-	}
-
-	err := h.checkAccessKey(accessKey.(string), accessKeyId.(string))
+	accessKeyId, accessKey, userId, paymail, err := h.authorizeSession(session)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 		return
@@ -75,17 +50,42 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 	c.Set(SessionUserPaymail, paymail)
 }
 
+func (h *AuthMiddleware) authorizeSession(s sessions.Session) (accessKeyId, accessKey, userId, paymail interface{}, err error) {
+	accessKeyId = s.Get(SessionAccessKeyId)
+	accessKey = s.Get(SessionAccessKey)
+	userId = s.Get(SessionUserId)
+	paymail = s.Get(SessionUserPaymail)
+
+	if isNilOrEmpty(accessKeyId) ||
+		isNilOrEmpty(accessKey) ||
+		userId == nil ||
+		paymail == nil {
+		return nil, nil, nil, nil, ErrorUnauthorized
+	}
+
+	err = h.checkAccessKey(accessKey.(string), accessKeyId.(string))
+	if err != nil {
+		return nil, nil, nil, nil, fmt.Errorf("%w: %s", ErrorUnauthorized, err) // we could use this with go 1.20: fmt.Errorf("%w: %w", ErrorUnauthorized, err)
+	}
+
+	return
+}
+
+func isNilOrEmpty(s interface{}) bool {
+	return s == nil || s == ""
+}
+
 // checkAccessKey checks if access key is valid by getting it from BUX.
 func (h *AuthMiddleware) checkAccessKey(accessKey, accessKeyId string) error {
 	// Create bux client with keys from session
 	buxClient, err := h.buxClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
-		return fmt.Errorf("unauthorized, error during checking access key in BUX")
+		return err
 	}
 
 	_, err = buxClient.GetAccessKey(accessKeyId)
 	if err != nil {
-		return fmt.Errorf("unauthorized")
+		return err
 	}
 
 	return nil
