@@ -5,7 +5,7 @@ import (
 	"bux-wallet/logging"
 	"math"
 
-	"github.com/BuxOrg/bux"
+	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/mrz1836/go-datastore"
 )
@@ -42,7 +42,7 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		},
 	}
 
-	metadata := &bux.Metadata{
+	metadata := &buxmodels.Metadata{
 		"receiver": recipient,
 		"sender":   userPaymail,
 	}

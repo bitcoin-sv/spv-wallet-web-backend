@@ -3,7 +3,6 @@ module bux-wallet
 go 1.19
 
 require (
-	github.com/BuxOrg/bux v0.5.4
 	github.com/BuxOrg/go-buxclient v0.3.6
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/libsv/go-bk v0.1.6
@@ -18,6 +17,7 @@ require (
 
 require (
 	github.com/99designs/gqlgen v0.17.34 // indirect
+	github.com/BuxOrg/bux-models v0.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/antonlindstrom/pgstore v0.0.0-20200229204646-b08ebf1105e0 // indirect
 	github.com/bitcoinschema/go-bitcoin/v2 v2.0.4 // indirect
@@ -172,15 +172,6 @@ require (
 
 // Issue with Ask Nancy on related packages
 replace github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.5.0
-
-// Issue with using wrong version of Redigo
-replace github.com/gomodule/redigo => github.com/gomodule/redigo v1.8.9
-
-// Breaking changes - needs a full refactor in WOC and BUX
-replace github.com/centrifugal/centrifuge-go => github.com/centrifugal/centrifuge-go v0.8.3
-
-// Breaking changes - needs a full refactor in WOC and BUX
-replace github.com/centrifugal/protocol => github.com/centrifugal/protocol v0.9.1
 
 // Incompatible version
 replace github.com/bsm/redislock => github.com/bsm/redislock v0.7.2

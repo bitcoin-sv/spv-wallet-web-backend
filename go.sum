@@ -81,6 +81,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/BuxOrg/bux v0.5.4 h1:pvBAySPYlbnni6j/iueHN22VH3qH4BKaFu6YSebtTds=
 github.com/BuxOrg/bux v0.5.4/go.mod h1:HI+eZkF0Yyh74btCXTqWmQXEivlp9bfSMWsU0Etcifc=
+github.com/BuxOrg/bux-models v0.1.0 h1:kxIwuTbg2UHJ+zFBAKOIHr5sc08PDSOYGr3HeuStpxA=
+github.com/BuxOrg/bux-models v0.1.0/go.mod h1:nH3MOdsIPPerBPOiEvwA01yTeArYtBk+PtDo7E+vPCk=
 github.com/BuxOrg/go-buxclient v0.3.6 h1:WfWy9RJePdPKSRus/pc7i2MuDOJIuTCmvBdct3zasUc=
 github.com/BuxOrg/go-buxclient v0.3.6/go.mod h1:cjqoMdN2XqRmGDExWuoeQjDCJweQU5WHYAsos8wUIxw=
 github.com/ClickHouse/clickhouse-go v1.4.3/go.mod h1:EaI/sW7Azgz9UATzd5ZdZHRUhHgv5+JMS9NSr2smCJI=

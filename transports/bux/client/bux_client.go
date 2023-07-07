@@ -8,7 +8,7 @@ import (
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
 
-	"github.com/BuxOrg/bux"
+	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient"
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/mrz1836/go-datastore"
@@ -22,7 +22,7 @@ type BuxClient struct {
 
 // CreateAccessKey creates new access key for user.
 func (c *BuxClient) CreateAccessKey() (users.AccKey, error) {
-	accessKey, err := c.client.CreateAccessKey(context.Background(), &bux.Metadata{})
+	accessKey, err := c.client.CreateAccessKey(context.Background(), &buxmodels.Metadata{})
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (c *BuxClient) GetXPub() (users.PubKey, error) {
 // SendToRecipients sends satoshis to recipients.
 func (c *BuxClient) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
 	// Create matadata with sender and receiver paymails.
-	metadata := &bux.Metadata{
+	metadata := &buxmodels.Metadata{
 		"receiver": recipients[0].To,
 		"sender":   senderPaymail,
 	}
@@ -106,7 +106,7 @@ func (c *BuxClient) SendToRecipients(recipients []*transports.Recipients, sender
 }
 
 // CreateAndFinalizeTransaction creates draft transaction and finalizes it.
-func (c *BuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *bux.Metadata) (users.DraftTransaction, error) {
+func (c *BuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (users.DraftTransaction, error) {
 	// Create draft transaction.
 	draftTx, err := c.client.DraftToRecipients(context.Background(), recipients, metadata)
 	if err != nil {
@@ -128,7 +128,7 @@ func (c *BuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipi
 }
 
 // RecordTransaction records transaction in BUX.
-func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *bux.Metadata) {
+func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) {
 	c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata) // nolint: all // TODO: handle error in correct way.
 }
 
@@ -144,7 +144,7 @@ func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams, userPaymai
 		queryParam.SortDirection = "desc"
 	}
 
-	transactions, err := c.client.GetTransactions(context.Background(), conditions, &bux.Metadata{}, &queryParam)
+	transactions, err := c.client.GetTransactions(context.Background(), conditions, &buxmodels.Metadata{}, &queryParam)
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +203,7 @@ func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.Ful
 func (c *BuxClient) GetTransactionsCount() (int64, error) {
 	conditions := make(map[string]interface{})
 
-	count, err := c.client.GetTransactionsCount(context.Background(), conditions, &bux.Metadata{})
+	count, err := c.client.GetTransactionsCount(context.Background(), conditions, &buxmodels.Metadata{})
 	if err != nil {
 		return 0, err
 	}
@@ -212,23 +212,23 @@ func (c *BuxClient) GetTransactionsCount() (int64, error) {
 
 // getPaymailsFromMetadata returns sender and receiver paymails from metadata.
 // If no paymail was found in metadata, fallback paymail is returned.
-func getPaymailsFromMetadata(transaction *bux.Transaction, fallbackPaymail string) (string, string) {
+func getPaymailsFromMetadata(transaction *buxmodels.Transaction, fallbackPaymail string) (string, string) {
 	senderPaymail := ""
 	receiverPaymail := ""
 
-	if transaction.Metadata != nil {
+	if transaction.Model.Metadata != nil {
 		// Try to get paymails from metadata if the transaction was made in BUX.
-		if transaction.Metadata["sender"] != nil {
-			senderPaymail = transaction.Metadata["sender"].(string)
+		if transaction.Model.Metadata["sender"] != nil {
+			senderPaymail = transaction.Model.Metadata["sender"].(string)
 		}
-		if transaction.Metadata["receiver"] != nil {
-			receiverPaymail = transaction.Metadata["receiver"].(string)
+		if transaction.Model.Metadata["receiver"] != nil {
+			receiverPaymail = transaction.Model.Metadata["receiver"].(string)
 		}
 
 		if senderPaymail == "" {
 			// Try to get paymails from metadata if the transaction was made outside BUX.
-			if transaction.Metadata["p2p_tx_metadata"] != nil {
-				p2pTxMetadata := transaction.Metadata["p2p_tx_metadata"].(map[string]interface{})
+			if transaction.Model.Metadata["p2p_tx_metadata"] != nil {
+				p2pTxMetadata := transaction.Model.Metadata["p2p_tx_metadata"].(map[string]interface{})
 				if p2pTxMetadata["sender"] != nil {
 					senderPaymail = p2pTxMetadata["sender"].(string)
 				}
@@ -236,9 +236,9 @@ func getPaymailsFromMetadata(transaction *bux.Transaction, fallbackPaymail strin
 		}
 	}
 
-	if transaction.Direction == "incoming" && receiverPaymail == "" {
+	if transaction.TransactionDirection == "incoming" && receiverPaymail == "" {
 		receiverPaymail = fallbackPaymail
-	} else if transaction.Direction == "outgoing" && senderPaymail == "" {
+	} else if transaction.TransactionDirection == "outgoing" && senderPaymail == "" {
 		senderPaymail = fallbackPaymail
 	}
 
