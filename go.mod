@@ -3,12 +3,16 @@ module bux-wallet
 go 1.19
 
 require (
+	github.com/BuxOrg/bux-models v0.1.1
 	github.com/BuxOrg/go-buxclient v0.3.6
+	github.com/brianvoe/gofakeit/v6 v6.22.0
 	github.com/gin-contrib/sessions v0.0.5
+	github.com/golang/mock v1.6.0
 	github.com/libsv/go-bk v0.1.6
 	github.com/mrz1836/go-datastore v0.4.4
 	github.com/rs/zerolog v1.29.1
 	github.com/spf13/viper v1.15.0
+	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.1
@@ -17,7 +21,7 @@ require (
 
 require (
 	github.com/99designs/gqlgen v0.17.34 // indirect
-	github.com/BuxOrg/bux-models v0.1.0 // indirect
+	github.com/BuxOrg/bux v0.5.4 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/antonlindstrom/pgstore v0.0.0-20200229204646-b08ebf1105e0 // indirect
 	github.com/bitcoinschema/go-bitcoin/v2 v2.0.4 // indirect
@@ -25,7 +29,6 @@ require (
 	github.com/bitcoinschema/go-map v0.1.0 // indirect
 	github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173 // indirect
 	github.com/bitcoinsv/bsvutil v0.0.0-20181216182056-1d77cf353ea9 // indirect
-	github.com/brianvoe/gofakeit/v6 v6.22.0 // indirect
 	github.com/bsm/redislock v0.9.3 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/capnm/sysinfo v0.0.0-20130621111458-5909a53897f3 // indirect
@@ -55,7 +58,6 @@ require (
 	github.com/gojektech/heimdall/v6 v6.1.0 // indirect
 	github.com/gojektech/valkyrie v0.0.0-20190210220504-8f62c1e7ba45 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
-	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
@@ -114,7 +116,6 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/segmentio/encoding v0.3.6 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
