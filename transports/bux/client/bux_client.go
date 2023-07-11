@@ -73,8 +73,8 @@ func (c *BuxClient) GetXPub() (users.PubKey, error) {
 	}
 
 	xPub := XPub{
-		Id:             xpub.ID,
-		XPub:           xpub.Model.RawXpub(),
+		Id: xpub.ID,
+		// XPub:           xpub.Model.RawXpub(),
 		CurrentBalance: xpub.CurrentBalance,
 	}
 
@@ -97,10 +97,10 @@ func (c *BuxClient) SendToRecipients(recipients []*transports.Recipients, sender
 
 	t := &Transaction{
 		Id:         transaction.ID,
-		Direction:  fmt.Sprint(transaction.Direction),
+		Direction:  fmt.Sprint(transaction.TransactionDirection),
 		TotalValue: transaction.TotalValue,
-		Status:     transaction.Status.String(),
-		CreatedAt:  transaction.CreatedAt,
+		Status:     transaction.Status,
+		CreatedAt:  transaction.Model.CreatedAt,
 	}
 	return t, nil
 }
@@ -158,11 +158,11 @@ func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams, userPaymai
 		}
 		transactionData := Transaction{
 			Id:         transaction.ID,
-			Direction:  fmt.Sprint(transaction.Direction),
+			Direction:  fmt.Sprint(transaction.TransactionDirection),
 			TotalValue: getAbsoluteValue(transaction.OutputValue),
 			Fee:        transaction.Fee,
 			Status:     status,
-			CreatedAt:  transaction.CreatedAt,
+			CreatedAt:  transaction.Model.CreatedAt,
 			Sender:     sender,
 			Receiver:   receiver,
 		}
@@ -186,12 +186,12 @@ func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.Ful
 		BlockHash:       transaction.BlockHash,
 		BlockHeight:     transaction.BlockHeight,
 		TotalValue:      getAbsoluteValue(transaction.OutputValue),
-		Direction:       fmt.Sprint(transaction.Direction),
-		Status:          transaction.Status.String(),
+		Direction:       fmt.Sprint(transaction.TransactionDirection),
+		Status:          transaction.Status,
 		Fee:             transaction.Fee,
 		NumberOfInputs:  transaction.NumberOfInputs,
 		NumberOfOutputs: transaction.NumberOfOutputs,
-		CreatedAt:       transaction.CreatedAt,
+		CreatedAt:       transaction.Model.CreatedAt,
 		Sender:          sender,
 		Receiver:        receiver,
 	}
