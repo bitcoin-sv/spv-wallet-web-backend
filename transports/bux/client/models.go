@@ -11,7 +11,6 @@ type AccessKey struct {
 // XPub is a struct that contains xpub data.
 type XPub struct {
 	Id             string `json:"id"`
-	XPub           string `json:"xpub"`
 	CurrentBalance uint64 `json:"current_balance"`
 }
 
@@ -62,11 +61,6 @@ func (a *AccessKey) GetAccessKeyId() string {
 // GetId returns xpub id.
 func (x *XPub) GetId() string {
 	return x.Id
-}
-
-// GetXPub returns xpub.
-func (x *XPub) GetXPub() string {
-	return x.XPub
 }
 
 // GetCurrentBalance returns current balance.

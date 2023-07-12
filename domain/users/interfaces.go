@@ -18,7 +18,6 @@ type (
 	// PubKey is an interface that defines xpub key data and methods.
 	PubKey interface {
 		GetId() string
-		GetXPub() string
 		GetCurrentBalance() uint64
 	}
 

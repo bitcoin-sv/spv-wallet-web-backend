@@ -73,8 +73,7 @@ func (c *BuxClient) GetXPub() (users.PubKey, error) {
 	}
 
 	xPub := XPub{
-		Id: xpub.ID,
-		// XPub:           xpub.Model.RawXpub(),
+		Id:             xpub.ID,
 		CurrentBalance: xpub.CurrentBalance,
 	}
 
