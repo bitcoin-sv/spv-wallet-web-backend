@@ -5,15 +5,15 @@
 package mock
 
 import (
-        users "bux-wallet/domain/users"
-        reflect "reflect"
-        time "time"
+	users "bux-wallet/domain/users"
+	reflect "reflect"
+	time "time"
 
-        bux "github.com/BuxOrg/bux"
-        transports "github.com/BuxOrg/go-buxclient/transports"
-        gomock "github.com/golang/mock/gomock"
-        bip32 "github.com/libsv/go-bk/bip32"
-        datastore "github.com/mrz1836/go-datastore"
+	buxmodels "github.com/BuxOrg/bux-models"
+	transports "github.com/BuxOrg/go-buxclient/transports"
+	gomock "github.com/golang/mock/gomock"
+	bip32 "github.com/libsv/go-bk/bip32"
+	datastore "github.com/mrz1836/go-datastore"
 )
 
 // MockAccKey is a mock of AccKey interface.
@@ -548,7 +548,7 @@ func (mr *MockUserBuxClientMockRecorder) CreateAccessKey() *gomock.Call {
 }
 
 // CreateAndFinalizeTransaction mocks base method.
-func (m *MockUserBuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *bux.Metadata) (users.DraftTransaction, error) {
+func (m *MockUserBuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (users.DraftTransaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateAndFinalizeTransaction", recipients, metadata)
         ret0, _ := ret[0].(users.DraftTransaction)
@@ -638,7 +638,7 @@ func (mr *MockUserBuxClientMockRecorder) GetXPub() *gomock.Call {
 }
 
 // RecordTransaction mocks base method.
-func (m *MockUserBuxClient) RecordTransaction(hex, draftTxId string, metadata *bux.Metadata) {
+func (m *MockUserBuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) {
         m.ctrl.T.Helper()
         m.ctrl.Call(m, "RecordTransaction", hex, draftTxId, metadata)
 }

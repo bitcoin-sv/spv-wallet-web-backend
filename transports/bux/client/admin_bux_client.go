@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/BuxOrg/bux"
+	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient"
 	"github.com/libsv/go-bk/bip32"
 	"github.com/spf13/viper"
@@ -29,7 +29,7 @@ func (c *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) 
 
 	// Register new xpub in BUX.
 	err = c.client.NewXpub(
-		context.Background(), xpub.String(), &bux.Metadata{},
+		context.Background(), xpub.String(), &buxmodels.Metadata{},
 	)
 
 	if err != nil {
@@ -52,7 +52,7 @@ func (c *AdminBuxClient) RegisterPaymail(alias, xpub string) (string, error) {
 	avatar := viper.GetString(config.EnvBuxPaymailAvatar)
 
 	// Register new xpub in BUX.
-	err := c.client.NewPaymail(context.Background(), xpub, address, avatar, alias, &bux.Metadata{})
+	err := c.client.NewPaymail(context.Background(), xpub, address, avatar, alias, &buxmodels.Metadata{})
 
 	if err != nil {
 		return "", err

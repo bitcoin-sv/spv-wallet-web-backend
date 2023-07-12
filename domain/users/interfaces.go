@@ -3,7 +3,7 @@ package users
 import (
 	"time"
 
-	"github.com/BuxOrg/bux"
+	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/libsv/go-bk/bip32"
 	"github.com/mrz1836/go-datastore"
@@ -18,7 +18,6 @@ type (
 	// PubKey is an interface that defines xpub key data and methods.
 	PubKey interface {
 		GetId() string
-		GetXPub() string
 		GetCurrentBalance() uint64
 	}
 
@@ -69,8 +68,8 @@ type (
 		GetTransactions(queryParam datastore.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
-		CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *bux.Metadata) (DraftTransaction, error)
-		RecordTransaction(hex, draftTxId string, metadata *bux.Metadata)
+		CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (DraftTransaction, error)
+		RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata)
 	}
 
 	// AdmBuxClient defines methods for bux client with admin key.
