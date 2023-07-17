@@ -5,6 +5,7 @@ import (
 	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
+	"github.com/BuxOrg/go-buxclient/transports"
 	"net/http"
 	"strconv"
 
@@ -12,7 +13,6 @@ import (
 	router "bux-wallet/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mrz1836/go-datastore"
 )
 
 type handler struct {
@@ -63,7 +63,7 @@ func (h *handler) getTransactions(c *gin.Context) {
 		pageSizeNumber = 10
 	}
 
-	queryParam := datastore.QueryParams{
+	queryParam := transports.QueryParams{
 		Page:          pageNumber,
 		PageSize:      pageSizeNumber,
 		OrderByField:  orderBy,

@@ -6,14 +6,13 @@ package mock
 
 import (
 	users "bux-wallet/domain/users"
-	reflect "reflect"
+    reflect "reflect"
 	time "time"
 
 	buxmodels "github.com/BuxOrg/bux-models"
 	transports "github.com/BuxOrg/go-buxclient/transports"
 	gomock "github.com/golang/mock/gomock"
 	bip32 "github.com/libsv/go-bk/bip32"
-	datastore "github.com/mrz1836/go-datastore"
 )
 
 // MockAccKey is a mock of AccKey interface.
@@ -593,7 +592,7 @@ func (mr *MockUserBuxClientMockRecorder) GetTransaction(transactionId, userPayma
 }
 
 // GetTransactions mocks base method.
-func (m *MockUserBuxClient) GetTransactions(queryParam datastore.QueryParams, userPaymail string) ([]users.Transaction, error) {
+func (m *MockUserBuxClient) GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]users.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetTransactions", queryParam, userPaymail)
         ret0, _ := ret[0].([]users.Transaction)
