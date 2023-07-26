@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/BuxOrg/bux-models v0.1.1
-	github.com/BuxOrg/go-buxclient v0.3.7
+	github.com/BuxOrg/go-buxclient v0.3.8
 	github.com/brianvoe/gofakeit/v6 v6.22.0
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/golang/mock v1.6.0
