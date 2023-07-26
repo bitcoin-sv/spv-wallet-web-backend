@@ -6,7 +6,6 @@ import (
 	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/libsv/go-bk/bip32"
-	"github.com/mrz1836/go-datastore"
 )
 
 type (
@@ -65,7 +64,7 @@ type (
 		GetXPub() (PubKey, error)
 		// Transaction methods
 		SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (Transaction, error)
-		GetTransactions(queryParam datastore.QueryParams, userPaymail string) ([]Transaction, error)
+		GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
 		CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (DraftTransaction, error)

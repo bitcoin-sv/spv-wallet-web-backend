@@ -7,7 +7,6 @@ import (
 
 	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient/transports"
-	"github.com/mrz1836/go-datastore"
 )
 
 // TransactionService represents service whoch contains methods linked with transactions.
@@ -75,7 +74,7 @@ func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (
 }
 
 // GetTransactions returns transactions by access key.
-func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam datastore.QueryParams) (*PaginatedTransactions, error) {
+func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam transports.QueryParams) (*PaginatedTransactions, error) {
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {

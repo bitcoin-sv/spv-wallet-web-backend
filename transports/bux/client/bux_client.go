@@ -11,7 +11,6 @@ import (
 	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient"
 	"github.com/BuxOrg/go-buxclient/transports"
-	"github.com/mrz1836/go-datastore"
 )
 
 // BuxClient is a wrapper for Bux Client.
@@ -132,7 +131,7 @@ func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels
 }
 
 // GetTransactions returns all transactions.
-func (c *BuxClient) GetTransactions(queryParam datastore.QueryParams, userPaymail string) ([]users.Transaction, error) {
+func (c *BuxClient) GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]users.Transaction, error) {
 	conditions := make(map[string]interface{})
 
 	if queryParam.OrderByField == "" {
