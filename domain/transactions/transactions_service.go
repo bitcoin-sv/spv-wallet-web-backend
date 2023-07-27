@@ -1,9 +1,10 @@
 package transactions
 
 import (
+	"math"
+
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
-	"math"
 
 	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient/transports"
@@ -26,29 +27,38 @@ func NewTransactionService(buxClient users.AdmBuxClient, bf users.BuxClientFacto
 }
 
 // CreateTransaction creates transaction.
-func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, satoshis uint64) error {
+func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, satoshis uint64, data string) error {
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithXpriv(xpriv)
 	if err != nil {
 		return err
 	}
 
-	// Create recipients.
-	var recipients = []*transports.Recipients{
-		{
-			Satoshis: satoshis,
-			To:       recipient,
-		},
-	}
+	var draftTransaction users.DraftTransaction
+	var metadata *buxmodels.Metadata
+	if data != "" {
+		draftTransaction, err = buxClient.DraftWithStringData(data, &buxmodels.Metadata{})
+		if err != nil {
+			return err
+		}
+	} else {
+		// Create recipients.
+		var recipients = []*transports.Recipients{
+			{
+				Satoshis: satoshis,
+				To:       recipient,
+			},
+		}
 
-	metadata := &buxmodels.Metadata{
-		"receiver": recipient,
-		"sender":   userPaymail,
-	}
+		metadata = &buxmodels.Metadata{
+			"receiver": recipient,
+			"sender":   userPaymail,
+		}
 
-	draftTransaction, err := buxClient.CreateAndFinalizeTransaction(recipients, metadata)
-	if err != nil {
-		return err
+		draftTransaction, err = buxClient.CreateAndFinalizeTransaction(recipients, metadata)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Send transaction.

@@ -125,6 +125,36 @@ func (c *BuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipi
 	return &draftTransaction, nil
 }
 
+func (c *BuxClient) DraftWithStringData(data string, metadata *buxmodels.Metadata) (users.DraftTransaction, error) {
+	opr := make([]string, 0)
+	opr = append(opr, data)
+
+	outputs := make([]*buxmodels.TransactionOutput, 0)
+	outputs = append(outputs, &buxmodels.TransactionOutput{OpReturn: &buxmodels.OpReturn{StringParts: opr}})
+	cfg := buxmodels.TransactionConfig{
+		Outputs: outputs,
+		FeeUnit: &buxmodels.FeeUnit{Satoshis: 4, Bytes: 100},
+	}
+
+	draftTx, err := c.client.DraftTransaction(context.Background(), &cfg, metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	// Finalize draft transaction.
+	hex, err := c.client.FinalizeTransaction(draftTx)
+	if err != nil {
+		return nil, err
+	}
+
+	draftTransaction := DraftTransaction{
+		TxDraftId: draftTx.ID,
+		TxHex:     hex,
+	}
+
+	return &draftTransaction, nil
+}
+
 // RecordTransaction records transaction in BUX.
 func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) {
 	c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata) // nolint: all // TODO: handle error in correct way.

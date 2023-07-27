@@ -1,13 +1,14 @@
 package transactions
 
 import (
+	"net/http"
+	"strconv"
+
 	"bux-wallet/domain"
 	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
 	"github.com/BuxOrg/go-buxclient/transports"
-	"net/http"
-	"strconv"
 
 	"bux-wallet/transports/http/auth"
 	router "bux-wallet/transports/http/endpoints/routes"
@@ -129,7 +130,7 @@ func (h *handler) createTransaction(c *gin.Context) {
 	}
 
 	// Create transaction.
-	err = h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, reqTransaction.Satoshis)
+	err = h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, reqTransaction.Satoshis, reqTransaction.Data)
 	if err != nil {
 		h.log.Errorf("An error occurred while creating a transaction: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while creating a transaction.")
