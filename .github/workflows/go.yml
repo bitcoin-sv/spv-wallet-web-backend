@@ -80,7 +80,7 @@ jobs:
       - name: Default Dockerhub repo to on project name
         if: vars.DOCKERHUB_REPO == null
         run: |
-          echo "DOCKERHUB_REPO=${{ github.event.repository.name }}" >> $GITHUB_ENV
+          echo "DOCKERHUB_REPO=$(basename ${GITHUB_REPOSITORY})" >> $GITHUB_ENV
       - name: Setup Dockerhub owner based on var
         if: vars.DOCKERHUB_OWNER != null
         run: |
@@ -134,5 +134,5 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           short-description: ${{ github.event.repository.description }}
-          repository: 4chain/${{ env.DOCKERHUB_REPO }}
+          repository: ${{ env.DOCKERHUB_OWNER }}/${{ env.DOCKERHUB_REPO }}
           readme-filepath: ./release/artifacts/README.DOCKER.md
