@@ -4,6 +4,8 @@ _Go application used as backend side for bsv wallet using BUX_
 
 -------------------------------------------------------------------------
 
+The `bux-wallet-backend` is an HTTP server that serves as the referential backend server for a custodial web wallet for Bitcoin SV (BSV). It integrates and utilizes the `bux-server` component to handle various BSV-related operations, including the creation of transactions and listing incoming and outgoing transactions.
+
 ## How to use it
 
 ### Endpoints documentation
