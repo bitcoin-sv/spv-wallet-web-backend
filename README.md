@@ -74,3 +74,7 @@ If you want to run tests then run
 ```bash
 task test
 ```
+
+## License
+
+[Open BSV License](https://github.com/bitcoin-sv/bitcoin-sv/blob/master/LICENSE).
