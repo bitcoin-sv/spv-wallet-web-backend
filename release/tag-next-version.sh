@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 minorChangesTypes='feat|perf|refactor|revert'
+patchChangesTypes='fix'
 
 function latestVersion() {
     git describe --tags --match 'v*' --abbrev=0
@@ -15,7 +16,7 @@ function minorChangesCount() {
 }
 
 function patchChangesCount() {
-  git --no-pager  log --pretty="format:%s" HEAD..."$1" | grep -cvE "^($minorChangesTypes){1}(\([[:alnum:]._-]+\))?(!)?:.*"
+  git --no-pager  log --pretty="format:%s" HEAD..."$1" | grep -cE "^($patchChangesTypes){1}(\([[:alnum:]._-]+\))?(!)?:.*"
 }
 
 ## ensure we have tags
@@ -45,6 +46,9 @@ elif (($(patchChangesCount "$rawVersion") > 0)); then
   nextVersion="v$major.$minor.$((patch+1))"
 fi
 
-git tag "$nextVersion"
-
-echo "New version $nextVersion tag created"
+if [ "$nextVersion" != "$rawVersion" ]; then
+  git tag "$nextVersion"
+  echo "New version $nextVersion tag created"
+else
+  echo "Changes not affecting a version, creation of tag is skipped."
+fi
