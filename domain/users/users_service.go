@@ -24,6 +24,7 @@ import (
 
 // ErrInvalidCredentials is throwing when invalid credentials were used.
 var ErrInvalidCredentials = errors.New("invalid credentials")
+
 // ErrUserAlreadyExists is throwing when we try to register a user with already used email.
 var ErrUserAlreadyExists = errors.New("user already exists")
 
@@ -291,23 +292,17 @@ func generateXpriv(seed []byte) (*bip32.ExtendedKey, error) {
 
 // encryptXpriv encrypts xpriv with password.
 func encryptXpriv(password, xpriv string) (string, error) {
-	fmt.Println("xpriv", xpriv)
-	fmt.Println("password", password)
 	// Create hash from password
 	hashedPassword, err := encryption.Hash(password)
 	if err != nil {
 		return "", err
 	}
 
-	fmt.Println("hashedPassword", hashedPassword)
-
 	// Encrypt xpriv with hashed password
 	encryptedXpriv, err := encryption.Encrypt(hashedPassword, xpriv)
 	if err != nil {
 		return "", err
 	}
-
-	fmt.Println("encryptedXpriv", encryptedXpriv)
 
 	return encryptedXpriv, nil
 }
