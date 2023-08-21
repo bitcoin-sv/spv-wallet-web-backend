@@ -126,8 +126,16 @@ func (c *BuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipi
 }
 
 // RecordTransaction records transaction in BUX.
-func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) {
-	c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata) // nolint: all // TODO: handle error in correct way.
+func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) error {
+	_, err := c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata)
+
+	return err
+}
+
+// UnreserveUtxos removes utxos from draft transaction in BUX.
+func (c *BuxClient) UnreserveUtxos(draftTxId string) error {
+	err := c.client.UnreserveUtxos(context.Background(), draftTxId)
+	return err
 }
 
 // GetTransactions returns all transactions.

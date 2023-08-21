@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/BuxOrg/bux-models v0.1.1
 	github.com/BuxOrg/go-buxclient v0.3.8
+	github.com/avast/retry-go/v4 v4.5.0
 	github.com/brianvoe/gofakeit/v6 v6.22.0
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/golang/mock v1.6.0
@@ -21,7 +22,7 @@ require (
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/antonlindstrom/pgstore v0.0.0-20200229204646-b08ebf1105e0 // indirect
-	github.com/bitcoinschema/go-bitcoin/v2 v2.0.4 // indirect
+	github.com/bitcoinschema/go-bitcoin/v2 v2.0.5 // indirect
 	github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
@@ -45,7 +46,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
-	github.com/libsv/go-bt/v2 v2.2.1 // indirect
+	github.com/libsv/go-bt/v2 v2.2.3 // indirect
 	github.com/machinebox/graphql v0.2.2 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -59,7 +60,7 @@ require (
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/crypto v0.11.0 // indirect
+	golang.org/x/crypto v0.12.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/tools v0.10.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230711160842-782d3b101e98 // indirect
@@ -82,8 +83,8 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
-	golang.org/x/sys v0.10.0 // indirect
-	golang.org/x/text v0.11.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

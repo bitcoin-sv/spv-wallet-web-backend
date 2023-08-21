@@ -637,15 +637,31 @@ func (mr *MockUserBuxClientMockRecorder) GetXPub() *gomock.Call {
 }
 
 // RecordTransaction mocks base method.
-func (m *MockUserBuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) {
+func (m *MockUserBuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) error {
         m.ctrl.T.Helper()
-        m.ctrl.Call(m, "RecordTransaction", hex, draftTxId, metadata)
+        ret:= m.ctrl.Call(m, "RecordTransaction", hex, draftTxId, metadata)
+        ret0, _ := ret[0].(error)
+        return ret0
 }
 
 // RecordTransaction indicates an expected call of RecordTransaction.
 func (mr *MockUserBuxClientMockRecorder) RecordTransaction(hex, draftTxId, metadata interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
         return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecordTransaction", reflect.TypeOf((*MockUserBuxClient)(nil).RecordTransaction), hex, draftTxId, metadata)
+}
+
+// UnreserveUtxos mocks base method.
+func (m *MockUserBuxClient) UnreserveUtxos(draftTxId string) error {
+        m.ctrl.T.Helper()
+        ret:=   m.ctrl.Call(m, "UnreserveUtxos", draftTxId)
+        ret0, _ := ret[0].(error)
+        return ret0
+}
+
+// UnreserveUtxos indicates an expected call of UnreserveUtxos.
+func (mr *MockUserBuxClientMockRecorder) UnreserveUtxos(draftTxId interface{}) *gomock.Call {
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnreserveUtxos", reflect.TypeOf((*MockUserBuxClient)(nil).UnreserveUtxos), draftTxId)
 }
 
 // RevokeAccessKey mocks base method.
