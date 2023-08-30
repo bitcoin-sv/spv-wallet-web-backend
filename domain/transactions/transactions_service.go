@@ -4,9 +4,11 @@ import (
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
 	"math"
+	"time"
 
 	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient/transports"
+	"github.com/avast/retry-go/v4"
 )
 
 // TransactionService represents service whoch contains methods linked with transactions.
@@ -51,9 +53,7 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		return err
 	}
 
-	// Send transaction.
-	go buxClient.RecordTransaction(draftTransaction.GetDraftTransactionHex(), draftTransaction.GetDraftTransactionId(), metadata)
-
+	go tryRecordTransaction(buxClient, draftTransaction, metadata, s.log)
 	return nil
 }
 
@@ -101,4 +101,52 @@ func (s *TransactionService) GetTransactions(accessKey, userPaymail string, quer
 	}
 
 	return pTransactions, nil
+}
+
+func tryRecordTransaction(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log logging.Logger) {
+	retries := uint(3)
+	recordErr := tryRecord(buxClient, draftTx, metadata, log, retries)
+
+	// unreserve utxos if failed
+	if recordErr != nil {
+		log.Errorf("record transaction failed: %s", recordErr.Error())
+
+		unreserveErr := tryUnreserve(buxClient, draftTx, log, retries)
+		if unreserveErr != nil {
+			log.Errorf("unreserve transaction failed: %s", unreserveErr.Error())
+		}
+
+	} else {
+		log.Debugf("transaction %s successfully recorded", draftTx.GetDraftTransactionId())
+	}
+}
+
+func tryRecord(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log logging.Logger, retries uint) error {
+	log.Debugf("recording transaction %s", draftTx.GetDraftTransactionId())
+
+	return retry.Do(
+		func() error {
+			return buxClient.RecordTransaction(draftTx.GetDraftTransactionHex(), draftTx.GetDraftTransactionId(), metadata)
+		},
+		retry.Attempts(retries),
+		retry.Delay(1*time.Second),
+		retry.OnRetry(func(n uint, err error) {
+			log.Warnf("%d retry RecordTransaction after error: %s", n, err.Error())
+		}),
+	)
+}
+
+func tryUnreserve(buxClient users.UserBuxClient, draftTx users.DraftTransaction, log logging.Logger, retries uint) error {
+	log.Debugf("unreserve UTXOs from draft %s", draftTx.GetDraftTransactionId())
+
+	return retry.Do(
+		func() error {
+			return buxClient.UnreserveUtxos(draftTx.GetDraftTransactionId())
+		},
+		retry.Attempts(retries),
+		retry.Delay(1*time.Second),
+		retry.OnRetry(func(n uint, err error) {
+			log.Warnf("%d retry UnreserveUtxos after error: %s", n, err.Error())
+		}),
+	)
 }
