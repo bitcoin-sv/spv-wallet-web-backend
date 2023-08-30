@@ -134,8 +134,7 @@ func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels
 
 // UnreserveUtxos removes utxos from draft transaction in BUX.
 func (c *BuxClient) UnreserveUtxos(draftTxId string) error {
-	err := c.client.UnreserveUtxos(context.Background(), draftTxId)
-	return err
+	return c.client.UnreserveUtxos(context.Background(), draftTxId)
 }
 
 // GetTransactions returns all transactions.

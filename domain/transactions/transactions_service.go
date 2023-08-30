@@ -111,8 +111,7 @@ func tryRecordTransaction(buxClient users.UserBuxClient, draftTx users.DraftTran
 	if recordErr != nil {
 		log.Errorf("record transaction failed: %s", recordErr.Error())
 
-		unreserveErr := tryUnreserve(buxClient, draftTx, metadata, log, retries)
-
+		unreserveErr := tryUnreserve(buxClient, draftTx, log, retries)
 		if unreserveErr != nil {
 			log.Errorf("unreserve transaction failed: %s", unreserveErr.Error())
 		}
@@ -137,7 +136,7 @@ func tryRecord(buxClient users.UserBuxClient, draftTx users.DraftTransaction, me
 	)
 }
 
-func tryUnreserve(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log logging.Logger, retries uint) error {
+func tryUnreserve(buxClient users.UserBuxClient, draftTx users.DraftTransaction, log logging.Logger, retries uint) error {
 	log.Debugf("unreserve UTXOs from draft %s", draftTx.GetDraftTransactionId())
 
 	return retry.Do(
