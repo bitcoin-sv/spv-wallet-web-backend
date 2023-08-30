@@ -3,8 +3,8 @@ module bux-wallet
 go 1.19
 
 require (
-	github.com/BuxOrg/bux-models v0.1.1
-	github.com/BuxOrg/go-buxclient v0.3.8
+	github.com/BuxOrg/bux-models v0.1.2
+	github.com/BuxOrg/go-buxclient v0.3.9
 	github.com/avast/retry-go/v4 v4.5.0
 	github.com/brianvoe/gofakeit/v6 v6.22.0
 	github.com/gin-contrib/sessions v0.0.5
@@ -46,7 +46,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
-	github.com/libsv/go-bt/v2 v2.2.3 // indirect
+	github.com/libsv/go-bt/v2 v2.2.4 // indirect
 	github.com/machinebox/graphql v0.2.2 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

@@ -104,8 +104,6 @@ func (s *TransactionService) GetTransactions(accessKey, userPaymail string, quer
 }
 
 func tryRecordTransaction(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log logging.Logger) {
-	log.Debugf("recording transaction %s", draftTx.GetDraftTransactionId())
-
 	retries := uint(3)
 	recordErr := tryRecord(buxClient, draftTx, metadata, log, retries)
 
@@ -125,6 +123,8 @@ func tryRecordTransaction(buxClient users.UserBuxClient, draftTx users.DraftTran
 }
 
 func tryRecord(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log logging.Logger, retries uint) error {
+	log.Debugf("recording transaction %s", draftTx.GetDraftTransactionId())
+
 	return retry.Do(
 		func() error {
 			return buxClient.RecordTransaction(draftTx.GetDraftTransactionHex(), draftTx.GetDraftTransactionId(), metadata)
@@ -138,6 +138,8 @@ func tryRecord(buxClient users.UserBuxClient, draftTx users.DraftTransaction, me
 }
 
 func tryUnreserve(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log logging.Logger, retries uint) error {
+	log.Debugf("unreserve UTXOs from draft %s", draftTx.GetDraftTransactionId())
+
 	return retry.Do(
 		func() error {
 			return buxClient.UnreserveUtxos(draftTx.GetDraftTransactionId())
