@@ -48,7 +48,7 @@ func TestCreateTransaction(t *testing.T) {
 		sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.DefaultLoggerFactory())
 
 		// Act
-		err := sut.CreateTransaction(paymail, xpriv, recipient, txValueInSatoshis)
+		err := sut.CreateTransaction(paymail, xpriv, recipient, 1, txValueInSatoshis)
 		if err != nil {
 			t.Fatal(err)
 		}
