@@ -68,7 +68,7 @@ type (
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
 		CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (DraftTransaction, error)
-		RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) error
+		RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) (*buxmodels.Transaction, error)
 		UnreserveUtxos(draftTxId string) error
 	}
 
