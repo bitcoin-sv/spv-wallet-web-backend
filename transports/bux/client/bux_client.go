@@ -126,10 +126,12 @@ func (c *BuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipi
 }
 
 // RecordTransaction records transaction in BUX.
-func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) error {
-	_, err := c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata)
-
-	return err
+func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) (*buxmodels.Transaction, error) {
+	tx, err := c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata)
+	if err != nil {
+		return nil, err
+	}
+	return tx, nil
 }
 
 // UnreserveUtxos removes utxos from draft transaction in BUX.
@@ -156,7 +158,7 @@ func (c *BuxClient) GetTransactions(queryParam transports.QueryParams, userPayma
 
 	var transactionsData = make([]users.Transaction, 0)
 	for _, transaction := range transactions {
-		sender, receiver := getPaymailsFromMetadata(transaction, userPaymail)
+		sender, receiver := GetPaymailsFromMetadata(transaction, userPaymail)
 		status := "unconfirmed"
 		if transaction.BlockHeight > 0 {
 			status = "confirmed"
@@ -184,7 +186,7 @@ func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.Ful
 		return nil, err
 	}
 
-	sender, receiver := getPaymailsFromMetadata(transaction, userPaymail)
+	sender, receiver := GetPaymailsFromMetadata(transaction, userPaymail)
 
 	transactionData := FullTransaction{
 		Id:              transaction.ID,
@@ -215,9 +217,9 @@ func (c *BuxClient) GetTransactionsCount() (int64, error) {
 	return count, nil
 }
 
-// getPaymailsFromMetadata returns sender and receiver paymails from metadata.
+// GetPaymailsFromMetadata returns sender and receiver paymails from metadata.
 // If no paymail was found in metadata, fallback paymail is returned.
-func getPaymailsFromMetadata(transaction *buxmodels.Transaction, fallbackPaymail string) (string, string) {
+func GetPaymailsFromMetadata(transaction *buxmodels.Transaction, fallbackPaymail string) (string, string) {
 	senderPaymail := ""
 	receiverPaymail := ""
 

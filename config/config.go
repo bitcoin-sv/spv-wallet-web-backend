@@ -50,6 +50,15 @@ const (
 	EnvBuxPaymailAvatar = "bux.paymail.avatar"
 )
 
+const (
+	// EnvWebsocketHistoryMax max number of published events that should be hold
+	// and send to client in case of restored lost connection.
+	EnvWebsocketHistoryMax = "websocket.history.max"
+	// EnvWebsocketHistoryTtl max minutes for which published events should be hold
+	// and send to client in case of restored lost connection.
+	EnvWebsocketHistoryTtl = "websocket.history.ttl"
+)
+
 // EnvHashSalt define the hash salt.
 const EnvHashSalt = "hash.salt"
 

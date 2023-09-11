@@ -15,6 +15,7 @@ func NewViperConfig(appname string) *Config {
 	setHashDefaults()
 	setLoggingDefaults()
 	setEndpointsDefaults()
+	setWebsocketDefaults()
 	return &Config{}
 }
 
@@ -56,7 +57,7 @@ func setBuxDefaults() {
 	viper.SetDefault(EnvBuxServerUrl, "http://localhost:3003/v1")
 	viper.SetDefault(EnvBuxWithDebug, true)
 	viper.SetDefault(EnvBuxSignRequest, true)
-	viper.SetDefault(EnvBuxPaymailDomain, "bux.com")
+	viper.SetDefault(EnvBuxPaymailDomain, "pawel.4chain.space")
 	viper.SetDefault(EnvBuxPaymailAvatar, "http://localhost:3003/static/paymail/avatar.jpg")
 }
 
@@ -72,4 +73,10 @@ func setLoggingDefaults() {
 // setEndpointsDefaults sets default values for endpoints used in app.
 func setEndpointsDefaults() {
 	viper.SetDefault(EnvEndpointsExchangeRate, "https://api.whatsonchain.com/v1/bsv/main/exchangerate")
+}
+
+// setWebhookDefaults sets default values for websocket.
+func setWebsocketDefaults() {
+	viper.SetDefault(EnvWebsocketHistoryMax, 300)
+	viper.SetDefault(EnvWebsocketHistoryTtl, 10)
 }

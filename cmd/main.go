@@ -6,15 +6,14 @@ import (
 	db_users "bux-wallet/data/users"
 	"bux-wallet/domain"
 	"bux-wallet/logging"
-
+	"bux-wallet/transports/http/endpoints"
+	httpserver "bux-wallet/transports/http/server"
+	"bux-wallet/transports/websocket"
 	"errors"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"bux-wallet/transports/http/endpoints"
-	httpserver "bux-wallet/transports/http/server"
 
 	"github.com/spf13/viper"
 )
@@ -44,8 +43,19 @@ func main() {
 		os.Exit(1)
 	}
 
+	ws, err := websocket.NewServer(lf, s)
+	if err != nil {
+		log.Errorf("failed to init a new websocket server: %v\n", err)
+		os.Exit(1)
+	}
+	err = ws.Start()
+	if err != nil {
+		log.Errorf("failed to start websocket server: %v\n", err)
+		os.Exit(1)
+	}
+
 	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort), lf)
-	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db, lf))
+	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db, lf, ws))
 
 	go func() {
 		if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
