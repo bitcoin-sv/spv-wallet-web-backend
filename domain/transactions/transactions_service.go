@@ -59,7 +59,7 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		tx, err := tryRecordTransaction(buxClient, draftTransaction, metadata, s.log)
 		if err != nil {
 			s.Websockets[strconv.Itoa(userId)].SendError(err)
-		} else {
+		} else if tx != nil {
 			s.Websockets[strconv.Itoa(userId)].NotifyAboutTransaction(tx)
 		}
 	}()
@@ -126,9 +126,9 @@ func tryRecordTransaction(buxClient users.UserBuxClient, draftTx users.DraftTran
 			log.Errorf("unreserve transaction failed: %s", unreserveErr.Error())
 		}
 		return nil, recordErr
-	} else {
-		log.Debugf("transaction %s successfully recorded", draftTx.GetDraftTransactionId())
 	}
+
+	log.Debugf("transaction %s successfully recorded", draftTx.GetDraftTransactionId())
 	return tx, nil
 }
 

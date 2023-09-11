@@ -14,7 +14,7 @@ type contextKey int
 
 var ginContextKey contextKey
 
-// GinContextToContextMiddleware add gin context to context for centrifuge
+// GinContextToContextMiddleware add gin context to context for centrifuge.
 func GinContextToContextMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := context.WithValue(c.Request.Context(), ginContextKey, c)
@@ -23,7 +23,7 @@ func GinContextToContextMiddleware() gin.HandlerFunc {
 	}
 }
 
-// GinContextFromContext recover the gin context from the context.Context
+// GinContextFromContext recover the gin context from the context.Context.
 func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
 	ginContext := ctx.Value(ginContextKey)
 	if ginContext == nil {
@@ -38,7 +38,7 @@ func GinContextFromContext(ctx context.Context) (*gin.Context, error) {
 	return gc, nil
 }
 
-// WsAuthMiddleware is used to authenticate websocket connections
+// WsAuthMiddleware is used to authenticate websocket connections.
 func WsAuthMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
