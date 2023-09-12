@@ -136,8 +136,7 @@ func tryRecord(buxClient users.UserBuxClient, draftTx users.DraftTransaction, me
 	log.Debugf("recording transaction %s", draftTx.GetDraftTransactionId())
 
 	tx := &buxmodels.Transaction{}
-
-	return tx, retry.Do(
+	err := retry.Do(
 		func() error {
 			var err error
 			tx, err = buxClient.RecordTransaction(draftTx.GetDraftTransactionHex(), draftTx.GetDraftTransactionId(), metadata)
@@ -149,6 +148,7 @@ func tryRecord(buxClient users.UserBuxClient, draftTx users.DraftTransaction, me
 			log.Warnf("%d retry RecordTransaction after error: %s", n, err.Error())
 		}),
 	)
+	return tx, err
 }
 
 func tryUnreserve(buxClient users.UserBuxClient, draftTx users.DraftTransaction, log logging.Logger, retries uint) error {

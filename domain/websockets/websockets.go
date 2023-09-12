@@ -16,16 +16,16 @@ type Socket struct {
 	Log    logging.Logger
 }
 
-// NotificationBase represents base of notification.
-type NotificationBase struct {
-	Status string  `json:"status"`
-	Error  *string `json:"error"`
-	Event  string  `json:"event"`
+// BaseEvent represents base of notification.
+type BaseEvent struct {
+	Status    string  `json:"status"`
+	Error     *string `json:"error"`
+	EventType string  `json:"eventType"`
 }
 
-// NewTransactionNotification represents notification about new transaction.
-type NewTransactionNotification struct {
-	NotificationBase
+// NewTransactionEvent represents notification about new transaction.
+type NewTransactionEvent struct {
+	BaseEvent
 	Transaction transaction `json:"transaction"`
 }
 
@@ -72,17 +72,17 @@ func (s *Socket) SendError(error error) {
 	s.Log.Infof("Event %v sent to websocket", error.Error())
 }
 
-func prepareNewTransactionEvent(tx *buxmodels.Transaction) NewTransactionNotification {
+func prepareNewTransactionEvent(tx *buxmodels.Transaction) NewTransactionEvent {
 	sender, receiver := buxclient.GetPaymailsFromMetadata(tx, "unknown")
 	status := "unconfirmed"
 	if tx.BlockHeight > 0 {
 		status = "confirmed"
 	}
-	return NewTransactionNotification{
-		NotificationBase: NotificationBase{
-			Status: "success",
-			Error:  nil,
-			Event:  "create_transaction",
+	return NewTransactionEvent{
+		BaseEvent: BaseEvent{
+			Status:    "success",
+			Error:     nil,
+			EventType: "create_transaction",
 		},
 		Transaction: transaction{
 			Id:         tx.ID,

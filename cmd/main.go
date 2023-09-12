@@ -69,7 +69,10 @@ func main() {
 
 	<-quit
 
-	if err := server.Shutdown(); err != nil {
+	if err = server.Shutdown(); err != nil {
 		log.Errorf("failed to stop http server: ", err)
+	}
+	if err = ws.Shutdown(); err != nil {
+		log.Errorf("failed to stop websocket server: ", err)
 	}
 }

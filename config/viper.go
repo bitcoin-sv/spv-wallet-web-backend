@@ -57,7 +57,7 @@ func setBuxDefaults() {
 	viper.SetDefault(EnvBuxServerUrl, "http://localhost:3003/v1")
 	viper.SetDefault(EnvBuxWithDebug, true)
 	viper.SetDefault(EnvBuxSignRequest, true)
-	viper.SetDefault(EnvBuxPaymailDomain, "pawel.4chain.space")
+	viper.SetDefault(EnvBuxPaymailDomain, "bux.com")
 	viper.SetDefault(EnvBuxPaymailAvatar, "http://localhost:3003/static/paymail/avatar.jpg")
 }
 
