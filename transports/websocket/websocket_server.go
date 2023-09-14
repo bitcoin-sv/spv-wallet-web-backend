@@ -4,7 +4,10 @@ import (
 	"bux-wallet/domain"
 	"bux-wallet/domain/websockets"
 	"bux-wallet/logging"
+	"bux-wallet/transports/http/auth"
+	"bux-wallet/transports/http/endpoints"
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -23,21 +26,25 @@ type Server interface {
 }
 
 type server struct {
-	node    *centrifuge.Node
-	log     logging.Logger
-	sockets map[string]*websockets.Socket
+	node     *centrifuge.Node
+	log      logging.Logger
+	sockets  map[string]*websockets.Socket
+	services *domain.Services
+	db       *sql.DB
 }
 
 // NewServer creates new websocket server.
-func NewServer(lf logging.LoggerFactory, services *domain.Services) (Server, error) {
+func NewServer(lf logging.LoggerFactory, services *domain.Services, db *sql.DB) (Server, error) {
 	node, err := newNode(lf)
 	if err != nil {
 		return nil, err
 	}
 	s := &server{
-		node:    node,
-		log:     lf.NewLogger("Websocket"),
-		sockets: services.TransactionsService.Websockets,
+		node:     node,
+		log:      lf.NewLogger("Websocket"),
+		sockets:  services.TransactionsService.Websockets,
+		services: services,
+		db:       db,
 	}
 	return s, nil
 }
@@ -67,10 +74,19 @@ func (s *server) ShutdownWithContext(ctx context.Context) error {
 
 // SetupEntrypoint setup gin to init websocket connection.
 func (s *server) SetupEntrypoint(engine *gin.Engine) {
+	apiMiddlewares := endpoints.ToHandlers(
+		auth.NewSessionMiddleware(s.db, engine),
+		auth.NewAuthMiddleware(s.services),
+	)
+
+	router := engine.Group("", apiMiddlewares...)
+
 	config := centrifuge.WebsocketConfig{
 		CheckOrigin: func(r *http.Request) bool { return true },
 	}
-	engine.GET("/connection/websocket", gin.WrapH(centrifuge.NewWebsocketHandler(s.node, config)))
+
+	router.Use(auth.GinContextToContextMiddleware())
+	router.GET("/connection/websocket", gin.WrapH(auth.WsAuthMiddleware(centrifuge.NewWebsocketHandler(s.GetNode(), config))))
 }
 
 func newNode(lf logging.LoggerFactory) (*centrifuge.Node, error) {

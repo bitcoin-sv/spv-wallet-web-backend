@@ -43,7 +43,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	ws, err := websocket.NewServer(lf, s)
+	ws, err := websocket.NewServer(lf, s, db)
 	if err != nil {
 		log.Errorf("failed to init a new websocket server: %v\n", err)
 		os.Exit(1)
@@ -55,7 +55,8 @@ func main() {
 	}
 
 	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort), lf)
-	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db, lf, ws))
+	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db, lf))
+	server.ApplyConfiguration(ws.SetupEntrypoint)
 
 	go func() {
 		if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {

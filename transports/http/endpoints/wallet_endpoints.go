@@ -3,10 +3,8 @@ package endpoints
 import (
 	"bux-wallet/domain"
 	"bux-wallet/logging"
-	"bux-wallet/transports/http/endpoints/api/websocket"
 	"bux-wallet/transports/http/endpoints/status"
 	"bux-wallet/transports/http/endpoints/swagger"
-	ws "bux-wallet/transports/websocket"
 	"database/sql"
 	"errors"
 
@@ -23,10 +21,9 @@ import (
 // SetupWalletRoutes main point where we're registering endpoints registrars (handlers that will register endpoints in gin engine)
 //
 //	and middlewares. It's returning function that can be used to setup engine of httpserver.HttpServer
-func SetupWalletRoutes(s *domain.Services, db *sql.DB, lf logging.LoggerFactory, wServer ws.Server) httpserver.GinEngineOpt {
+func SetupWalletRoutes(s *domain.Services, db *sql.DB, lf logging.LoggerFactory) httpserver.GinEngineOpt {
 	accessRootEndpoints, accessApiEndpoints := access.NewHandler(s, lf)
 	usersRootEndpoints, usersApiEndpoints := users.NewHandler(s, lf)
-	wsApiEndpoints := websocket.NewHandler(wServer)
 
 	routes := []interface{}{
 		swagger.NewHandler(),
@@ -36,11 +33,10 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB, lf logging.LoggerFactory,
 		accessRootEndpoints,
 		accessApiEndpoints,
 		transactions.NewHandler(s, lf),
-		wsApiEndpoints,
 	}
 
 	return func(engine *gin.Engine) {
-		apiMiddlewares := toHandlers(
+		apiMiddlewares := ToHandlers(
 			auth.NewSessionMiddleware(db, engine),
 			auth.NewAuthMiddleware(s),
 		)
@@ -60,7 +56,8 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB, lf logging.LoggerFactory,
 	}
 }
 
-func toHandlers(middlewares ...router.ApiMiddleware) []gin.HandlerFunc {
+// ToHandlers converts middlewares to gin.HandlerFunc.
+func ToHandlers(middlewares ...router.ApiMiddleware) []gin.HandlerFunc {
 	result := make([]gin.HandlerFunc, 0)
 	for _, m := range middlewares {
 		result = append(result, m.ApplyToApi)
