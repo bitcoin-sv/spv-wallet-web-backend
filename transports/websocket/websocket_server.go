@@ -79,14 +79,14 @@ func (s *server) SetupEntrypoint(engine *gin.Engine) {
 		auth.NewAuthMiddleware(s.services),
 	)
 
-	router := engine.Group("", apiMiddlewares...)
+	router := engine.Group("/connection/websocket", apiMiddlewares...)
 
 	config := centrifuge.WebsocketConfig{
 		CheckOrigin: func(r *http.Request) bool { return true },
 	}
 
 	router.Use(auth.GinContextToContextMiddleware())
-	router.GET("/connection/websocket", gin.WrapH(auth.WsAuthMiddleware(centrifuge.NewWebsocketHandler(s.GetNode(), config))))
+	router.GET("", gin.WrapH(auth.WsAuthMiddleware(centrifuge.NewWebsocketHandler(s.GetNode(), config))))
 }
 
 func newNode(lf logging.LoggerFactory) (*centrifuge.Node, error) {
