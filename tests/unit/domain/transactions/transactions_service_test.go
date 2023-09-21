@@ -1,6 +1,7 @@
 package transactions_test
 
 import (
+	"bux-wallet/notification"
 	"errors"
 	"testing"
 
@@ -48,7 +49,8 @@ func TestCreateTransaction(t *testing.T) {
 		sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.DefaultLoggerFactory())
 
 		// Act
-		err := sut.CreateTransaction(paymail, xpriv, recipient, txValueInSatoshis)
+		txs := make(chan notification.TransactionEvent, 1)
+		err := sut.CreateTransaction(paymail, xpriv, recipient, txValueInSatoshis, txs)
 		if err != nil {
 			t.Fatal(err)
 		}

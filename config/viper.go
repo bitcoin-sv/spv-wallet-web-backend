@@ -15,6 +15,7 @@ func NewViperConfig(appname string) *Config {
 	setHashDefaults()
 	setLoggingDefaults()
 	setEndpointsDefaults()
+	setWebsocketDefaults()
 	return &Config{}
 }
 
@@ -72,4 +73,10 @@ func setLoggingDefaults() {
 // setEndpointsDefaults sets default values for endpoints used in app.
 func setEndpointsDefaults() {
 	viper.SetDefault(EnvEndpointsExchangeRate, "https://api.whatsonchain.com/v1/bsv/main/exchangerate")
+}
+
+// setWebhookDefaults sets default values for websocket.
+func setWebsocketDefaults() {
+	viper.SetDefault(EnvWebsocketHistoryMax, 300)
+	viper.SetDefault(EnvWebsocketHistoryTtl, 10)
 }

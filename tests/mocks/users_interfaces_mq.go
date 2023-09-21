@@ -6,7 +6,7 @@ package mock
 
 import (
 	users "bux-wallet/domain/users"
-    reflect "reflect"
+        reflect "reflect"
 	time "time"
 
 	buxmodels "github.com/BuxOrg/bux-models"
@@ -637,11 +637,11 @@ func (mr *MockUserBuxClientMockRecorder) GetXPub() *gomock.Call {
 }
 
 // RecordTransaction mocks base method.
-func (m *MockUserBuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) error {
+func (m *MockUserBuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) (*buxmodels.Transaction, error) {
         m.ctrl.T.Helper()
         ret:= m.ctrl.Call(m, "RecordTransaction", hex, draftTxId, metadata)
-        ret0, _ := ret[0].(error)
-        return ret0
+        ret1, _ := ret[1].(error)
+        return nil, ret1
 }
 
 // RecordTransaction indicates an expected call of RecordTransaction.

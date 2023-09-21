@@ -3,6 +3,7 @@ package transactions
 import (
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
+	"bux-wallet/notification"
 	"math"
 	"time"
 
@@ -28,14 +29,12 @@ func NewTransactionService(buxClient users.AdmBuxClient, bf users.BuxClientFacto
 }
 
 // CreateTransaction creates transaction.
-func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, satoshis uint64) error {
-	// Try to generate BUX client with decrypted xpriv.
+func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, satoshis uint64, events chan notification.TransactionEvent) error {
 	buxClient, err := s.buxClientFactory.CreateWithXpriv(xpriv)
 	if err != nil {
 		return err
 	}
 
-	// Create recipients.
 	var recipients = []*transports.Recipients{
 		{
 			Satoshis: satoshis,
@@ -53,7 +52,15 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		return err
 	}
 
-	go tryRecordTransaction(buxClient, draftTransaction, metadata, s.log)
+	go func() {
+		tx, err := tryRecordTransaction(buxClient, draftTransaction, metadata, s.log)
+		if err != nil {
+			events <- notification.PrepareTransactionErrorEvent(err)
+		} else if tx != nil {
+			events <- notification.PrepareTransactionEvent(tx)
+		}
+	}()
+
 	return nil
 }
 
@@ -103,9 +110,9 @@ func (s *TransactionService) GetTransactions(accessKey, userPaymail string, quer
 	return pTransactions, nil
 }
 
-func tryRecordTransaction(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log logging.Logger) {
+func tryRecordTransaction(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log logging.Logger) (*buxmodels.Transaction, error) {
 	retries := uint(3)
-	recordErr := tryRecord(buxClient, draftTx, metadata, log, retries)
+	tx, recordErr := tryRecord(buxClient, draftTx, metadata, log, retries)
 
 	// unreserve utxos if failed
 	if recordErr != nil {
@@ -115,18 +122,22 @@ func tryRecordTransaction(buxClient users.UserBuxClient, draftTx users.DraftTran
 		if unreserveErr != nil {
 			log.Errorf("unreserve transaction failed: %s", unreserveErr.Error())
 		}
-
-	} else {
-		log.Debugf("transaction %s successfully recorded", draftTx.GetDraftTransactionId())
+		return nil, recordErr
 	}
+
+	log.Debugf("transaction %s successfully recorded", draftTx.GetDraftTransactionId())
+	return tx, nil
 }
 
-func tryRecord(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log logging.Logger, retries uint) error {
+func tryRecord(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log logging.Logger, retries uint) (*buxmodels.Transaction, error) {
 	log.Debugf("recording transaction %s", draftTx.GetDraftTransactionId())
 
-	return retry.Do(
+	tx := &buxmodels.Transaction{}
+	err := retry.Do(
 		func() error {
-			return buxClient.RecordTransaction(draftTx.GetDraftTransactionHex(), draftTx.GetDraftTransactionId(), metadata)
+			var err error
+			tx, err = buxClient.RecordTransaction(draftTx.GetDraftTransactionHex(), draftTx.GetDraftTransactionId(), metadata)
+			return err
 		},
 		retry.Attempts(retries),
 		retry.Delay(1*time.Second),
@@ -134,6 +145,7 @@ func tryRecord(buxClient users.UserBuxClient, draftTx users.DraftTransaction, me
 			log.Warnf("%d retry RecordTransaction after error: %s", n, err.Error())
 		}),
 	)
+	return tx, err
 }
 
 func tryUnreserve(buxClient users.UserBuxClient, draftTx users.DraftTransaction, log logging.Logger, retries uint) error {
