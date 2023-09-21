@@ -29,7 +29,7 @@ func NewTransactionService(buxClient users.AdmBuxClient, bf users.BuxClientFacto
 }
 
 // CreateTransaction creates transaction.
-func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, satoshis uint64, txs chan notification.NewTransactionEvent) error {
+func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, satoshis uint64, events chan notification.TransactionEvent) error {
 	buxClient, err := s.buxClientFactory.CreateWithXpriv(xpriv)
 	if err != nil {
 		return err
@@ -55,9 +55,9 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 	go func() {
 		tx, err := tryRecordTransaction(buxClient, draftTransaction, metadata, s.log)
 		if err != nil {
-			txs <- notification.PrepareNewTransactionErrorEvent(err)
+			events <- notification.PrepareTransactionErrorEvent(err)
 		} else if tx != nil {
-			txs <- notification.PrepareNewTransactionEvent(tx)
+			events <- notification.PrepareTransactionEvent(tx)
 		}
 	}()
 

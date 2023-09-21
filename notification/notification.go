@@ -14,10 +14,10 @@ type BaseEvent struct {
 	EventType string  `json:"eventType"`
 }
 
-// NewTransactionEvent represents notification about new transaction.
-type NewTransactionEvent struct {
+// TransactionEvent represents notification about new transaction.
+type TransactionEvent struct {
 	BaseEvent
-	Transaction Transaction `json:"transaction"`
+	Transaction *Transaction `json:"transaction"`
 }
 
 // Transaction represents simplified transaction which is return in webhook.
@@ -31,20 +31,20 @@ type Transaction struct {
 	CreatedAt  time.Time `json:"createdAt"`
 }
 
-// PrepareNewTransactionEvent prepares event in NewTransactionEvent struct.
-func PrepareNewTransactionEvent(tx *buxmodels.Transaction) NewTransactionEvent {
+// PrepareTransactionEvent prepares event in NewTransactionEvent struct.
+func PrepareTransactionEvent(tx *buxmodels.Transaction) TransactionEvent {
 	sender, receiver := buxclient.GetPaymailsFromMetadata(tx, "unknown")
 	status := "unconfirmed"
 	if tx.BlockHeight > 0 {
 		status = "confirmed"
 	}
-	return NewTransactionEvent{
+	return TransactionEvent{
 		BaseEvent: BaseEvent{
 			Status:    "success",
 			Error:     nil,
 			EventType: "create_transaction",
 		},
-		Transaction: Transaction{
+		Transaction: &Transaction{
 			Id:         tx.ID,
 			Receiver:   receiver,
 			Sender:     sender,
@@ -56,15 +56,15 @@ func PrepareNewTransactionEvent(tx *buxmodels.Transaction) NewTransactionEvent {
 	}
 }
 
-// PrepareNewTransactionErrorEvent prepares error event in NewTransactionEvent struct.
-func PrepareNewTransactionErrorEvent(err error) NewTransactionEvent {
+// PrepareTransactionErrorEvent prepares error event in NewTransactionEvent struct.
+func PrepareTransactionErrorEvent(err error) TransactionEvent {
 	errString := err.Error()
-	return NewTransactionEvent{
+	return TransactionEvent{
 		BaseEvent: BaseEvent{
 			Status:    "error",
 			Error:     &errString,
 			EventType: "create_transaction",
 		},
-		Transaction: Transaction{},
+		Transaction: nil,
 	}
 }

@@ -29,7 +29,7 @@ func (s *Socket) Notify(event any) {
 
 // NotifyAboutTransaction will send notification about new transaction.
 func (s *Socket) NotifyAboutTransaction(tx *buxmodels.Transaction) {
-	txEvent := notification.PrepareNewTransactionEvent(tx)
+	txEvent := notification.PrepareTransactionEvent(tx)
 	s.Notify(txEvent)
 }
 
