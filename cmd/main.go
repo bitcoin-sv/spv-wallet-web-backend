@@ -55,7 +55,7 @@ func main() {
 	}
 
 	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort), lf)
-	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db, lf))
+	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db, lf, ws))
 	server.ApplyConfiguration(ws.SetupEntrypoint)
 
 	go func() {

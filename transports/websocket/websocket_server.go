@@ -2,10 +2,9 @@ package websocket
 
 import (
 	"bux-wallet/domain"
-	"bux-wallet/domain/websockets"
 	"bux-wallet/logging"
 	"bux-wallet/transports/http/auth"
-	"bux-wallet/transports/http/endpoints"
+	router "bux-wallet/transports/http/endpoints/routes"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -23,12 +22,14 @@ type Server interface {
 	Shutdown() error
 	SetupEntrypoint(*gin.Engine)
 	GetNode() *centrifuge.Node
+	GetSocket(userId string) *Socket
+	GetSockets() map[string]*Socket
 }
 
 type server struct {
 	node     *centrifuge.Node
 	log      logging.Logger
-	sockets  map[string]*websockets.Socket
+	sockets  map[string]*Socket
 	services *domain.Services
 	db       *sql.DB
 }
@@ -42,7 +43,7 @@ func NewServer(lf logging.LoggerFactory, services *domain.Services, db *sql.DB) 
 	s := &server{
 		node:     node,
 		log:      lf.NewLogger("Websocket"),
-		sockets:  services.TransactionsService.Websockets,
+		sockets:  make(map[string]*Socket),
 		services: services,
 		db:       db,
 	}
@@ -74,19 +75,19 @@ func (s *server) ShutdownWithContext(ctx context.Context) error {
 
 // SetupEntrypoint setup gin to init websocket connection.
 func (s *server) SetupEntrypoint(engine *gin.Engine) {
-	apiMiddlewares := endpoints.ToHandlers(
+	apiMiddlewares := router.ToHandlers(
 		auth.NewSessionMiddleware(s.db, engine),
 		auth.NewAuthMiddleware(s.services),
 	)
 
-	router := engine.Group("/connection/websocket", apiMiddlewares...)
+	r := engine.Group("/connection/websocket", apiMiddlewares...)
 
 	config := centrifuge.WebsocketConfig{
 		CheckOrigin: func(r *http.Request) bool { return true },
 	}
 
-	router.Use(auth.GinContextToContextMiddleware())
-	router.GET("", gin.WrapH(auth.WsAuthMiddleware(centrifuge.NewWebsocketHandler(s.GetNode(), config))))
+	r.Use(auth.GinContextToContextMiddleware())
+	r.GET("", gin.WrapH(auth.WsAuthMiddleware(centrifuge.NewWebsocketHandler(s.GetNode(), config))))
 }
 
 func newNode(lf logging.LoggerFactory) (*centrifuge.Node, error) {
@@ -117,7 +118,7 @@ func (s *server) setupNode() {
 	})
 
 	s.node.OnConnect(func(client *centrifuge.Client) {
-		s.sockets[client.UserID()] = &websockets.Socket{
+		s.sockets[client.UserID()] = &Socket{
 			Client: client,
 			Log:    s.log,
 		}
@@ -145,4 +146,12 @@ func (s *server) setupNode() {
 
 func (s *server) GetNode() *centrifuge.Node {
 	return s.node
+}
+
+func (s *server) GetSocket(userId string) *Socket {
+	return s.sockets[userId]
+}
+
+func (s *server) GetSockets() map[string]*Socket {
+	return s.sockets
 }

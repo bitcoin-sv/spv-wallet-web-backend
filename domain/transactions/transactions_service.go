@@ -2,10 +2,9 @@ package transactions
 
 import (
 	"bux-wallet/domain/users"
-	"bux-wallet/domain/websockets"
 	"bux-wallet/logging"
+	"bux-wallet/notification"
 	"math"
-	"strconv"
 	"time"
 
 	buxmodels "github.com/BuxOrg/bux-models"
@@ -18,7 +17,6 @@ type TransactionService struct {
 	buxClient        users.AdmBuxClient
 	buxClientFactory users.BuxClientFactory
 	log              logging.Logger
-	Websockets       map[string]*websockets.Socket
 }
 
 // NewTransactionService creates new transaction service.
@@ -27,12 +25,11 @@ func NewTransactionService(buxClient users.AdmBuxClient, bf users.BuxClientFacto
 		buxClient:        buxClient,
 		buxClientFactory: bf,
 		log:              lf.NewLogger("transaction-service"),
-		Websockets:       make(map[string]*websockets.Socket),
 	}
 }
 
 // CreateTransaction creates transaction.
-func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, userId int, satoshis uint64) error {
+func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, userId int, satoshis uint64, txs chan notification.NewTransactionEvent) error {
 	buxClient, err := s.buxClientFactory.CreateWithXpriv(xpriv)
 	if err != nil {
 		return err
@@ -58,9 +55,9 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 	go func() {
 		tx, err := tryRecordTransaction(buxClient, draftTransaction, metadata, s.log)
 		if err != nil {
-			s.Websockets[strconv.Itoa(userId)].SendError(err)
-		} else if tx != nil {
-			s.Websockets[strconv.Itoa(userId)].NotifyAboutTransaction(tx)
+			txs <- notification.PrepareNewTransactionErrorEvent(err)
+		} else {
+			txs <- notification.PrepareNewTransactionEvent(tx)
 		}
 	}()
 

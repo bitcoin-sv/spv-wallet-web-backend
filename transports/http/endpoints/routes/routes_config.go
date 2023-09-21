@@ -43,3 +43,12 @@ type ApiMiddlewareFunc func(c *gin.Context)
 func (f ApiMiddlewareFunc) ApplyToApi(c *gin.Context) {
 	f(c)
 }
+
+// ToHandlers converts middlewares to gin.HandlerFunc.
+func ToHandlers(middlewares ...ApiMiddleware) []gin.HandlerFunc {
+	result := make([]gin.HandlerFunc, 0)
+	for _, m := range middlewares {
+		result = append(result, m.ApplyToApi)
+	}
+	return result
+}

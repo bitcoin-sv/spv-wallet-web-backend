@@ -5,6 +5,8 @@ import (
 	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
+	"bux-wallet/notification"
+	"bux-wallet/transports/websocket"
 	"github.com/BuxOrg/go-buxclient/transports"
 	"net/http"
 	"strconv"
@@ -19,14 +21,16 @@ type handler struct {
 	uService users.UserService
 	tService transactions.TransactionService
 	log      logging.Logger
+	ws       websocket.Server
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services, lf logging.LoggerFactory) router.ApiEndpoints {
+func NewHandler(s *domain.Services, lf logging.LoggerFactory, ws websocket.Server) router.ApiEndpoints {
 	return &handler{
 		uService: *s.UsersService,
 		tService: *s.TransactionsService,
 		log:      lf.NewLogger("transactions-handler"),
+		ws:       ws,
 	}
 }
 
@@ -128,13 +132,15 @@ func (h *handler) createTransaction(c *gin.Context) {
 		return
 	}
 
-	// Create transaction.
-	err = h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, c.GetInt(auth.SessionUserId), reqTransaction.Satoshis)
+	txs := make(chan notification.NewTransactionEvent)
+	err = h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, c.GetInt(auth.SessionUserId), reqTransaction.Satoshis, txs)
 	if err != nil {
 		h.log.Errorf("An error occurred while creating a transaction: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while creating a transaction.")
 		return
 	}
+	transaction := <-txs
+	h.ws.GetSocket(strconv.Itoa(c.GetInt(auth.SessionUserId))).Notify(transaction)
 
 	c.Status(http.StatusOK)
 }
