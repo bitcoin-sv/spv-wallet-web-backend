@@ -133,7 +133,7 @@ func (h *handler) createTransaction(c *gin.Context) {
 	}
 
 	txs := make(chan notification.NewTransactionEvent)
-	err = h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, c.GetInt(auth.SessionUserId), reqTransaction.Satoshis, txs)
+	err = h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, reqTransaction.Satoshis, txs)
 	if err != nil {
 		h.log.Errorf("An error occurred while creating a transaction: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while creating a transaction.")

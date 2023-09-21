@@ -31,6 +31,7 @@ type Transaction struct {
 	CreatedAt  time.Time `json:"createdAt"`
 }
 
+// PrepareNewTransactionEvent prepares event in NewTransactionEvent struct.
 func PrepareNewTransactionEvent(tx *buxmodels.Transaction) NewTransactionEvent {
 	sender, receiver := buxclient.GetPaymailsFromMetadata(tx, "unknown")
 	status := "unconfirmed"

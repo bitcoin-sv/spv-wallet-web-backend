@@ -1,12 +1,18 @@
 package buxclient
 
-import buxmodels "github.com/BuxOrg/bux-models"
+import (
+	buxmodels "github.com/BuxOrg/bux-models"
+)
 
 // GetPaymailsFromMetadata returns sender and receiver paymails from metadata.
 // If no paymail was found in metadata, fallback paymail is returned.
 func GetPaymailsFromMetadata(transaction *buxmodels.Transaction, fallbackPaymail string) (string, string) {
 	senderPaymail := ""
 	receiverPaymail := ""
+
+	if transaction == nil {
+		return senderPaymail, receiverPaymail
+	}
 
 	if transaction.Model.Metadata != nil {
 		// Try to get paymails from metadata if the transaction was made in BUX.
