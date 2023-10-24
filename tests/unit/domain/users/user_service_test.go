@@ -8,6 +8,7 @@ import (
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
 	mock "bux-wallet/tests/mocks"
+	"github.com/stretchr/testify/require"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -116,7 +117,7 @@ func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
 			result, err := sut.CreateNewUser(tc.userEmail, tc.userPswd)
 
 			// Assert
-			assert.EqualError(t, err, tc.expectedErr.Error())
+			require.EqualError(t, err, tc.expectedErr.Error())
 			assert.Nil(t, result)
 		})
 	}
