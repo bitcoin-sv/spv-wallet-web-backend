@@ -1,9 +1,10 @@
 package websocket
 
 import (
+	"encoding/json"
+
 	"bux-wallet/logging"
 	"bux-wallet/notification"
-	"encoding/json"
 	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/centrifugal/centrifuge"
 )
@@ -18,6 +19,11 @@ type Socket struct {
 func (s *Socket) Notify(event any) {
 	bytes, err := json.Marshal(event)
 	if err != nil {
+		return
+	}
+
+	if s.Client == nil {
+		s.Log.Debugf("Skipping notification, no client connection to handle the event %s", bytes)
 		return
 	}
 

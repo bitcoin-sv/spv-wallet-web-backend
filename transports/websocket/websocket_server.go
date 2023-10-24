@@ -1,16 +1,17 @@
 package websocket
 
 import (
-	"bux-wallet/domain"
-	"bux-wallet/logging"
-	"bux-wallet/transports/http/auth"
-	router "bux-wallet/transports/http/endpoints/routes"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
+
+	"bux-wallet/domain"
+	"bux-wallet/logging"
+	"bux-wallet/transports/http/auth"
+	router "bux-wallet/transports/http/endpoints/routes"
 
 	"github.com/centrifugal/centrifuge"
 	"github.com/gin-gonic/gin"
@@ -149,7 +150,11 @@ func (s *server) GetNode() *centrifuge.Node {
 }
 
 func (s *server) GetSocket(userId string) *Socket {
-	return s.sockets[userId]
+	userSocket := s.sockets[userId]
+	if userSocket == nil {
+		userSocket = &Socket{Log: s.log}
+	}
+	return userSocket
 }
 
 func (s *server) GetSockets() map[string]*Socket {

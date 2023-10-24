@@ -2,6 +2,8 @@ package transactions_test
 
 import (
 	"bux-wallet/notification"
+	"github.com/stretchr/testify/require"
+
 	"errors"
 	"testing"
 
@@ -143,7 +145,7 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
 
 			// Assert
-			assert.EqualError(t, tc.expectdErr, err.Error())
+			require.EqualError(t, tc.expectdErr, err.Error())
 			assert.Nil(t, result)
 		})
 	}
