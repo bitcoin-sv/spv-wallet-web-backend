@@ -1,3 +1,4 @@
+project_name: bux-wallet-backend
 env:
   - DOCKERHUB_USERNAME={{ if index .Env "DOCKERHUB_USERNAME"  }}{{ .Env.DOCKERHUB_USERNAME }}{{ else }}4chainstudio{{ end }}
   - DOCKERHUB_REPONAME={{ if index .Env "DOCKERHUB_REPONAME"  }}{{ .Env.DOCKERHUB_REPONAME }}{{ else }}{{ .ProjectName }}{{ end }}
