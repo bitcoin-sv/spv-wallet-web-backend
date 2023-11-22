@@ -80,8 +80,7 @@ func (s *server) SetupEntrypoint(engine *gin.Engine) {
 		auth.NewSessionMiddleware(s.db, engine),
 		auth.NewAuthMiddleware(s.services),
 	)
-
-	r := engine.Group("/connection/websocket", apiMiddlewares...)
+	r := engine.Group("/api/websocket", apiMiddlewares...)
 
 	config := centrifuge.WebsocketConfig{
 		CheckOrigin: func(r *http.Request) bool { return true },
