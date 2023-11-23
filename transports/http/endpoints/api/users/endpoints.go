@@ -1,16 +1,16 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
-
 	"bux-wallet/transports/http/auth"
 	router "bux-wallet/transports/http/endpoints/routes"
-
-	"github.com/gin-gonic/gin"
 )
 
 type handler struct {
@@ -52,10 +52,8 @@ func NewHandler(s *domain.Services, lf logging.LoggerFactory) (router.RootEndpoi
 //	@Param data body RegisterUser true "User data"
 func (h *handler) register(c *gin.Context) {
 	var reqUser RegisterUser
-	err := c.Bind(&reqUser)
-
 	// Check if request body is valid JSON
-	if err != nil {
+	if err := c.Bind(&reqUser); err != nil {
 		h.log.Errorf("Invalid payload: %s", err)
 		c.JSON(http.StatusBadRequest, "Invalid request.")
 		return
@@ -71,11 +69,16 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if user with this email already exists or there is another error
 	if err != nil {
-		if err == users.ErrUserAlreadyExists {
-			c.JSON(http.StatusBadRequest, "The email address is already associated with another user.")
-			return
+		switch err.(type) {
+		case *users.UserError:
+			c.JSON(http.StatusBadRequest, fmt.Sprintf("Error creating user: %v", err))
+		case *users.PaymailError:
+			c.JSON(http.StatusBadRequest, fmt.Sprintf("Error registering Paymail: %v", err))
+		case *users.XPubError:
+			c.JSON(http.StatusBadRequest, fmt.Sprintf("Error registering XPub: %v", err))
+		default:
+			c.JSON(http.StatusInternalServerError, "Something went wrong when creating new user. Please try again later.")
 		}
-		c.JSON(http.StatusInternalServerError, "Something went wrong. Please try again later.")
 		return
 	}
 

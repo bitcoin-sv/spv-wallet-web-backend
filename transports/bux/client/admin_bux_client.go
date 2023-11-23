@@ -1,8 +1,6 @@
 package buxclient
 
 import (
-	"bux-wallet/config"
-	"bux-wallet/logging"
 	"context"
 	"fmt"
 
@@ -10,6 +8,9 @@ import (
 	"github.com/BuxOrg/go-buxclient"
 	"github.com/libsv/go-bk/bip32"
 	"github.com/spf13/viper"
+
+	"bux-wallet/config"
+	"bux-wallet/logging"
 )
 
 // AdminBuxClient is a wrapper for Admin Bux Client.
@@ -24,6 +25,7 @@ func (c *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) 
 	xpub, err := xpriv.Neuter()
 
 	if err != nil {
+		c.log.Error(err.Error())
 		return "", err
 	}
 
@@ -55,6 +57,7 @@ func (c *AdminBuxClient) RegisterPaymail(alias, xpub string) (string, error) {
 	err := c.client.NewPaymail(context.Background(), xpub, address, avatar, alias, &buxmodels.Metadata{})
 
 	if err != nil {
+		c.log.Error(err.Error())
 		return "", err
 	}
 	return address, nil
