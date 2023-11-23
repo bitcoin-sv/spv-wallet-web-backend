@@ -5,13 +5,13 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"bux-wallet/domain/users"
 	"bux-wallet/logging"
 	mock "bux-wallet/tests/mocks"
-	"github.com/stretchr/testify/require"
-
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateNewUser_ReturnsUser(t *testing.T) {

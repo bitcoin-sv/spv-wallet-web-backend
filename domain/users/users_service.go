@@ -6,27 +6,63 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/mail"
 	"strings"
 	"time"
 
-	"bux-wallet/config"
-	"bux-wallet/encryption"
-	"bux-wallet/logging"
-
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
 	"github.com/libsv/go-bk/chaincfg"
 	"github.com/spf13/viper"
+
+	"bux-wallet/config"
+	"bux-wallet/encryption"
+	"bux-wallet/logging"
 )
 
+// CredentialsError Generic error type / wrapper for Credentials errors.
+type CredentialsError struct {
+	message string
+}
+
+func (e *CredentialsError) Error() string {
+	return e.message
+}
+
+// UserError Generic error type / wrapper for User errors.
+type UserError struct {
+	message string
+}
+
+func (e *UserError) Error() string {
+	return e.message
+}
+
+// PaymailError Generic error type / wrapper for Paymail errors.
+type PaymailError struct {
+	message string
+}
+
+func (e *PaymailError) Error() string {
+	return e.message
+}
+
+// XPubError Generic error type / wrapper for XPub errors.
+type XPubError struct {
+	message string
+}
+
+func (e *XPubError) Error() string {
+	return e.message
+}
+
 // ErrInvalidCredentials is throwing when invalid credentials were used.
-var ErrInvalidCredentials = errors.New("invalid credentials")
+var ErrInvalidCredentials = &CredentialsError{"invalid credentials"}
 
 // ErrUserAlreadyExists is throwing when we try to register a user with already used email.
-var ErrUserAlreadyExists = errors.New("user already exists")
+var ErrUserAlreadyExists = &UserError{"user already exists"}
 
 // UserService represents User service and provide access to repository.
 type UserService struct {
@@ -51,46 +87,60 @@ func NewUserService(repo UsersRepository, adminBuxClient AdmBuxClient, bf BuxCli
 
 // InsertUser inserts user to database.
 func (s *UserService) InsertUser(user *User) error {
-	err := s.repo.InsertUser(context.Background(), user)
-	return err
+	if err := s.repo.InsertUser(context.Background(), user); err != nil {
+		e := &UserError{err.Error()}
+		s.log.Error(e.Error())
+		return e
+	}
+	return nil
 }
 
 // CreateNewUser creates new user.
 func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error) {
 	// Validate password.
-	err := validatePassword(password)
-	if err != nil {
-		return nil, err
+	if err := validatePassword(password); err != nil {
+		e := &UserError{err.Error()}
+		s.log.Error(e.Error())
+		return nil, e
 	}
 
 	// Validate user.
-	err = s.validateUser(email)
-	if err != nil {
-		return nil, err
+	if err := s.validateUser(email); err != nil {
+		e := &UserError{err.Error()}
+		s.log.Error(e.Error())
+		return nil, e
 	}
 
 	// Generate mnemonic and seed
 	mnemonic, seed, err := generateMnemonic()
 	if err != nil {
-		return nil, err
+		e := &UserError{err.Error()}
+		s.log.Error(e.Error())
+		return nil, e
 	}
 
 	xpriv, err := generateXpriv(seed)
 	if err != nil {
-		return nil, err
+		e := &UserError{err.Error()}
+		s.log.Error(e.Error())
+		return nil, e
 	}
 
 	// Encrypt xpriv
 	encryptedXpriv, err := encryptXpriv(password, xpriv.String())
 
 	if err != nil {
-		return nil, err
+		e := &UserError{err.Error()}
+		s.log.Error(e.Error())
+		return nil, e
 	}
 
 	// Register xpub in BUX.
 	xpub, err := s.buxClient.RegisterXpub(xpriv)
 	if err != nil {
-		return nil, fmt.Errorf("error registering xpub in BUX: %s", err)
+		e := &XPubError{fmt.Sprintf("error registering xpub in BUX: %s", err)}
+		s.log.Error(e.Error())
+		return nil, e
 	}
 
 	// Get username from email which will be used as paymail alias.
@@ -99,7 +149,9 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	// Register paymail in BUX.
 	paymail, err := s.buxClient.RegisterPaymail(username, xpub)
 	if err != nil {
-		return nil, fmt.Errorf("error registering paymail in BUX: %s", err)
+		e := &PaymailError{fmt.Sprintf("error registering paymail in BUX: %s", err)}
+		s.log.Error(e.Error())
+		return nil, e
 	}
 
 	// Create and save new user.
@@ -110,9 +162,10 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 		CreatedAt: time.Now(),
 	}
 
-	err = s.InsertUser(user)
-	if err != nil {
-		return nil, err
+	if err := s.InsertUser(user); err != nil {
+		e := &UserError{err.Error()}
+		s.log.Error(e.Error())
+		return nil, e
 	}
 
 	newUSerData := &CreatedUser{
@@ -206,6 +259,7 @@ func (s *UserService) SignOutUser(accessKeyId, accessKey string) error {
 func (s *UserService) GetUserById(userId int) (*User, error) {
 	user, err := s.repo.GetUserById(context.Background(), userId)
 	if err != nil {
+		s.log.Error(err.Error())
 		return nil, err
 	}
 
@@ -217,18 +271,21 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 	// Create BUX client with access key.
 	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
+		s.log.Error(err.Error())
 		return nil, err
 	}
 
 	// Get xpub.
 	xpub, err := buxClient.GetXPub()
 	if err != nil {
+		s.log.Error(err.Error())
 		return nil, err
 	}
 
 	// Calculate balance.
 	balance, err := calculateBalance(xpub.GetCurrentBalance())
 	if err != nil {
+		s.log.Error(err.Error())
 		return nil, err
 	}
 
@@ -239,12 +296,14 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 func (s *UserService) GetUserXpriv(userId int, password string) (string, error) {
 	user, err := s.repo.GetUserById(context.Background(), userId)
 	if err != nil {
+		s.log.Error(err.Error())
 		return "", err
 	}
 
 	// Decrypt xpriv.
 	decryptedXpriv, err := decryptXpriv(password, user.Xpriv)
 	if err != nil {
+		s.log.Error(err.Error())
 		return "", err
 	}
 
@@ -253,19 +312,19 @@ func (s *UserService) GetUserXpriv(userId int, password string) (string, error) 
 
 func (s *UserService) validateUser(email string) error {
 	//Validate email
-	_, err := mail.ParseAddress(email)
-	if err != nil {
-		return fmt.Errorf("invalid email address")
+	if _, err := mail.ParseAddress(email); err != nil {
+		e := &UserError{"invalid email address"}
+		s.log.Error(e.Error())
+		return e
 	}
 
 	// Check if user with email already exists.
-	_, err = s.repo.GetUserByEmail(context.Background(), email)
-
-	if err != nil {
+	if _, err := s.repo.GetUserByEmail(context.Background(), email); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil
 		}
-		return err
+		s.log.Error(err.Error())
+		return &UserError{err.Error()}
 	}
 
 	return ErrUserAlreadyExists
@@ -345,28 +404,28 @@ func validatePassword(password string) error {
 func calculateBalance(satoshis uint64) (*Balance, error) {
 	// Create request.
 	exchangeRateUrl := viper.GetString(config.EnvEndpointsExchangeRate)
-	req, error := http.NewRequestWithContext(context.Background(), http.MethodGet, exchangeRateUrl, nil)
-	if error != nil {
-		return nil, fmt.Errorf("error during creating exchange rate request: %s", error.Error())
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, exchangeRateUrl, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error during creating exchange rate request: %w", err)
 	}
 
 	// Send request.
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error during getting exchange rate: %s", err.Error())
+		return nil, fmt.Errorf("error during getting exchange rate: %w", err)
 	}
 	defer res.Body.Close() // nolint: all
 
 	// Parse response body.
 	var exchangeRate ExchangeRate
-	bodyBytes, err := ioutil.ReadAll(res.Body)
+	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, fmt.Errorf("error during reading response body: %s", err.Error())
+		return nil, fmt.Errorf("error during reading response body: %w", err)
 	}
 
 	err = json.Unmarshal(bodyBytes, &exchangeRate)
 	if err != nil {
-		return nil, fmt.Errorf("error during unmarshaling response body: %s", err.Error())
+		return nil, fmt.Errorf("error during unmarshalling response body: %w", err)
 	}
 
 	// Calculate balance.
