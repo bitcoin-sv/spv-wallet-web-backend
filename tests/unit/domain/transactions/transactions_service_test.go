@@ -48,7 +48,7 @@ func TestCreateTransaction(t *testing.T) {
 			CreateWithXpriv(xpriv).
 			Return(buxClientMq, nil)
 
-		sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.DefaultLoggerFactory())
+		sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.GetDefaultLogger())
 
 		// Act
 		txs := make(chan notification.TransactionEvent, 1)
@@ -91,7 +91,7 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 				CreateWithAccessKey(accessKey).
 				Return(buxClientMq, nil)
 
-			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.DefaultLoggerFactory())
+			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.GetDefaultLogger())
 
 			// Act
 			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
@@ -139,7 +139,7 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 				CreateWithAccessKey(accessKey).
 				Return(buxClientMq, nil)
 
-			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.DefaultLoggerFactory())
+			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.GetDefaultLogger())
 
 			// Act
 			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)

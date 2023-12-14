@@ -2,12 +2,12 @@ package endpoints
 
 import (
 	"bux-wallet/domain"
-	"bux-wallet/logging"
 	"bux-wallet/transports/http/endpoints/status"
 	"bux-wallet/transports/http/endpoints/swagger"
 	"bux-wallet/transports/websocket"
 	"database/sql"
 	"errors"
+	"github.com/rs/zerolog"
 
 	"bux-wallet/transports/http/auth"
 	"bux-wallet/transports/http/endpoints/api/access"
@@ -22,9 +22,9 @@ import (
 // SetupWalletRoutes main point where we're registering endpoints registrars (handlers that will register endpoints in gin engine)
 //
 //	and middlewares. It's returning function that can be used to setup engine of httpserver.HttpServer
-func SetupWalletRoutes(s *domain.Services, db *sql.DB, lf logging.LoggerFactory, ws websocket.Server) httpserver.GinEngineOpt {
-	accessRootEndpoints, accessApiEndpoints := access.NewHandler(s, lf)
-	usersRootEndpoints, usersApiEndpoints := users.NewHandler(s, lf)
+func SetupWalletRoutes(s *domain.Services, db *sql.DB, log *zerolog.Logger, ws websocket.Server) httpserver.GinEngineOpt {
+	accessRootEndpoints, accessApiEndpoints := access.NewHandler(s, log)
+	usersRootEndpoints, usersApiEndpoints := users.NewHandler(s, log)
 
 	routes := []interface{}{
 		swagger.NewHandler(),
@@ -33,7 +33,7 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB, lf logging.LoggerFactory,
 		usersApiEndpoints,
 		accessRootEndpoints,
 		accessApiEndpoints,
-		transactions.NewHandler(s, lf, ws),
+		transactions.NewHandler(s, log, ws),
 	}
 
 	return func(engine *gin.Engine) {

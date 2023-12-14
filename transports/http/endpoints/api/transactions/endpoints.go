@@ -4,10 +4,10 @@ import (
 	"bux-wallet/domain"
 	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
-	"bux-wallet/logging"
 	"bux-wallet/notification"
 	"bux-wallet/transports/websocket"
 	"github.com/BuxOrg/go-buxclient/transports"
+	"github.com/rs/zerolog"
 	"net/http"
 	"strconv"
 
@@ -20,16 +20,16 @@ import (
 type handler struct {
 	uService users.UserService
 	tService transactions.TransactionService
-	log      logging.Logger
+	log      *zerolog.Logger
 	ws       websocket.Server
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services, lf logging.LoggerFactory, ws websocket.Server) router.ApiEndpoints {
+func NewHandler(s *domain.Services, log *zerolog.Logger, ws websocket.Server) router.ApiEndpoints {
 	return &handler{
 		uService: *s.UsersService,
 		tService: *s.TransactionsService,
-		log:      lf.NewLogger("transactions-handler"),
+		log:      log,
 		ws:       ws,
 	}
 }
@@ -75,14 +75,14 @@ func (h *handler) getTransactions(c *gin.Context) {
 	}
 
 	// Get user transactions.
-	transactions, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey), c.GetString(auth.SessionUserPaymail), queryParam)
+	txs, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey), c.GetString(auth.SessionUserPaymail), queryParam)
 	if err != nil {
-		h.log.Errorf("An error occurred while trying to get a list of transactions: %s", err)
+		h.log.Error().Msgf("An error occurred while trying to get a list of transactions: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred while trying to get a list of transactions")
 		return
 	}
 
-	c.JSON(http.StatusOK, transactions)
+	c.JSON(http.StatusOK, txs)
 }
 
 // Get specific transactions.
@@ -99,7 +99,7 @@ func (h *handler) getTransaction(c *gin.Context) {
 	// Get transaction by id.
 	transaction, err := h.tService.GetTransaction(c.GetString(auth.SessionAccessKey), transactionId, c.GetString(auth.SessionUserPaymail))
 	if err != nil {
-		h.log.Errorf("An error occurred while trying to get transaction details: %s", err)
+		h.log.Error().Msgf("An error occurred while trying to get transaction details: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred while trying to get transaction details")
 		return
 	}
@@ -119,7 +119,7 @@ func (h *handler) createTransaction(c *gin.Context) {
 	var reqTransaction CreateTransaction
 	err := c.Bind(&reqTransaction)
 	if err != nil {
-		h.log.Errorf("Invalid payload: %s", err)
+		h.log.Error().Msgf("Invalid payload: %s", err)
 		c.JSON(http.StatusBadRequest, "Invalid request. Please check transaction details")
 		return
 	}
@@ -127,7 +127,7 @@ func (h *handler) createTransaction(c *gin.Context) {
 	// Validate user.
 	xpriv, err := h.uService.GetUserXpriv(c.GetInt(auth.SessionUserId), reqTransaction.Password)
 	if err != nil {
-		h.log.Errorf("Invalid password: %s", err)
+		h.log.Error().Msgf("Invalid password: %s", err)
 		c.JSON(http.StatusBadRequest, "Invalid password.")
 		return
 	}
@@ -135,7 +135,7 @@ func (h *handler) createTransaction(c *gin.Context) {
 	events := make(chan notification.TransactionEvent)
 	err = h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, reqTransaction.Satoshis, events)
 	if err != nil {
-		h.log.Errorf("An error occurred while creating a transaction: %s", err)
+		h.log.Error().Msgf("An error occurred while creating a transaction: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while creating a transaction.")
 		return
 	}

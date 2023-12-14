@@ -4,8 +4,8 @@ import (
 	db_users "bux-wallet/data/users"
 	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
-	"bux-wallet/logging"
 	buxclient "bux-wallet/transports/bux/client"
+	"github.com/rs/zerolog"
 )
 
 // Services is a struct that contains all services.
@@ -16,19 +16,19 @@ type Services struct {
 }
 
 // NewServices creates services instance.
-func NewServices(usersRepo *db_users.UsersRepository, lf logging.LoggerFactory) (*Services, error) {
-	bf := buxclient.NewBuxClientFactory(lf)
+func NewServices(usersRepo *db_users.UsersRepository, log *zerolog.Logger) (*Services, error) {
+	bf := buxclient.NewBuxClientFactory(log)
 	adminBuxClient, err := bf.CreateAdminBuxClient()
 	if err != nil {
 		return nil, err
 	}
 
 	// Create User services.
-	uService := users.NewUserService(usersRepo, adminBuxClient, bf, lf)
+	uService := users.NewUserService(usersRepo, adminBuxClient, bf, log)
 
 	return &Services{
 		UsersService:        uService,
-		TransactionsService: transactions.NewTransactionService(adminBuxClient, bf, lf),
+		TransactionsService: transactions.NewTransactionService(adminBuxClient, bf, log),
 		BuxClientFactory:    bf,
 	}, nil
 }

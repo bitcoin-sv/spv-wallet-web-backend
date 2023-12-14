@@ -25,42 +25,47 @@ const appname = "bux-wallet-backend"
 // @version			1.0
 // @description     This is an API for bux wallet.
 func main() {
+	defaultLogger := logging.GetDefaultLogger()
+
 	// Load config.
 	config.NewViperConfig(appname).
 		WithDb()
 
-	lf := logging.DefaultLoggerFactory()
-	log := lf.NewLogger("main")
+	log, err := logging.CreateLogger()
+	if err != nil {
+		defaultLogger.Error().Msg("cannot create logger")
+		os.Exit(1)
+	}
 
-	db := databases.SetUpDatabase(lf)
+	db := databases.SetUpDatabase(log)
 	defer db.Close() // nolint: all
 
 	repo := db_users.NewUsersRepository(db)
 
-	s, err := domain.NewServices(repo, lf)
+	s, err := domain.NewServices(repo, log)
 	if err != nil {
-		log.Errorf("cannot create services because of an error: ", err)
+		log.Error().Msgf("cannot create services because of an error: %v", err)
 		os.Exit(1)
 	}
 
-	ws, err := websocket.NewServer(lf, s, db)
+	ws, err := websocket.NewServer(log, s, db)
 	if err != nil {
-		log.Errorf("failed to init a new websocket server: %v\n", err)
+		log.Error().Msgf("failed to init a new websocket server: %v", err)
 		os.Exit(1)
 	}
 	err = ws.Start()
 	if err != nil {
-		log.Errorf("failed to start websocket server: %v\n", err)
+		log.Error().Msgf("failed to start websocket server: %v", err)
 		os.Exit(1)
 	}
 
-	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort), lf)
-	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db, lf, ws))
+	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort), log)
+	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db, log, ws))
 	server.ApplyConfiguration(ws.SetupEntrypoint)
 
 	go func() {
 		if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Errorf("cannot start server because of an error: ", err)
+			log.Error().Msgf("cannot start server because of an error: %v", err)
 			os.Exit(1)
 		}
 	}()
@@ -71,9 +76,9 @@ func main() {
 	<-quit
 
 	if err = server.Shutdown(); err != nil {
-		log.Errorf("failed to stop http server: ", err)
+		log.Error().Msgf("failed to stop http server: %v", err)
 	}
 	if err = ws.Shutdown(); err != nil {
-		log.Errorf("failed to stop websocket server: ", err)
+		log.Error().Msgf("failed to stop websocket server: %v", err)
 	}
 }

@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog"
 	"net/http"
 	"time"
 
 	"bux-wallet/domain"
-	"bux-wallet/logging"
 	"bux-wallet/transports/http/auth"
 	router "bux-wallet/transports/http/endpoints/routes"
 
@@ -29,21 +29,23 @@ type Server interface {
 
 type server struct {
 	node     *centrifuge.Node
-	log      logging.Logger
+	log      *zerolog.Logger
 	sockets  map[string]*Socket
 	services *domain.Services
 	db       *sql.DB
 }
 
 // NewServer creates new websocket server.
-func NewServer(lf logging.LoggerFactory, services *domain.Services, db *sql.DB) (Server, error) {
-	node, err := newNode(lf)
+func NewServer(log *zerolog.Logger, services *domain.Services, db *sql.DB) (Server, error) {
+	websocketLogger := log.With().Str("service", "websocket").Logger()
+
+	node, err := newNode(&websocketLogger)
 	if err != nil {
 		return nil, err
 	}
 	s := &server{
 		node:     node,
-		log:      lf.NewLogger("Websocket"),
+		log:      &websocketLogger,
 		sockets:  make(map[string]*Socket),
 		services: services,
 		db:       db,
@@ -57,6 +59,7 @@ func (s *server) Start() error {
 	if err := s.node.Run(); err != nil {
 		return fmt.Errorf("cannot start websocket server: %w", err)
 	}
+	s.log.Debug().Msgf("Websocket server started")
 	return nil
 }
 
@@ -67,7 +70,7 @@ func (s *server) Shutdown() error {
 
 // ShutdownWithContext stoping a server in a provided context.
 func (s *server) ShutdownWithContext(ctx context.Context) error {
-	s.log.Infof("Shutting down a websocket server")
+	s.log.Info().Msgf("Shutting down a websocket server")
 	if err := s.node.Shutdown(ctx); err != nil {
 		return fmt.Errorf("cannot stop websocket server: %w", err)
 	}
@@ -90,8 +93,8 @@ func (s *server) SetupEntrypoint(engine *gin.Engine) {
 	r.GET("", gin.WrapH(auth.WsAuthMiddleware(centrifuge.NewWebsocketHandler(s.GetNode(), config))))
 }
 
-func newNode(lf logging.LoggerFactory) (*centrifuge.Node, error) {
-	lh := newLogHandler(lf)
+func newNode(l *zerolog.Logger) (*centrifuge.Node, error) {
+	lh := newLogHandler(l)
 	return centrifuge.New(centrifuge.Config{
 		Name:       "bux-wallet",
 		LogLevel:   lh.Level(),

@@ -3,6 +3,7 @@ package buxclient
 import (
 	"context"
 	"fmt"
+	"github.com/rs/zerolog"
 
 	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient"
@@ -10,13 +11,12 @@ import (
 	"github.com/spf13/viper"
 
 	"bux-wallet/config"
-	"bux-wallet/logging"
 )
 
 // AdminBuxClient is a wrapper for Admin Bux Client.
 type AdminBuxClient struct {
 	client *buxclient.BuxClient
-	log    logging.Logger
+	log    *zerolog.Logger
 }
 
 // RegisterXpub registers xpub in bux.
@@ -25,7 +25,7 @@ func (c *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) 
 	xpub, err := xpriv.Neuter()
 
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().Msgf("Error while creating new xPub: %v", err.Error())
 		return "", err
 	}
 
@@ -35,7 +35,9 @@ func (c *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) 
 	)
 
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().
+			Str("xpub", xpub.String()).
+			Msgf("Error while registering new xPub: %v", err.Error())
 		return "", err
 	}
 
@@ -57,7 +59,7 @@ func (c *AdminBuxClient) RegisterPaymail(alias, xpub string) (string, error) {
 	err := c.client.NewPaymail(context.Background(), xpub, address, avatar, alias, &buxmodels.Metadata{})
 
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().Msgf("Error while registering new paymail: %v", err.Error())
 		return "", err
 	}
 	return address, nil

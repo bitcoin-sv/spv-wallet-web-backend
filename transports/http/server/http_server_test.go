@@ -14,9 +14,9 @@ import (
 
 func TestNewHttpServer(t *testing.T) {
 
-	lf := logging.DefaultLoggerFactory()
+	defaultLog := logging.GetDefaultLogger()
 
-	server := NewHttpServer(8080, lf)
+	server := NewHttpServer(8080, defaultLog)
 	server.ApplyConfiguration(WithPanicEndpoint)
 
 	// Create a test request
@@ -47,10 +47,8 @@ func TestNewHttpServer(t *testing.T) {
 
 func TestDebugWriter(t *testing.T) {
 	// Arrange
-	lf := logging.DefaultLoggerFactory()
-	logger := lf.NewLogger("test")
-
-	writer := debugWriter(logger)
+	defaultLog := logging.GetDefaultLogger()
+	writer := debugWriter(defaultLog)
 
 	// Act
 	_, err := writer.Write([]byte("Debug log message"))
@@ -61,9 +59,9 @@ func TestDebugWriter(t *testing.T) {
 
 func TestApplyConfiguration(t *testing.T) {
 	// Arrange
-	lf := logging.DefaultLoggerFactory()
+	defaultLog := logging.GetDefaultLogger()
 
-	server := NewHttpServer(8080, lf)
+	server := NewHttpServer(8080, defaultLog)
 	require.NotNil(t, server, "Server should be created")
 
 	// Act
@@ -75,9 +73,9 @@ func TestApplyConfiguration(t *testing.T) {
 
 func TestShutdownWithContext(t *testing.T) {
 	// Arrange
-	lf := logging.DefaultLoggerFactory()
+	defaultLog := logging.GetDefaultLogger()
 
-	server := NewHttpServer(8080, lf)
+	server := NewHttpServer(8080, defaultLog)
 	require.NotNil(t, server, "Server should be created")
 
 	// Act

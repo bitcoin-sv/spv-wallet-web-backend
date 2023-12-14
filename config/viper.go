@@ -68,6 +68,9 @@ func setHashDefaults() {
 
 func setLoggingDefaults() {
 	viper.SetDefault(EnvLoggingLevel, "Debug")
+	viper.SetDefault(EnvLoggingInstanceName, "bux-wallet-backend")
+	viper.SetDefault(EnvLoggingFormat, "console")
+	viper.SetDefault(EnvLoggingLogOrigin, false)
 }
 
 // setEndpointsDefaults sets default values for endpoints used in app.

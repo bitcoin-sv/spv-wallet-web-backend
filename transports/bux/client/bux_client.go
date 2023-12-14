@@ -3,6 +3,7 @@ package buxclient
 import (
 	"context"
 	"fmt"
+	"github.com/rs/zerolog"
 	"math"
 
 	buxmodels "github.com/BuxOrg/bux-models"
@@ -10,20 +11,19 @@ import (
 	"github.com/BuxOrg/go-buxclient/transports"
 
 	"bux-wallet/domain/users"
-	"bux-wallet/logging"
 )
 
 // BuxClient is a wrapper for Bux Client.
 type BuxClient struct {
 	client *buxclient.BuxClient
-	log    logging.Logger
+	log    *zerolog.Logger
 }
 
 // CreateAccessKey creates new access key for user.
 func (c *BuxClient) CreateAccessKey() (users.AccKey, error) {
 	accessKey, err := c.client.CreateAccessKey(context.Background(), &buxmodels.Metadata{})
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().Msgf("Error while creating new accessKey: %v", err.Error())
 		return nil, err
 	}
 
@@ -39,7 +39,9 @@ func (c *BuxClient) CreateAccessKey() (users.AccKey, error) {
 func (c *BuxClient) GetAccessKey(accessKeyId string) (users.AccKey, error) {
 	accessKey, err := c.client.GetAccessKey(context.Background(), accessKeyId)
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().
+			Str("accessKeyID", accessKeyId).
+			Msgf("Error while getting accessKey: %v", err.Error())
 		return nil, err
 	}
 
@@ -55,7 +57,9 @@ func (c *BuxClient) GetAccessKey(accessKeyId string) (users.AccKey, error) {
 func (c *BuxClient) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
 	accessKey, err := c.client.RevokeAccessKey(context.Background(), accessKeyId)
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().
+			Str("accessKeyID", accessKeyId).
+			Msgf("Error while revoking accessKey: %v", err.Error())
 		return nil, err
 	}
 
@@ -71,7 +75,7 @@ func (c *BuxClient) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
 func (c *BuxClient) GetXPub() (users.PubKey, error) {
 	xpub, err := c.client.GetXPub(context.Background())
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().Msgf("Error while getting new xPub: %v", err.Error())
 		return nil, err
 	}
 
@@ -94,7 +98,7 @@ func (c *BuxClient) SendToRecipients(recipients []*transports.Recipients, sender
 	// Send transaction.
 	transaction, err := c.client.SendToRecipients(context.Background(), recipients, metadata)
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().Msgf("Error while creating new tx: %v", err.Error())
 		return nil, err
 	}
 
@@ -113,14 +117,14 @@ func (c *BuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipi
 	// Create draft transaction.
 	draftTx, err := c.client.DraftToRecipients(context.Background(), recipients, metadata)
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().Msgf("Error while creating new draft tx: %v", err.Error())
 		return nil, err
 	}
 
 	// Finalize draft transaction.
 	hex, err := c.client.FinalizeTransaction(draftTx)
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().Str("draftTxID", draftTx.ID).Msgf("Error while finalizing tx: %v", err.Error())
 		return nil, err
 	}
 
@@ -136,7 +140,7 @@ func (c *BuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipi
 func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) (*buxmodels.Transaction, error) {
 	tx, err := c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata)
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().Str("draftTxID", draftTxId).Msgf("Error while recording tx: %v", err.Error())
 		return nil, err
 	}
 	return tx, nil
@@ -161,7 +165,9 @@ func (c *BuxClient) GetTransactions(queryParam transports.QueryParams, userPayma
 
 	transactions, err := c.client.GetTransactions(context.Background(), conditions, &buxmodels.Metadata{}, &queryParam)
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().
+			Str("userPaymail", userPaymail).
+			Msgf("Error while getting transactions: %v", err.Error())
 		return nil, err
 	}
 
@@ -192,7 +198,10 @@ func (c *BuxClient) GetTransactions(queryParam transports.QueryParams, userPayma
 func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.FullTransaction, error) {
 	transaction, err := c.client.GetTransaction(context.Background(), transactionId)
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().
+			Str("transactionId", transactionId).
+			Str("userPaymail", userPaymail).
+			Msgf("Error while getting transaction: %v", err.Error())
 		return nil, err
 	}
 
@@ -222,7 +231,7 @@ func (c *BuxClient) GetTransactionsCount() (int64, error) {
 
 	count, err := c.client.GetTransactionsCount(context.Background(), conditions, &buxmodels.Metadata{})
 	if err != nil {
-		c.log.Error(err.Error())
+		c.log.Error().Msgf("Error while getting transactions count: %v", err.Error())
 		return 0, err
 	}
 	return count, nil

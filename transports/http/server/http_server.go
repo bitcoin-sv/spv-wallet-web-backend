@@ -3,12 +3,12 @@ package httpserver
 import (
 	"context"
 	"fmt"
+	"github.com/rs/zerolog"
 	"io"
 	"net/http"
 	"time"
 
 	"bux-wallet/config"
-	"bux-wallet/logging"
 	"bux-wallet/transports/http/endpoints/api/cors"
 	"bux-wallet/util"
 
@@ -23,13 +23,15 @@ type GinEngineOpt func(*gin.Engine)
 type HttpServer struct {
 	httpServer *http.Server
 	handler    *gin.Engine
-	log        logging.Logger
+	log        *zerolog.Logger
 }
 
 // NewHttpServer creates and returns HttpServer instance.
-func NewHttpServer(port int, lf logging.LoggerFactory) *HttpServer {
+func NewHttpServer(port int, log *zerolog.Logger) *HttpServer {
+	httpLogger := log.With().Str("service", "http-server").Logger()
+
 	engine := gin.New()
-	engine.Use(gin.LoggerWithWriter(debugWriter(lf.NewLogger("gin"))), gin.Recovery())
+	engine.Use(gin.LoggerWithWriter(debugWriter(&httpLogger)), gin.Recovery())
 	engine.Use(cors.CorsMiddleware())
 
 	return &HttpServer{
@@ -40,13 +42,13 @@ func NewHttpServer(port int, lf logging.LoggerFactory) *HttpServer {
 			WriteTimeout: time.Duration(viper.GetInt(config.EnvHttpServerWriteTimeout)) * time.Second,
 		},
 		handler: engine,
-		log:     lf.NewLogger("http"),
+		log:     &httpLogger,
 	}
 }
 
-func debugWriter(logger logging.Logger) io.Writer {
+func debugWriter(logger *zerolog.Logger) io.Writer {
 	w := func(p []byte) (n int, err error) {
-		logger.Debug(string(p))
+		logger.Debug().Msg(string(p))
 		return len(p), err
 	}
 	return util.WriterFunc(w)
@@ -61,17 +63,22 @@ func (s *HttpServer) ApplyConfiguration(opts ...GinEngineOpt) {
 
 // Start is used to start http server.
 func (s *HttpServer) Start() error {
-	s.log.Infof("Starting server on address %s", s.httpServer.Addr)
+	s.log.Info().Msgf("Starting server on address %s", s.httpServer.Addr)
 	return s.httpServer.ListenAndServe()
 }
 
 // ShutdownWithContext is used to stop http server using provided context.
 func (s *HttpServer) ShutdownWithContext(ctx context.Context) error {
-	s.log.Info("HTTP Server Shutdown")
+	s.log.Info().Msg("HTTP Server Shutdown")
 	return s.httpServer.Shutdown(ctx)
 }
 
 // Shutdown is used to stop http server.
 func (s *HttpServer) Shutdown() error {
 	return s.ShutdownWithContext(context.Background())
+}
+
+// Logger return http server logger.
+func (s *HttpServer) Logger() *zerolog.Logger {
+	return s.log
 }

@@ -2,7 +2,7 @@ package databases
 
 import (
 	"bux-wallet/config"
-	"bux-wallet/logging"
+	"github.com/rs/zerolog"
 
 	"database/sql"
 	"fmt"
@@ -15,8 +15,8 @@ import (
 )
 
 // SetUpDatabase is used to set up database connection.
-func SetUpDatabase(lf logging.LoggerFactory) *sql.DB {
-	log := lf.NewLogger("databases")
+func SetUpDatabase(l *zerolog.Logger) *sql.DB {
+	log := l.With().Str("service", "database").Logger()
 
 	// Load config.
 	host := viper.GetString(config.EnvDbHost)
@@ -31,7 +31,7 @@ func SetUpDatabase(lf logging.LoggerFactory) *sql.DB {
 		"password=%s dbname=%s sslmode=%s",
 		host, port, user, password, dbname, sslMode)
 
-	log.Debug(psqlInfo)
+	log.Debug().Msg(psqlInfo)
 
 	// Open database connection.
 	db, err := sql.Open("postgres", psqlInfo)
@@ -47,7 +47,7 @@ func SetUpDatabase(lf logging.LoggerFactory) *sql.DB {
 
 	// defer db.Close()
 
-	log.Info("Successfully connected!")
+	log.Info().Msg("Successfully connected!")
 
 	runMigration(db)
 

@@ -3,7 +3,8 @@ package access
 import (
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
-	"bux-wallet/logging"
+	"errors"
+	"github.com/rs/zerolog"
 	"net/http"
 
 	"bux-wallet/transports/http/auth"
@@ -14,24 +15,24 @@ import (
 
 type handler struct {
 	service users.UserService
-	log     logging.Logger
+	log     *zerolog.Logger
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services, lf logging.LoggerFactory) (router.RootEndpoints, router.ApiEndpoints) {
+func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, router.ApiEndpoints) {
 	h := &handler{
 		service: *s.UsersService,
-		log:     lf.NewLogger("access-handler"),
+		log:     log,
 	}
 
 	prefix := "/api/v1"
 
-	// Register root endpoints which are athorized by admin token.
+	// Register root endpoints which are authorized by admin token.
 	rootEndpoints := router.RootEndpointsFunc(func(router *gin.RouterGroup) {
 		router.POST(prefix+"/sign-in", h.signIn)
 	})
 
-	// Register api endpoints which are athorized by session token.
+	// Register api endpoints which are authorized by session token.
 	apiEndpoints := router.ApiEndpointsFunc(func(router *gin.RouterGroup) {
 		router.POST("/sign-out", h.signOut)
 	})
@@ -54,26 +55,26 @@ func (h *handler) signIn(c *gin.Context) {
 
 	// Check if request body is valid JSON
 	if err != nil {
-		h.log.Errorf("Invalid payload. Error: %s", err)
+		h.log.Error().Msgf("Invalid payload. Error: %s", err)
 		c.JSON(http.StatusBadRequest, "Invalid request.")
 		return
 	}
 
 	signInUser, err := h.service.SignInUser(reqUser.Email, reqUser.Password)
 	if err != nil {
-		if err == users.ErrInvalidCredentials {
+		if errors.Is(err, users.ErrInvalidCredentials) {
 			c.JSON(http.StatusBadRequest, "Sorry, your username or password is incorrect. Please try again.")
 			return
 		}
 
-		h.log.Errorf("Sign-in error: %s", err)
+		h.log.Error().Msgf("Sign-in error: %s", err)
 		c.JSON(http.StatusInternalServerError, "Something went wrong. Please try again later.")
 		return
 	}
 
 	err = auth.UpdateSession(c, signInUser)
 	if err != nil {
-		h.log.Errorf("Sign-in error. Session wasn't saved: %s", err)
+		h.log.Error().Msgf("Sign-in error. Session wasn't saved: %s", err)
 		c.JSON(http.StatusBadRequest, "Something went wrong. Please try again later.")
 	}
 
@@ -95,14 +96,14 @@ func (h *handler) signIn(c *gin.Context) {
 func (h *handler) signOut(c *gin.Context) {
 	err := h.service.SignOutUser(c.GetString(auth.SessionAccessKeyId), c.GetString(auth.SessionAccessKey))
 	if err != nil {
-		h.log.Errorf("Sign-out error: %s", err)
+		h.log.Error().Msgf("Sign-out error: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred during the logout process.")
 		return
 	}
 
 	err = auth.TerminateSession(c)
 	if err != nil {
-		h.log.Errorf("Sign-out error. Session wasn't terminated: %s", err)
+		h.log.Error().Msgf("Sign-out error. Session wasn't terminated: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred during the logout process.")
 		return
 	}
