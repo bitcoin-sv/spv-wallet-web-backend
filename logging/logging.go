@@ -15,12 +15,6 @@ const (
 	jsonLogFormat    = "json"
 )
 
-// DefaultLoggerFactory creates an instance of logger factory with default configuration for this app.
-func DefaultLoggerFactory() LoggerFactory {
-	lvl := viper.GetString(config.EnvLoggingLevel)
-	return NewZerologLoggerFactory("bux-wallet", LevelFromString(lvl))
-}
-
 // GetDefaultLogger generates and returns a default logger instance.
 func GetDefaultLogger() *zerolog.Logger {
 	logger := ecszerolog.New(os.Stdout, ecszerolog.Level(zerolog.DebugLevel)).
