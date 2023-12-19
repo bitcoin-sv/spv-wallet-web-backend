@@ -10,15 +10,15 @@ on:
   pull_request:
     branches: [ master,main ]
 
-env:
-  GO_VERSION: 1.19
-
 jobs:
   golangci:
     name: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -29,10 +29,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Go ${{env.GO_VERSION}}
+      - name: Set up Go from go.mod
         uses: actions/setup-go@v4
         with:
-          go-version: ${{env.GO_VERSION}}
+          go-version-file: go.mod
 
       - name: Clean test cache
         run: go clean -testcache
@@ -54,7 +54,7 @@ jobs:
       - run: git fetch --force --tags
       - uses: actions/setup-go@v4
         with:
-          go-version: ${{env.GO_VERSION}}
+          go-version-file: go.mod
       - uses: goreleaser/goreleaser-action@v4
         with:
           distribution: goreleaser
@@ -96,7 +96,7 @@ jobs:
       - run: git fetch --force --tags
       - uses: actions/setup-go@v4
         with:
-          go-version: ${{env.GO_VERSION}}
+          go-version-file: go.mod
       - name: Make directory for darwin bin
         run: |
           mkdir -p ./release/artifacts/darwin
