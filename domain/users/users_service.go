@@ -302,7 +302,6 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		s.log.Error().
-			Str("accessKey", accessKey).
 			Msgf("Error while creating BUX client: %v", err.Error())
 		return nil, err
 	}
@@ -311,7 +310,6 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 	xpub, err := buxClient.GetXPub()
 	if err != nil {
 		s.log.Error().
-			Str("accessKey", accessKey).
 			Msgf("Error while getting xPub: %v", err.Error())
 		return nil, err
 	}
@@ -320,7 +318,6 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 	balance, err := calculateBalance(xpub.GetCurrentBalance())
 	if err != nil {
 		s.log.Error().
-			Str("accessKey", accessKey).
 			Str("xpubID", xpub.GetId()).
 			Msgf("Error while calculating balance: %v", err.Error())
 		return nil, err
