@@ -2,6 +2,7 @@ package transactions_test
 
 import (
 	"bux-wallet/notification"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 
 	"errors"
@@ -13,7 +14,6 @@ import (
 
 	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
-	"bux-wallet/logging"
 	buxclient "bux-wallet/transports/bux/client"
 
 	"github.com/brianvoe/gofakeit/v6"
@@ -22,6 +22,7 @@ import (
 )
 
 func TestCreateTransaction(t *testing.T) {
+	testLogger := zerolog.Nop()
 	t.Run("Create transaction", func(t *testing.T) {
 		// Arrange
 		ctrl := gomock.NewController(t)
@@ -48,7 +49,7 @@ func TestCreateTransaction(t *testing.T) {
 			CreateWithXpriv(xpriv).
 			Return(buxClientMq, nil)
 
-		sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.GetDefaultLogger())
+		sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
 
 		// Act
 		txs := make(chan notification.TransactionEvent, 1)
@@ -60,6 +61,7 @@ func TestCreateTransaction(t *testing.T) {
 }
 
 func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
+	testLogger := zerolog.Nop()
 	ts := data.CreateTestTransactions(10)
 
 	cases := []struct {
@@ -91,7 +93,7 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 				CreateWithAccessKey(accessKey).
 				Return(buxClientMq, nil)
 
-			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.GetDefaultLogger())
+			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
 
 			// Act
 			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
@@ -106,6 +108,7 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 }
 
 func TestGetTransaction_ReturnsError(t *testing.T) {
+	testLogger := zerolog.Nop()
 	ts := data.CreateTestTransactions(10)
 
 	cases := []struct {
@@ -139,7 +142,7 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 				CreateWithAccessKey(accessKey).
 				Return(buxClientMq, nil)
 
-			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, logging.GetDefaultLogger())
+			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
 
 			// Act
 			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)

@@ -3,6 +3,7 @@ package users_test
 import (
 	"database/sql"
 	"errors"
+	"github.com/rs/zerolog"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -10,11 +11,11 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"bux-wallet/domain/users"
-	"bux-wallet/logging"
 	mock "bux-wallet/tests/mocks"
 )
 
 func TestCreateNewUser_ReturnsUser(t *testing.T) {
+	testLogger := zerolog.Nop()
 	cases := []struct {
 		name         string
 		userEmail    string
@@ -56,7 +57,7 @@ func TestCreateNewUser_ReturnsUser(t *testing.T) {
 				RegisterPaymail(gomock.Any(), gomock.Any()).
 				Return(tc.expectedUser.User.Paymail, nil)
 
-			sut := users.NewUserService(repoMq, buxClientMq, nil, logging.GetDefaultLogger())
+			sut := users.NewUserService(repoMq, buxClientMq, nil, &testLogger)
 
 			// Act
 			result, err := sut.CreateNewUser(tc.userEmail, tc.userPswd)
@@ -71,6 +72,7 @@ func TestCreateNewUser_ReturnsUser(t *testing.T) {
 }
 
 func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
+	testLogger := zerolog.Nop()
 	cases := []struct {
 		name        string
 		userEmail   string
@@ -111,7 +113,7 @@ func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
 				Return(nil, nil).
 				AnyTimes()
 
-			sut := users.NewUserService(repoMq, buxClientMq, nil, logging.GetDefaultLogger())
+			sut := users.NewUserService(repoMq, buxClientMq, nil, &testLogger)
 
 			// Act
 			result, err := sut.CreateNewUser(tc.userEmail, tc.userPswd)
