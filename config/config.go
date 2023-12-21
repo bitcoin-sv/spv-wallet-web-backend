@@ -65,6 +65,12 @@ const EnvHashSalt = "hash.salt"
 const (
 	// EnvLoggingLevel define logging level for running application.
 	EnvLoggingLevel = "logging.level"
+	// EnvLoggingInstanceName define the instance name for logging.
+	EnvLoggingInstanceName = "logging.instance.name"
+	// EnvLoggingFormat define the logging format - console/json.
+	EnvLoggingFormat = "logging.format"
+	// EnvLoggingLogOrigin define whether to log origin.
+	EnvLoggingLogOrigin = "logging.log.origin"
 )
 
 const (

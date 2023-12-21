@@ -2,27 +2,27 @@ package users
 
 import (
 	"fmt"
+	"github.com/rs/zerolog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
 	"bux-wallet/domain"
 	"bux-wallet/domain/users"
-	"bux-wallet/logging"
 	"bux-wallet/transports/http/auth"
 	router "bux-wallet/transports/http/endpoints/routes"
 )
 
 type handler struct {
 	service users.UserService
-	log     logging.Logger
+	log     *zerolog.Logger
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services, lf logging.LoggerFactory) (router.RootEndpoints, router.ApiEndpoints) {
+func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, router.ApiEndpoints) {
 	h := &handler{
 		service: *s.UsersService,
-		log:     lf.NewLogger("users-handler"),
+		log:     log,
 	}
 
 	prefix := "/api/v1"
@@ -54,7 +54,7 @@ func (h *handler) register(c *gin.Context) {
 	var reqUser RegisterUser
 	// Check if request body is valid JSON
 	if err := c.Bind(&reqUser); err != nil {
-		h.log.Errorf("Invalid payload: %s", err)
+		h.log.Error().Msgf("Invalid payload: %s", err)
 		c.JSON(http.StatusBadRequest, "Invalid request.")
 		return
 	}
@@ -102,14 +102,14 @@ func (h *handler) register(c *gin.Context) {
 func (h *handler) getUser(c *gin.Context) {
 	user, err := h.service.GetUserById(c.GetInt(auth.SessionUserId))
 	if err != nil {
-		h.log.Errorf("User not found: %s", err)
+		h.log.Error().Msgf("User not found: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while getting user details")
 		return
 	}
 
 	currentBalance, err := h.service.GetUserBalance(c.GetString(auth.SessionAccessKey))
 	if err != nil {
-		h.log.Errorf("Balance not found: %s", err)
+		h.log.Error().Msgf("Balance not found: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while getting user details")
 		return
 	}

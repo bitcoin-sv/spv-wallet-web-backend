@@ -3,20 +3,21 @@ package buxclient
 import (
 	"bux-wallet/config"
 	"bux-wallet/domain/users"
-	"bux-wallet/logging"
+	"github.com/rs/zerolog"
 
 	"github.com/BuxOrg/go-buxclient"
 	"github.com/spf13/viper"
 )
 
 type buxclientFactory struct {
-	log logging.Logger
+	log *zerolog.Logger
 }
 
 // NewBuxClientFactory creates instance of Bux Client Factory.
-func NewBuxClientFactory(lf logging.LoggerFactory) users.BuxClientFactory {
+func NewBuxClientFactory(log *zerolog.Logger) users.BuxClientFactory {
+	buxClientLogger := log.With().Str("service", "bux-client").Logger()
 	return &buxclientFactory{
-		log: lf.NewLogger("bux-client"),
+		log: &buxClientLogger,
 	}
 }
 

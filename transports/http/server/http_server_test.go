@@ -2,21 +2,20 @@ package httpserver
 
 import (
 	"context"
+	"github.com/rs/zerolog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
-
-	"bux-wallet/logging"
 )
 
 func TestNewHttpServer(t *testing.T) {
 
-	lf := logging.DefaultLoggerFactory()
+	testLogger := zerolog.Nop()
 
-	server := NewHttpServer(8080, lf)
+	server := NewHttpServer(8080, &testLogger)
 	server.ApplyConfiguration(WithPanicEndpoint)
 
 	// Create a test request
@@ -47,10 +46,8 @@ func TestNewHttpServer(t *testing.T) {
 
 func TestDebugWriter(t *testing.T) {
 	// Arrange
-	lf := logging.DefaultLoggerFactory()
-	logger := lf.NewLogger("test")
-
-	writer := debugWriter(logger)
+	testLogger := zerolog.Nop()
+	writer := debugWriter(&testLogger)
 
 	// Act
 	_, err := writer.Write([]byte("Debug log message"))
@@ -61,9 +58,9 @@ func TestDebugWriter(t *testing.T) {
 
 func TestApplyConfiguration(t *testing.T) {
 	// Arrange
-	lf := logging.DefaultLoggerFactory()
+	testLogger := zerolog.Nop()
 
-	server := NewHttpServer(8080, lf)
+	server := NewHttpServer(8080, &testLogger)
 	require.NotNil(t, server, "Server should be created")
 
 	// Act
@@ -75,9 +72,9 @@ func TestApplyConfiguration(t *testing.T) {
 
 func TestShutdownWithContext(t *testing.T) {
 	// Arrange
-	lf := logging.DefaultLoggerFactory()
+	testLogger := zerolog.Nop()
 
-	server := NewHttpServer(8080, lf)
+	server := NewHttpServer(8080, &testLogger)
 	require.NotNil(t, server, "Server should be created")
 
 	// Act

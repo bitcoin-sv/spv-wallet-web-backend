@@ -2,8 +2,8 @@ package websocket
 
 import (
 	"encoding/json"
+	"github.com/rs/zerolog"
 
-	"bux-wallet/logging"
 	"bux-wallet/notification"
 	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/centrifugal/centrifuge"
@@ -12,7 +12,7 @@ import (
 // Socket represents websocket server entrypoint used to publish messages via websocket communication.
 type Socket struct {
 	Client *centrifuge.Client
-	Log    logging.Logger
+	Log    *zerolog.Logger
 }
 
 // Notify send event notification.
@@ -23,14 +23,14 @@ func (s *Socket) Notify(event any) {
 	}
 
 	if s.Client == nil {
-		s.Log.Debugf("Skipping notification, no client connection to handle the event %s", bytes)
+		s.Log.Debug().Msgf("Skipping notification, no client connection to handle the event %s", bytes)
 		return
 	}
 
 	if err = s.Client.Send(bytes); err != nil {
-		s.Log.Errorf("Error when sending event %v to websocket: %v", event, err.Error())
+		s.Log.Error().Msgf("Error when sending event %v to websocket: %v", event, err.Error())
 	}
-	s.Log.Infof("Event %v sent to websocket", event)
+	s.Log.Info().Msgf("Event %v sent to websocket", event)
 }
 
 // NotifyAboutTransaction will send notification about new transaction.
@@ -47,7 +47,7 @@ func (s *Socket) SendError(error error) {
 	}
 
 	if err = s.Client.Send(bytes); err != nil {
-		s.Log.Errorf("Error when sending event %v to websocket: %v", error.Error(), err.Error())
+		s.Log.Error().Msgf("Error when sending event %v to websocket: %v", error.Error(), err.Error())
 	}
-	s.Log.Infof("Event %v sent to websocket", error.Error())
+	s.Log.Info().Msgf("Event %v sent to websocket", error.Error())
 }

@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/rs/zerolog"
 	"io"
 	"net/http"
 	"net/mail"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,7 +21,6 @@ import (
 
 	"bux-wallet/config"
 	"bux-wallet/encryption"
-	"bux-wallet/logging"
 )
 
 // CredentialsError Generic error type / wrapper for Credentials errors.
@@ -69,17 +70,17 @@ type UserService struct {
 	repo             UsersRepository
 	buxClient        AdmBuxClient
 	buxClientFactory BuxClientFactory
-	log              logging.Logger
+	log              *zerolog.Logger
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo UsersRepository, adminBuxClient AdmBuxClient, bf BuxClientFactory, lf logging.LoggerFactory) *UserService {
-	// Create service.
+func NewUserService(repo UsersRepository, adminBuxClient AdmBuxClient, bf BuxClientFactory, l *zerolog.Logger) *UserService {
+	userServiceLogger := l.With().Str("service", "user-service").Logger()
 	s := &UserService{
 		repo:             repo,
 		buxClient:        adminBuxClient,
 		buxClientFactory: bf,
-		log:              lf.NewLogger("user-service"),
+		log:              &userServiceLogger,
 	}
 
 	return s
@@ -89,7 +90,7 @@ func NewUserService(repo UsersRepository, adminBuxClient AdmBuxClient, bf BuxCli
 func (s *UserService) InsertUser(user *User) error {
 	if err := s.repo.InsertUser(context.Background(), user); err != nil {
 		e := &UserError{err.Error()}
-		s.log.Error(e.Error())
+		s.log.Error().Msgf("Error while inserting user: %v", e.Error())
 		return e
 	}
 	return nil
@@ -100,14 +101,18 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	// Validate password.
 	if err := validatePassword(password); err != nil {
 		e := &UserError{err.Error()}
-		s.log.Error(e.Error())
+		s.log.Error().
+			Str("newUserEmail", email).
+			Msgf("Error while validating password: %v", e.Error())
 		return nil, e
 	}
 
 	// Validate user.
 	if err := s.validateUser(email); err != nil {
 		e := &UserError{err.Error()}
-		s.log.Error(e.Error())
+		s.log.Error().
+			Str("newUserEmail", email).
+			Msgf("Error while validating user: %v", e.Error())
 		return nil, e
 	}
 
@@ -115,23 +120,28 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	mnemonic, seed, err := generateMnemonic()
 	if err != nil {
 		e := &UserError{err.Error()}
-		s.log.Error(e.Error())
+		s.log.Error().
+			Str("newUserEmail", email).
+			Msgf("Error while generating mnemonic: %v", e.Error())
 		return nil, e
 	}
 
 	xpriv, err := generateXpriv(seed)
 	if err != nil {
 		e := &UserError{err.Error()}
-		s.log.Error(e.Error())
+		s.log.Error().
+			Str("newUserEmail", email).
+			Msgf("Error while generating xPriv: %v", e.Error())
 		return nil, e
 	}
 
 	// Encrypt xpriv
 	encryptedXpriv, err := encryptXpriv(password, xpriv.String())
-
 	if err != nil {
 		e := &UserError{err.Error()}
-		s.log.Error(e.Error())
+		s.log.Error().
+			Str("newUserEmail", email).
+			Msgf("Error while encrypting xPriv: %v", e.Error())
 		return nil, e
 	}
 
@@ -139,7 +149,9 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	xpub, err := s.buxClient.RegisterXpub(xpriv)
 	if err != nil {
 		e := &XPubError{fmt.Sprintf("error registering xpub in BUX: %s", err)}
-		s.log.Error(e.Error())
+		s.log.Error().
+			Str("newUserEmail", email).
+			Msgf("Error while registering xPub: %v", e.Error())
 		return nil, e
 	}
 
@@ -150,7 +162,9 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	paymail, err := s.buxClient.RegisterPaymail(username, xpub)
 	if err != nil {
 		e := &PaymailError{fmt.Sprintf("error registering paymail in BUX: %s", err)}
-		s.log.Error(e.Error())
+		s.log.Error().
+			Str("newUserEmail", email).
+			Msgf("Error while registering paymail: %v", e.Error())
 		return nil, e
 	}
 
@@ -164,7 +178,9 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 
 	if err := s.InsertUser(user); err != nil {
 		e := &UserError{err.Error()}
-		s.log.Error(e.Error())
+		s.log.Error().
+			Str("newUserEmail", email).
+			Msgf("Error while inserting user: %v", e.Error())
 		return nil, e
 	}
 
@@ -181,8 +197,10 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	// Check if user exists.
 	user, err := s.repo.GetUserByEmail(context.Background(), email)
 	if err != nil {
-		s.log.Errorf("User wasn't found by email: %s", err)
-		if err == sql.ErrNoRows {
+		s.log.Error().
+			Str("userEmail", email).
+			Msgf("User wasn't found by email: %v", err.Error())
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrInvalidCredentials
 		}
 		return nil, err
@@ -191,14 +209,18 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	// Decrypt xpriv.
 	decryptedXpriv, err := decryptXpriv(password, user.Xpriv)
 	if err != nil {
-		s.log.Errorf("xPriv wasn't decrypted: %s", err)
+		s.log.Error().
+			Str("userEmail", email).
+			Msgf("Error while decrypting xPriv: %v", err.Error())
 		return nil, err
 	}
 
 	// Try to generate BUX client with decrypted xpriv.
 	buxClient, err := s.buxClientFactory.CreateWithXpriv(decryptedXpriv)
 	if err != nil {
-		s.log.Errorf("Bux client can't be provided: %s", err)
+		s.log.Error().
+			Str("userEmail", email).
+			Msgf("Error while creating BUX client: %v", err.Error())
 		// "no keys available" error is a custom bux-client error which says that bux-client can't be provided(in our case due to wrong xpriv)
 		if err.Error() == "no keys available" {
 			return nil, ErrInvalidCredentials
@@ -209,19 +231,25 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	// Create access key.
 	accessKey, err := buxClient.CreateAccessKey()
 	if err != nil {
-		s.log.Errorf("Access Key wasn't created: %s", err)
+		s.log.Error().
+			Str("userEmail", email).
+			Msgf("Error while creating access key: %v", err.Error())
 		return nil, err
 	}
 
 	xpub, err := buxClient.GetXPub()
 	if err != nil {
-		s.log.Errorf("xPub wasn't found: %s", err)
+		s.log.Error().
+			Str("userEmail", email).
+			Msgf("Error while getting xPub: %v", err.Error())
 		return nil, err
 	}
 
 	balance, err := calculateBalance(xpub.GetCurrentBalance())
 	if err != nil {
-		s.log.Errorf("An error occurred on balance calculation: %s", err)
+		s.log.Error().
+			Str("userEmail", email).
+			Msgf("Error while calculating balance: %v", err.Error())
 		return nil, err
 	}
 
@@ -259,7 +287,9 @@ func (s *UserService) SignOutUser(accessKeyId, accessKey string) error {
 func (s *UserService) GetUserById(userId int) (*User, error) {
 	user, err := s.repo.GetUserById(context.Background(), userId)
 	if err != nil {
-		s.log.Error(err.Error())
+		s.log.Error().
+			Str("userID", strconv.Itoa(userId)).
+			Msgf("Error while getting user by id: %v", err.Error())
 		return nil, err
 	}
 
@@ -271,21 +301,25 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 	// Create BUX client with access key.
 	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
-		s.log.Error(err.Error())
+		s.log.Error().
+			Msgf("Error while creating BUX client: %v", err.Error())
 		return nil, err
 	}
 
 	// Get xpub.
 	xpub, err := buxClient.GetXPub()
 	if err != nil {
-		s.log.Error(err.Error())
+		s.log.Error().
+			Msgf("Error while getting xPub: %v", err.Error())
 		return nil, err
 	}
 
 	// Calculate balance.
 	balance, err := calculateBalance(xpub.GetCurrentBalance())
 	if err != nil {
-		s.log.Error(err.Error())
+		s.log.Error().
+			Str("xpubID", xpub.GetId()).
+			Msgf("Error while calculating balance: %v", err.Error())
 		return nil, err
 	}
 
@@ -296,14 +330,19 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 func (s *UserService) GetUserXpriv(userId int, password string) (string, error) {
 	user, err := s.repo.GetUserById(context.Background(), userId)
 	if err != nil {
-		s.log.Error(err.Error())
+		s.log.Error().
+			Str("userID", strconv.Itoa(userId)).
+			Msgf("Error while getting user by id: %v", err.Error())
+
 		return "", err
 	}
 
 	// Decrypt xpriv.
 	decryptedXpriv, err := decryptXpriv(password, user.Xpriv)
 	if err != nil {
-		s.log.Error(err.Error())
+		s.log.Error().
+			Str("userID", strconv.Itoa(userId)).
+			Msgf("Error while decrypting xPriv: %v", err.Error())
 		return "", err
 	}
 
@@ -314,7 +353,9 @@ func (s *UserService) validateUser(email string) error {
 	//Validate email
 	if _, err := mail.ParseAddress(email); err != nil {
 		e := &UserError{"invalid email address"}
-		s.log.Error(e.Error())
+		s.log.Error().
+			Str("userEmail", email).
+			Msgf("Error while validating email: %v", e.Error())
 		return e
 	}
 
@@ -323,7 +364,9 @@ func (s *UserService) validateUser(email string) error {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil
 		}
-		s.log.Error(err.Error())
+		s.log.Error().
+			Str("userEmail", email).
+			Msgf("Error while validating email: %v", err.Error())
 		return &UserError{err.Error()}
 	}
 
