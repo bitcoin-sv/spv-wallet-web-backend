@@ -1,8 +1,9 @@
 package cors
 
 import (
-	"bux-wallet/config"
 	"net/http"
+
+	"bux-wallet/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -17,7 +18,7 @@ func CorsMiddleware() gin.HandlerFunc {
 			if allowedOrigin == origin {
 				c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 				c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-				c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+				c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Cache-Control")
 				c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 				break
 			}
