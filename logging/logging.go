@@ -19,7 +19,6 @@ const (
 func GetDefaultLogger() *zerolog.Logger {
 	logger := ecszerolog.New(os.Stdout, ecszerolog.Level(zerolog.DebugLevel)).
 		With().
-		Timestamp().
 		Caller().
 		Str("application", "bux-wallet-default").
 		Logger()
@@ -52,13 +51,11 @@ func CreateLogger() (*zerolog.Logger, error) {
 	if viper.GetBool(config.EnvLoggingLogOrigin) {
 		logger = ecszerolog.New(writer, logLevel, origin).
 			With().
-			Timestamp().
 			Str("application", instanceName).
 			Logger()
 	} else {
 		logger = ecszerolog.New(writer, logLevel).
 			With().
-			Timestamp().
 			Str("application", instanceName).
 			Logger()
 	}
