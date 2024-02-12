@@ -5,9 +5,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
 	"net/http"
 	"time"
+
+	"github.com/rs/zerolog"
 
 	"bux-wallet/domain"
 	"bux-wallet/transports/http/auth"
@@ -96,7 +97,7 @@ func (s *server) SetupEntrypoint(engine *gin.Engine) {
 func newNode(l *zerolog.Logger) (*centrifuge.Node, error) {
 	lh := newLogHandler(l)
 	return centrifuge.New(centrifuge.Config{
-		Name:       "bux-wallet",
+		Name:       "spv-wallet",
 		LogLevel:   lh.Level(),
 		LogHandler: lh.Log,
 	})
