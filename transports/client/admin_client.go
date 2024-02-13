@@ -1,26 +1,27 @@
-package buxclient
+package client
 
 import (
 	"context"
 	"fmt"
+
 	"github.com/rs/zerolog"
 
-	buxmodels "github.com/BuxOrg/bux-models"
-	"github.com/BuxOrg/go-buxclient"
+	models "github.com/BuxOrg/bux-models"
+	walletclient "github.com/BuxOrg/go-buxclient"
 	"github.com/libsv/go-bk/bip32"
 	"github.com/spf13/viper"
 
 	"bux-wallet/config"
 )
 
-// AdminBuxClient is a wrapper for Admin Bux Client.
-type AdminBuxClient struct {
-	client *buxclient.BuxClient
+// AdminClient is a wrapper for Admin SPV Wallet Client.
+type AdminClient struct {
+	client *walletclient.BuxClient
 	log    *zerolog.Logger
 }
 
-// RegisterXpub registers xpub in bux.
-func (c *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
+// RegisterXpub registers xpub in SPV Wallet.
+func (c *AdminClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
 	// Get xpub from xpriv.
 	xpub, err := xpriv.Neuter()
 
@@ -29,9 +30,9 @@ func (c *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) 
 		return "", err
 	}
 
-	// Register new xpub in BUX.
+	// Register new xpub in SPV Wallet.
 	err = c.client.NewXpub(
-		context.Background(), xpub.String(), &buxmodels.Metadata{},
+		context.Background(), xpub.String(), &models.Metadata{},
 	)
 
 	if err != nil {
@@ -44,8 +45,8 @@ func (c *AdminBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) 
 	return xpub.String(), nil
 }
 
-// RegisterPaymail registers new paymail in bux.
-func (c *AdminBuxClient) RegisterPaymail(alias, xpub string) (string, error) {
+// RegisterPaymail registers new paymail in SPV Wallet.
+func (c *AdminClient) RegisterPaymail(alias, xpub string) (string, error) {
 	// Get paymail domain from env.
 	domain := viper.GetString(config.EnvBuxPaymailDomain)
 
@@ -55,8 +56,8 @@ func (c *AdminBuxClient) RegisterPaymail(alias, xpub string) (string, error) {
 	// Get avatar url from env.
 	avatar := viper.GetString(config.EnvBuxPaymailAvatar)
 
-	// Register new xpub in BUX.
-	err := c.client.NewPaymail(context.Background(), xpub, address, avatar, alias, &buxmodels.Metadata{})
+	// Register new xpub in SPV Wallet.
+	err := c.client.NewPaymail(context.Background(), xpub, address, avatar, alias, &models.Metadata{})
 
 	if err != nil {
 		c.log.Error().Msgf("Error while registering new paymail: %v", err.Error())

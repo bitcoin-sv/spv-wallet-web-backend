@@ -2,6 +2,7 @@ package transactions_test
 
 import (
 	"bux-wallet/notification"
+
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 
@@ -14,7 +15,7 @@ import (
 
 	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
-	buxclient "bux-wallet/transports/bux/client"
+	"bux-wallet/transports/client"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang/mock/gomock"
@@ -33,7 +34,7 @@ func TestCreateTransaction(t *testing.T) {
 		recipient := "recipient.paymail@4chain.com"
 		txValueInSatoshis := uint64(500)
 
-		tr := buxclient.DraftTransaction{}
+		tr := client.DraftTransaction{}
 
 		buxClientMq := mock.NewMockUserBuxClient(ctrl)
 		buxClientMq.EXPECT().
@@ -154,8 +155,8 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 	}
 }
 
-func findById(collection []buxclient.FullTransaction, id string) (users.FullTransaction, error) {
-	result := utils.Find(collection, func(t buxclient.FullTransaction) bool { return t.Id == id })
+func findById(collection []client.FullTransaction, id string) (users.FullTransaction, error) {
+	result := utils.Find(collection, func(t client.FullTransaction) bool { return t.Id == id })
 
 	if result == nil {
 		return nil, errors.New("Not found")

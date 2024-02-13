@@ -4,7 +4,8 @@ import (
 	db_users "bux-wallet/data/users"
 	"bux-wallet/domain/transactions"
 	"bux-wallet/domain/users"
-	buxclient "bux-wallet/transports/bux/client"
+	"bux-wallet/transports/client"
+
 	"github.com/rs/zerolog"
 )
 
@@ -17,8 +18,8 @@ type Services struct {
 
 // NewServices creates services instance.
 func NewServices(usersRepo *db_users.UsersRepository, log *zerolog.Logger) (*Services, error) {
-	bf := buxclient.NewBuxClientFactory(log)
-	adminBuxClient, err := bf.CreateAdminBuxClient()
+	bf := client.NewClientFactory(log)
+	adminBuxClient, err := bf.CreateAdminClient()
 	if err != nil {
 		return nil, err
 	}

@@ -770,19 +770,19 @@ func (m *MockBuxClientFactory) EXPECT() *MockBuxClientFactoryMockRecorder {
         return m.recorder
 }
 
-// CreateAdminBuxClient mocks base method.
-func (m *MockBuxClientFactory) CreateAdminBuxClient() (users.AdmBuxClient, error) {
+// CreateAdminClient mocks base method.
+func (m *MockBuxClientFactory) CreateAdminClient() (users.AdmBuxClient, error) {
         m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "CreateAdminBuxClient")
+        ret := m.ctrl.Call(m, "CreateAdminClient")
         ret0, _ := ret[0].(users.AdmBuxClient)
         ret1, _ := ret[1].(error)
         return ret0, ret1
 }
 
-// CreateAdminBuxClient indicates an expected call of CreateAdminBuxClient.
-func (mr *MockBuxClientFactoryMockRecorder) CreateAdminBuxClient() *gomock.Call {
+// CreateAdminClient indicates an expected call of CreateAdminClient.
+func (mr *MockBuxClientFactoryMockRecorder) CreateAdminClient() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAdminBuxClient", reflect.TypeOf((*MockBuxClientFactory)(nil).CreateAdminBuxClient))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAdminClient", reflect.TypeOf((*MockBuxClientFactory)(nil).CreateAdminClient))
 }
 
 // CreateWithAccessKey mocks base method.

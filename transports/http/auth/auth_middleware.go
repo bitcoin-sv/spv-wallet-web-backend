@@ -23,7 +23,7 @@ type AuthMiddleware struct {
 
 // NewAuthMiddleware create middleware that is checking the variables in session.
 func NewAuthMiddleware(s *domain.Services) *AuthMiddleware {
-	adminBuxClient, err := s.BuxClientFactory.CreateAdminBuxClient()
+	adminBuxClient, err := s.BuxClientFactory.CreateAdminClient()
 	if err != nil {
 		panic(fmt.Errorf("error during creating admin bux client: %w", err))
 	}

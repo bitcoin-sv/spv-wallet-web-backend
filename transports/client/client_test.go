@@ -1,4 +1,4 @@
-package buxclient
+package client
 
 import (
 	"testing"

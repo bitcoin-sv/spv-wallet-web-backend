@@ -1,10 +1,11 @@
 package notification
 
 import (
-	buxclient "bux-wallet/transports/bux/client"
+	"bux-wallet/transports/client"
 	"fmt"
-	buxmodels "github.com/BuxOrg/bux-models"
 	"time"
+
+	models "github.com/BuxOrg/bux-models"
 )
 
 // BaseEvent represents base of notification.
@@ -32,8 +33,8 @@ type Transaction struct {
 }
 
 // PrepareTransactionEvent prepares event in NewTransactionEvent struct.
-func PrepareTransactionEvent(tx *buxmodels.Transaction) TransactionEvent {
-	sender, receiver := buxclient.GetPaymailsFromMetadata(tx, "unknown")
+func PrepareTransactionEvent(tx *models.Transaction) TransactionEvent {
+	sender, receiver := client.GetPaymailsFromMetadata(tx, "unknown")
 	status := "unconfirmed"
 	if tx.BlockHeight > 0 {
 		status = "confirmed"

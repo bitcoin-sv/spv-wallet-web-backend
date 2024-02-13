@@ -82,6 +82,6 @@ type (
 	BuxClientFactory interface {
 		CreateWithXpriv(xpriv string) (UserBuxClient, error)
 		CreateWithAccessKey(accessKey string) (UserBuxClient, error)
-		CreateAdminBuxClient() (AdmBuxClient, error)
+		CreateAdminClient() (AdmBuxClient, error)
 	}
 )
