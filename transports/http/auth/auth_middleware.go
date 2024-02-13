@@ -16,21 +16,21 @@ var ErrorUnauthorized = errors.New("unauthorized")
 
 // AuthMiddleware middleware that is checking the variables set in session.
 type AuthMiddleware struct {
-	adminBuxClient   users.AdminClient
-	buxClientFactory users.ClientFactory
-	services         *domain.Services
+	adminClient   users.AdminClient
+	clientFactory users.ClientFactory
+	services      *domain.Services
 }
 
 // NewAuthMiddleware create middleware that is checking the variables in session.
 func NewAuthMiddleware(s *domain.Services) *AuthMiddleware {
-	adminBuxClient, err := s.BuxClientFactory.CreateAdminClient()
+	adminClient, err := s.ClientFactory.CreateAdminClient()
 	if err != nil {
-		panic(fmt.Errorf("error during creating admin bux client: %w", err))
+		panic(fmt.Errorf("error during creating adminClient: %w", err))
 	}
 	return &AuthMiddleware{
-		adminBuxClient:   adminBuxClient,
-		buxClientFactory: s.BuxClientFactory,
-		services:         s,
+		adminClient:   adminClient,
+		clientFactory: s.ClientFactory,
+		services:      s,
 	}
 }
 
@@ -75,18 +75,12 @@ func isNilOrEmpty(s interface{}) bool {
 	return s == nil || s == ""
 }
 
-// checkAccessKey checks if access key is valid by getting it from BUX.
 func (h *AuthMiddleware) checkAccessKey(accessKey, accessKeyId string) error {
-	// Create bux client with keys from session
-	buxClient, err := h.buxClientFactory.CreateWithAccessKey(accessKey)
+	userClient, err := h.clientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return err
 	}
 
-	_, err = buxClient.GetAccessKey(accessKeyId)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, err = userClient.GetAccessKey(accessKeyId)
+	return err
 }

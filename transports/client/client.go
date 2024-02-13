@@ -14,7 +14,7 @@ import (
 	"web-backend/domain/users"
 )
 
-// Client is a wrapper for Bux Client.
+// Client implements UserClient interface which wraps the spv-wallet-go-client and provides methods for user.
 type Client struct {
 	client *walletclient.BuxClient
 	log    *zerolog.Logger

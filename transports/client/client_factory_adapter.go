@@ -14,7 +14,7 @@ type clientFactory struct {
 	log *zerolog.Logger
 }
 
-// NewClientFactory creates instance of Bux Client Factory.
+// NewClientFactory implements the ClientFactory.
 func NewClientFactory(log *zerolog.Logger) users.ClientFactory {
 	buxClientLogger := log.With().Str("service", "spv-wallet-client").Logger()
 	return &clientFactory{
@@ -22,14 +22,12 @@ func NewClientFactory(log *zerolog.Logger) users.ClientFactory {
 	}
 }
 
-// CreateAdminClient creates instance of Bux Client with admin keys.
+// CreateAdminClient returns AdminClient as spv-wallet-go-client instance with admin key.
 func (bf *clientFactory) CreateAdminClient() (users.AdminClient, error) {
-	// Get env variables.
 	xpriv := viper.GetString(config.EnvBuxAdminXpriv)
 	serverUrl, debug, signRequest := getServerData()
 
-	// Init bux client.
-	buxClient, err := walletclient.New(
+	adminClient, err := walletclient.New(
 		walletclient.WithXPriv(xpriv),
 		walletclient.WithAdminKey(xpriv),
 		walletclient.WithHTTP(serverUrl),
@@ -42,18 +40,16 @@ func (bf *clientFactory) CreateAdminClient() (users.AdminClient, error) {
 	}
 
 	return &AdminClient{
-		client: buxClient,
+		client: adminClient,
 		log:    bf.log,
 	}, nil
 }
 
-// CreateWithXpriv creates instance of Bux Client with given xpriv.
+// CreateWithXpriv returns UserClient as spv-wallet-go-client instance with given xpriv.
 func (bf *clientFactory) CreateWithXpriv(xpriv string) (users.UserClient, error) {
-	// Get env variables.
 	serverUrl, debug, signRequest := getServerData()
 
-	// Init bux client with generated xpub.
-	buxClient, err := walletclient.New(
+	userClient, err := walletclient.New(
 		walletclient.WithXPriv(xpriv),
 		walletclient.WithHTTP(serverUrl),
 		walletclient.WithDebugging(debug),
@@ -65,18 +61,17 @@ func (bf *clientFactory) CreateWithXpriv(xpriv string) (users.UserClient, error)
 	}
 
 	return &Client{
-		client: buxClient,
+		client: userClient,
 		log:    bf.log,
 	}, nil
 }
 
-// CreateWithXpriv creates instance of Bux Client with given xpriv.
+// CreateWithXpriv returns UserClient as spv-wallet-go-client instance with given access key.
 func (bf *clientFactory) CreateWithAccessKey(accessKey string) (users.UserClient, error) {
 	// Get env variables.
 	serverUrl, debug, signRequest := getServerData()
 
-	// Init bux client with generated xpub.
-	buxClient, err := walletclient.New(
+	userclient, err := walletclient.New(
 		walletclient.WithAccessKey(accessKey),
 		walletclient.WithHTTP(serverUrl),
 		walletclient.WithDebugging(debug),
@@ -88,7 +83,7 @@ func (bf *clientFactory) CreateWithAccessKey(accessKey string) (users.UserClient
 	}
 
 	return &Client{
-		client: buxClient,
+		client: userclient,
 		log:    bf.log,
 	}, nil
 }
