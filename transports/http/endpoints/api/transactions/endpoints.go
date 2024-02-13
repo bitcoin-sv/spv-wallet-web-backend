@@ -1,18 +1,19 @@
 package transactions
 
 import (
-	"bux-wallet/domain"
-	"bux-wallet/domain/transactions"
-	"bux-wallet/domain/users"
-	"bux-wallet/notification"
-	"bux-wallet/transports/websocket"
-	"github.com/BuxOrg/go-buxclient/transports"
-	"github.com/rs/zerolog"
 	"net/http"
 	"strconv"
+	"web-backend/domain"
+	"web-backend/domain/transactions"
+	"web-backend/domain/users"
+	"web-backend/notification"
+	"web-backend/transports/websocket"
 
-	"bux-wallet/transports/http/auth"
-	router "bux-wallet/transports/http/endpoints/routes"
+	"github.com/BuxOrg/go-buxclient/transports"
+	"github.com/rs/zerolog"
+
+	"web-backend/transports/http/auth"
+	router "web-backend/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
 )

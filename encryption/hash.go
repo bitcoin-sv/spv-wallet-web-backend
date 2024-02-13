@@ -1,9 +1,9 @@
 package encryption
 
 import (
-	"bux-wallet/config"
 	"crypto/sha256"
 	"fmt"
+	"web-backend/config"
 
 	"github.com/spf13/viper"
 )

@@ -1,8 +1,8 @@
 package encryption_test
 
 import (
-	"bux-wallet/encryption"
 	"testing"
+	"web-backend/encryption"
 
 	"github.com/stretchr/testify/assert"
 )

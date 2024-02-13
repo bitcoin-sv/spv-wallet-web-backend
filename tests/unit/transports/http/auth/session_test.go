@@ -4,8 +4,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"bux-wallet/domain/users"
-	"bux-wallet/transports/http/auth"
+	"web-backend/domain/users"
+	"web-backend/transports/http/auth"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"

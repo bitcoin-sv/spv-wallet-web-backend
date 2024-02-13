@@ -3,15 +3,16 @@ package users_test
 import (
 	"database/sql"
 	"errors"
-	"github.com/rs/zerolog"
 	"testing"
+
+	"github.com/rs/zerolog"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"bux-wallet/domain/users"
-	mock "bux-wallet/tests/mocks"
+	"web-backend/domain/users"
+	mock "web-backend/tests/mocks"
 )
 
 func TestCreateNewUser_ReturnsUser(t *testing.T) {

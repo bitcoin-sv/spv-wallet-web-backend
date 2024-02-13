@@ -1,13 +1,14 @@
 package logging
 
 import (
-	"bux-wallet/config"
-	"github.com/rs/zerolog"
-	"github.com/spf13/viper"
-	"go.elastic.co/ecszerolog"
 	"io"
 	"os"
 	"time"
+	"web-backend/config"
+
+	"github.com/rs/zerolog"
+	"github.com/spf13/viper"
+	"go.elastic.co/ecszerolog"
 )
 
 const (
@@ -20,7 +21,7 @@ func GetDefaultLogger() *zerolog.Logger {
 	logger := ecszerolog.New(os.Stdout, ecszerolog.Level(zerolog.DebugLevel)).
 		With().
 		Caller().
-		Str("application", "bux-wallet-default").
+		Str("application", "spv-wallet-web-backend-default").
 		Logger()
 
 	return &logger

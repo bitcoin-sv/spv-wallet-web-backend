@@ -1,10 +1,10 @@
 package auth
 
 import (
-	"bux-wallet/config"
-	router "bux-wallet/transports/http/endpoints/routes"
 	"database/sql"
 	"net/http"
+	"web-backend/config"
+	router "web-backend/transports/http/endpoints/routes"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/postgres"

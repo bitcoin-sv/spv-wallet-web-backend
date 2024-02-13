@@ -1,7 +1,8 @@
 package databases
 
 import (
-	"bux-wallet/config"
+	"web-backend/config"
+
 	"github.com/rs/zerolog"
 
 	"database/sql"

@@ -11,7 +11,7 @@ import (
 	walletclient "github.com/BuxOrg/go-buxclient"
 	"github.com/BuxOrg/go-buxclient/transports"
 
-	"bux-wallet/domain/users"
+	"web-backend/domain/users"
 )
 
 // Client is a wrapper for Bux Client.

@@ -1,24 +1,24 @@
 package main
 
 import (
-	"bux-wallet/config"
-	"bux-wallet/config/databases"
-	db_users "bux-wallet/data/users"
-	"bux-wallet/domain"
-	"bux-wallet/logging"
-	"bux-wallet/transports/http/endpoints"
-	httpserver "bux-wallet/transports/http/server"
-	"bux-wallet/transports/websocket"
 	"errors"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"web-backend/config"
+	"web-backend/config/databases"
+	db_users "web-backend/data/users"
+	"web-backend/domain"
+	"web-backend/logging"
+	"web-backend/transports/http/endpoints"
+	httpserver "web-backend/transports/http/server"
+	"web-backend/transports/websocket"
 
 	"github.com/spf13/viper"
 )
 
-const appname = "bux-wallet-backend"
+const appname = "spv-wallet-web-backend"
 
 // nolint: godot
 // @title           Bux Wallet API

@@ -1,9 +1,9 @@
 package users
 
 import (
-	"bux-wallet/domain/users"
 	"context"
 	"database/sql"
+	"web-backend/domain/users"
 )
 
 const (

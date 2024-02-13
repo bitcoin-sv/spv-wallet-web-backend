@@ -1,7 +1,7 @@
 package transactions_test
 
 import (
-	"bux-wallet/notification"
+	"web-backend/notification"
 
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
@@ -9,13 +9,13 @@ import (
 	"errors"
 	"testing"
 
-	"bux-wallet/tests/data"
-	mock "bux-wallet/tests/mocks"
-	"bux-wallet/tests/utils"
+	"web-backend/tests/data"
+	mock "web-backend/tests/mocks"
+	"web-backend/tests/utils"
 
-	"bux-wallet/domain/transactions"
-	"bux-wallet/domain/users"
-	"bux-wallet/transports/client"
+	"web-backend/domain/transactions"
+	"web-backend/domain/users"
+	"web-backend/transports/client"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang/mock/gomock"

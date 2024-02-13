@@ -1,9 +1,9 @@
 package notification
 
 import (
-	"bux-wallet/transports/client"
 	"fmt"
 	"time"
+	"web-backend/transports/client"
 
 	models "github.com/BuxOrg/bux-models"
 )

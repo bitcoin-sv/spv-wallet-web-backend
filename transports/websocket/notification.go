@@ -2,9 +2,11 @@ package websocket
 
 import (
 	"encoding/json"
+
 	"github.com/rs/zerolog"
 
-	"bux-wallet/notification"
+	"web-backend/notification"
+
 	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/centrifugal/centrifuge"
 )

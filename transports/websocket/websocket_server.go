@@ -10,9 +10,9 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"bux-wallet/domain"
-	"bux-wallet/transports/http/auth"
-	router "bux-wallet/transports/http/endpoints/routes"
+	"web-backend/domain"
+	"web-backend/transports/http/auth"
+	router "web-backend/transports/http/endpoints/routes"
 
 	"github.com/centrifugal/centrifuge"
 	"github.com/gin-gonic/gin"

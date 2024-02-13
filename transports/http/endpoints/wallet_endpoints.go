@@ -1,20 +1,21 @@
 package endpoints
 
 import (
-	"bux-wallet/domain"
-	"bux-wallet/transports/http/endpoints/status"
-	"bux-wallet/transports/http/endpoints/swagger"
-	"bux-wallet/transports/websocket"
 	"database/sql"
 	"errors"
+	"web-backend/domain"
+	"web-backend/transports/http/endpoints/status"
+	"web-backend/transports/http/endpoints/swagger"
+	"web-backend/transports/websocket"
+
 	"github.com/rs/zerolog"
 
-	"bux-wallet/transports/http/auth"
-	"bux-wallet/transports/http/endpoints/api/access"
-	"bux-wallet/transports/http/endpoints/api/transactions"
-	"bux-wallet/transports/http/endpoints/api/users"
-	router "bux-wallet/transports/http/endpoints/routes"
-	httpserver "bux-wallet/transports/http/server"
+	"web-backend/transports/http/auth"
+	"web-backend/transports/http/endpoints/api/access"
+	"web-backend/transports/http/endpoints/api/transactions"
+	"web-backend/transports/http/endpoints/api/users"
+	router "web-backend/transports/http/endpoints/routes"
+	httpserver "web-backend/transports/http/server"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,7 +1,7 @@
 package data
 
 import (
-	"bux-wallet/transports/client"
+	"web-backend/transports/client"
 
 	"github.com/brianvoe/gofakeit/v6"
 )

@@ -1,14 +1,15 @@
 package access
 
 import (
-	"bux-wallet/domain"
-	"bux-wallet/domain/users"
 	"errors"
-	"github.com/rs/zerolog"
 	"net/http"
+	"web-backend/domain"
+	"web-backend/domain/users"
 
-	"bux-wallet/transports/http/auth"
-	router "bux-wallet/transports/http/endpoints/routes"
+	"github.com/rs/zerolog"
+
+	"web-backend/transports/http/auth"
+	router "web-backend/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
 )

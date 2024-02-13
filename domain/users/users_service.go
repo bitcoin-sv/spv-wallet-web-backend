@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/rs/zerolog"
 	"io"
 	"net/http"
 	"net/mail"
@@ -14,13 +13,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/rs/zerolog"
+
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
 	"github.com/libsv/go-bk/chaincfg"
 	"github.com/spf13/viper"
 
-	"bux-wallet/config"
-	"bux-wallet/encryption"
+	"web-backend/config"
+	"web-backend/encryption"
 )
 
 // CredentialsError Generic error type / wrapper for Credentials errors.

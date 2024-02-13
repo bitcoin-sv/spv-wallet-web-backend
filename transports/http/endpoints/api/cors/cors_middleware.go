@@ -3,7 +3,7 @@ package cors
 import (
 	"net/http"
 
-	"bux-wallet/config"
+	"web-backend/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"

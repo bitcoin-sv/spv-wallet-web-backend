@@ -11,7 +11,7 @@ import (
 	"github.com/libsv/go-bk/bip32"
 	"github.com/spf13/viper"
 
-	"bux-wallet/config"
+	"web-backend/config"
 )
 
 // AdminClient is a wrapper for Admin SPV Wallet Client.

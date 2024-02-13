@@ -5,7 +5,7 @@
 package mock
 
 import (
-	users "bux-wallet/domain/users"
+	users "web-backend/domain/users"
         reflect "reflect"
 	time "time"
 

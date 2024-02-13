@@ -1,8 +1,8 @@
 package client
 
 import (
-	"bux-wallet/config"
-	"bux-wallet/domain/users"
+	"web-backend/config"
+	"web-backend/domain/users"
 
 	"github.com/rs/zerolog"
 

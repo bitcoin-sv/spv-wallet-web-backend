@@ -1,8 +1,8 @@
 package users
 
 import (
-	"bux-wallet/domain/users"
 	"time"
+	"web-backend/domain/users"
 )
 
 // UserDto is a struct that represent user database record.

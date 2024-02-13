@@ -1,10 +1,10 @@
 package domain
 
 import (
-	db_users "bux-wallet/data/users"
-	"bux-wallet/domain/transactions"
-	"bux-wallet/domain/users"
-	"bux-wallet/transports/client"
+	db_users "web-backend/data/users"
+	"web-backend/domain/transactions"
+	"web-backend/domain/users"
+	"web-backend/transports/client"
 
 	"github.com/rs/zerolog"
 )

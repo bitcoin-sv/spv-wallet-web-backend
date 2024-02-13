@@ -1,11 +1,12 @@
 package transactions
 
 import (
-	"bux-wallet/domain/users"
-	"bux-wallet/notification"
-	"github.com/rs/zerolog"
 	"math"
 	"time"
+	"web-backend/domain/users"
+	"web-backend/notification"
+
+	"github.com/rs/zerolog"
 
 	buxmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient/transports"

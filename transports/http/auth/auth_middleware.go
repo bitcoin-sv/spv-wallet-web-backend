@@ -1,11 +1,11 @@
 package auth
 
 import (
-	"bux-wallet/domain"
-	"bux-wallet/domain/users"
 	"errors"
 	"fmt"
 	"net/http"
+	"web-backend/domain"
+	"web-backend/domain/users"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"

@@ -2,15 +2,16 @@ package users
 
 import (
 	"fmt"
-	"github.com/rs/zerolog"
 	"net/http"
+
+	"github.com/rs/zerolog"
 
 	"github.com/gin-gonic/gin"
 
-	"bux-wallet/domain"
-	"bux-wallet/domain/users"
-	"bux-wallet/transports/http/auth"
-	router "bux-wallet/transports/http/endpoints/routes"
+	"web-backend/domain"
+	"web-backend/domain/users"
+	"web-backend/transports/http/auth"
+	router "web-backend/transports/http/endpoints/routes"
 )
 
 type handler struct {

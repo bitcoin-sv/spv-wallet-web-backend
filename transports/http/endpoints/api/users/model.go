@@ -1,6 +1,6 @@
 package users
 
-import "bux-wallet/domain/users"
+import "web-backend/domain/users"
 
 // RegisterUser is a struct that contains user register data.
 type RegisterUser struct {

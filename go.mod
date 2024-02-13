@@ -1,4 +1,4 @@
-module bux-wallet
+module web-backend
 
 go 1.21.5
 
