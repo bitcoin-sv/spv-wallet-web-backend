@@ -21,9 +21,9 @@ import (
 const appname = "spv-wallet-web-backend"
 
 // nolint: godot
-// @title           Bux Wallet API
+// @title           SPV Wallet web-backend
 // @version			1.0
-// @description     This is an API for bux wallet.
+// @description     This is an API for the spv-wallet-web-frontend.
 func main() {
 	defaultLogger := logging.GetDefaultLogger()
 

@@ -15,13 +15,13 @@ import (
 
 // TransactionService represents service whoch contains methods linked with transactions.
 type TransactionService struct {
-	buxClient        users.AdmBuxClient
-	buxClientFactory users.BuxClientFactory
+	buxClient        users.AdminClient
+	buxClientFactory users.ClientFactory
 	log              *zerolog.Logger
 }
 
 // NewTransactionService creates new transaction service.
-func NewTransactionService(buxClient users.AdmBuxClient, bf users.BuxClientFactory, log *zerolog.Logger) *TransactionService {
+func NewTransactionService(buxClient users.AdminClient, bf users.ClientFactory, log *zerolog.Logger) *TransactionService {
 	transactionServiceLogger := log.With().Str("service", "user-service").Logger()
 	return &TransactionService{
 		buxClient:        buxClient,
@@ -112,7 +112,7 @@ func (s *TransactionService) GetTransactions(accessKey, userPaymail string, quer
 	return pTransactions, nil
 }
 
-func tryRecordTransaction(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log *zerolog.Logger) (*buxmodels.Transaction, error) {
+func tryRecordTransaction(buxClient users.UserClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log *zerolog.Logger) (*buxmodels.Transaction, error) {
 	retries := uint(3)
 	tx, recordErr := tryRecord(buxClient, draftTx, metadata, log, retries)
 
@@ -137,7 +137,7 @@ func tryRecordTransaction(buxClient users.UserBuxClient, draftTx users.DraftTran
 	return tx, nil
 }
 
-func tryRecord(buxClient users.UserBuxClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log *zerolog.Logger, retries uint) (*buxmodels.Transaction, error) {
+func tryRecord(buxClient users.UserClient, draftTx users.DraftTransaction, metadata *buxmodels.Metadata, log *zerolog.Logger, retries uint) (*buxmodels.Transaction, error) {
 	log.Debug().
 		Str("draftTxId", draftTx.GetDraftTransactionId()).
 		Msg("record transaction")
@@ -160,7 +160,7 @@ func tryRecord(buxClient users.UserBuxClient, draftTx users.DraftTransaction, me
 	return tx, err
 }
 
-func tryUnreserve(buxClient users.UserBuxClient, draftTx users.DraftTransaction, log *zerolog.Logger, retries uint) error {
+func tryUnreserve(buxClient users.UserClient, draftTx users.DraftTransaction, log *zerolog.Logger, retries uint) error {
 	log.Debug().
 		Str("draftTxId", draftTx.GetDraftTransactionId()).
 		Msg("unreserve UTXOs from draft")

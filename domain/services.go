@@ -13,7 +13,7 @@ import (
 type Services struct {
 	UsersService        *users.UserService
 	TransactionsService *transactions.TransactionService
-	BuxClientFactory    users.BuxClientFactory
+	BuxClientFactory    users.ClientFactory
 }
 
 // NewServices creates services instance.

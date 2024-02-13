@@ -69,13 +69,13 @@ var ErrUserAlreadyExists = &UserError{"user already exists"}
 // UserService represents User service and provide access to repository.
 type UserService struct {
 	repo             UsersRepository
-	buxClient        AdmBuxClient
-	buxClientFactory BuxClientFactory
+	buxClient        AdminClient
+	buxClientFactory ClientFactory
 	log              *zerolog.Logger
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo UsersRepository, adminBuxClient AdmBuxClient, bf BuxClientFactory, l *zerolog.Logger) *UserService {
+func NewUserService(repo UsersRepository, adminBuxClient AdminClient, bf ClientFactory, l *zerolog.Logger) *UserService {
 	userServiceLogger := l.With().Str("service", "user-service").Logger()
 	s := &UserService{
 		repo:             repo,

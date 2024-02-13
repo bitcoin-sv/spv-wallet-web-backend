@@ -15,7 +15,7 @@ type clientFactory struct {
 }
 
 // NewClientFactory creates instance of Bux Client Factory.
-func NewClientFactory(log *zerolog.Logger) users.BuxClientFactory {
+func NewClientFactory(log *zerolog.Logger) users.ClientFactory {
 	buxClientLogger := log.With().Str("service", "spv-wallet-client").Logger()
 	return &clientFactory{
 		log: &buxClientLogger,
@@ -23,7 +23,7 @@ func NewClientFactory(log *zerolog.Logger) users.BuxClientFactory {
 }
 
 // CreateAdminClient creates instance of Bux Client with admin keys.
-func (bf *clientFactory) CreateAdminClient() (users.AdmBuxClient, error) {
+func (bf *clientFactory) CreateAdminClient() (users.AdminClient, error) {
 	// Get env variables.
 	xpriv := viper.GetString(config.EnvBuxAdminXpriv)
 	serverUrl, debug, signRequest := getServerData()
@@ -48,7 +48,7 @@ func (bf *clientFactory) CreateAdminClient() (users.AdmBuxClient, error) {
 }
 
 // CreateWithXpriv creates instance of Bux Client with given xpriv.
-func (bf *clientFactory) CreateWithXpriv(xpriv string) (users.UserBuxClient, error) {
+func (bf *clientFactory) CreateWithXpriv(xpriv string) (users.UserClient, error) {
 	// Get env variables.
 	serverUrl, debug, signRequest := getServerData()
 
@@ -71,7 +71,7 @@ func (bf *clientFactory) CreateWithXpriv(xpriv string) (users.UserBuxClient, err
 }
 
 // CreateWithXpriv creates instance of Bux Client with given xpriv.
-func (bf *clientFactory) CreateWithAccessKey(accessKey string) (users.UserBuxClient, error) {
+func (bf *clientFactory) CreateWithAccessKey(accessKey string) (users.UserClient, error) {
 	// Get env variables.
 	serverUrl, debug, signRequest := getServerData()
 

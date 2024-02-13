@@ -771,10 +771,10 @@ func (m *MockBuxClientFactory) EXPECT() *MockBuxClientFactoryMockRecorder {
 }
 
 // CreateAdminClient mocks base method.
-func (m *MockBuxClientFactory) CreateAdminClient() (users.AdmBuxClient, error) {
+func (m *MockBuxClientFactory) CreateAdminClient() (users.AdminClient, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateAdminClient")
-        ret0, _ := ret[0].(users.AdmBuxClient)
+        ret0, _ := ret[0].(users.AdminClient)
         ret1, _ := ret[1].(error)
         return ret0, ret1
 }
@@ -786,10 +786,10 @@ func (mr *MockBuxClientFactoryMockRecorder) CreateAdminClient() *gomock.Call {
 }
 
 // CreateWithAccessKey mocks base method.
-func (m *MockBuxClientFactory) CreateWithAccessKey(accessKey string) (users.UserBuxClient, error) {
+func (m *MockBuxClientFactory) CreateWithAccessKey(accessKey string) (users.UserClient, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateWithAccessKey", accessKey)
-        ret0, _ := ret[0].(users.UserBuxClient)
+        ret0, _ := ret[0].(users.UserClient)
         ret1, _ := ret[1].(error)
         return ret0, ret1
 }
@@ -801,10 +801,10 @@ func (mr *MockBuxClientFactoryMockRecorder) CreateWithAccessKey(accessKey interf
 }
 
 // CreateWithXpriv mocks base method.
-func (m *MockBuxClientFactory) CreateWithXpriv(xpriv string) (users.UserBuxClient, error) {
+func (m *MockBuxClientFactory) CreateWithXpriv(xpriv string) (users.UserClient, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateWithXpriv", xpriv)
-        ret0, _ := ret[0].(users.UserBuxClient)
+        ret0, _ := ret[0].(users.UserClient)
         ret1, _ := ret[1].(error)
         return ret0, ret1
 }

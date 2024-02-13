@@ -16,8 +16,8 @@ var ErrorUnauthorized = errors.New("unauthorized")
 
 // AuthMiddleware middleware that is checking the variables set in session.
 type AuthMiddleware struct {
-	adminBuxClient   users.AdmBuxClient
-	buxClientFactory users.BuxClientFactory
+	adminBuxClient   users.AdminClient
+	buxClientFactory users.ClientFactory
 	services         *domain.Services
 }
 
