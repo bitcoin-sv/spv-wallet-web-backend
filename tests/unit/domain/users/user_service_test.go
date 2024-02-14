@@ -25,11 +25,11 @@ func TestCreateNewUser_ReturnsUser(t *testing.T) {
 	}{
 		{
 			name:      "Insert valid user",
-			userEmail: "homer.simpson@4chain.com",
+			userEmail: "homer.simpson@example.com",
 			userPswd:  "strongP4$$word",
 			expectedUser: &users.CreatedUser{
 				User: &users.User{
-					Email:   "homer.simpson@4chain.com",
+					Email:   "homer.simpson@example.com",
 					Paymail: "homer.simpson@homer.simpson.space",
 				},
 			},
@@ -82,19 +82,19 @@ func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
 	}{
 		{
 			name:        "User already exists",
-			userEmail:   "marge.simpson@4chain.com",
+			userEmail:   "marge.simpson@example.com",
 			userPswd:    "strongP4$$word",
 			expectedErr: users.ErrUserAlreadyExists,
 		},
 		{
 			name:        "Invalid email",
-			userEmail:   "bart.simpson_4chain.com",
+			userEmail:   "bart.simpson_example.com",
 			userPswd:    "strongP4$$word",
 			expectedErr: errors.New("invalid email address"),
 		},
 		{
 			name:        "Invalid password",
-			userEmail:   "ned.flanders@4chain.com",
+			userEmail:   "ned.flanders@example.com",
 			userPswd:    "",
 			expectedErr: errors.New("correct password is required"),
 		},

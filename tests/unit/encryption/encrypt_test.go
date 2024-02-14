@@ -19,14 +19,14 @@ func TestEncryptionDecryption(t *testing.T) {
 		{
 			name:                           "Used valid passphrase",
 			plaintext:                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque consequat justo sed viverra laoreet. Cras pulvinar orci turpis, vel pulvinar tellus vestibulum eget. Duis dictum purus eget ante aliquet mollis. Duis sit amet arcu urna.",
-			passphraseForEncryption:        "4chain",
-			passphraseForDecryption:        "4chain",
+			passphraseForEncryption:        "example",
+			passphraseForDecryption:        "example",
 			expectedDecodedTextSameAsInput: true,
 		},
 		{
 			name:                           "Used invalid passphrase",
 			plaintext:                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque consequat justo sed viverra laoreet. Cras pulvinar orci turpis, vel pulvinar tellus vestibulum eget. Duis dictum purus eget ante aliquet mollis. Duis sit amet arcu urna.",
-			passphraseForEncryption:        "4chain",
+			passphraseForEncryption:        "example",
 			passphraseForDecryption:        "otherword",
 			expectedDecodedTextSameAsInput: false,
 		},
