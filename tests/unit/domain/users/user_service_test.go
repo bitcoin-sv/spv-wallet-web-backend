@@ -43,7 +43,7 @@ func TestCreateNewUser_ReturnsUser(t *testing.T) {
 			defer ctrl.Finish()
 
 			repoMq := mock.NewMockUsersRepository(ctrl)
-			mockAdminClient := mock.NewMockAdmBuxClient(ctrl)
+			mockAdminClient := mock.NewMockAdminClient(ctrl)
 
 			repoMq.EXPECT().
 				GetUserByEmail(gomock.Any(), tc.userEmail).
@@ -107,7 +107,7 @@ func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
 			defer ctrl.Finish()
 
 			repoMq := mock.NewMockUsersRepository(ctrl)
-			mockAdminClient := mock.NewMockAdmBuxClient(ctrl)
+			mockAdminClient := mock.NewMockAdminClient(ctrl)
 
 			repoMq.EXPECT().
 				GetUserByEmail(gomock.Any(), tc.userEmail).

@@ -5,14 +5,14 @@
 package mock
 
 import (
-	users "web-backend/domain/users"
         reflect "reflect"
-	time "time"
+        time "time"
+        users "web-backend/domain/users"
 
-	buxmodels "github.com/BuxOrg/bux-models"
-	transports "github.com/BuxOrg/go-buxclient/transports"
-	gomock "github.com/golang/mock/gomock"
-	bip32 "github.com/libsv/go-bk/bip32"
+        buxmodels "github.com/BuxOrg/bux-models"
+        transports "github.com/BuxOrg/go-buxclient/transports"
+        gomock "github.com/golang/mock/gomock"
+        bip32 "github.com/libsv/go-bk/bip32"
 )
 
 // MockAccKey is a mock of AccKey interface.
@@ -115,20 +115,6 @@ func (m *MockPubKey) GetId() string {
 func (mr *MockPubKeyMockRecorder) GetId() *gomock.Call {
         mr.mock.ctrl.T.Helper()
         return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetId", reflect.TypeOf((*MockPubKey)(nil).GetId))
-}
-
-// GetXPub mocks base method.
-func (m *MockPubKey) GetXPub() string {
-        m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "GetXPub")
-        ret0, _ := ret[0].(string)
-        return ret0
-}
-
-// GetXPub indicates an expected call of GetXPub.
-func (mr *MockPubKeyMockRecorder) GetXPub() *gomock.Call {
-        mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetXPub", reflect.TypeOf((*MockPubKey)(nil).GetXPub))
 }
 
 // MockTransaction is a mock of Transaction interface.
@@ -508,31 +494,31 @@ func (mr *MockDraftTransactionMockRecorder) GetDraftTransactionId() *gomock.Call
         return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDraftTransactionId", reflect.TypeOf((*MockDraftTransaction)(nil).GetDraftTransactionId))
 }
 
-// MockUserBuxClient is a mock of UserBuxClient interface.
-type MockUserBuxClient struct {
+// MockUserClient is a mock of UserClient interface.
+type MockUserClient struct {
         ctrl     *gomock.Controller
-        recorder *MockUserBuxClientMockRecorder
+        recorder *MockUserClientMockRecorder
 }
 
-// MockUserBuxClientMockRecorder is the mock recorder for MockUserBuxClient.
-type MockUserBuxClientMockRecorder struct {
-        mock *MockUserBuxClient
+// MockUserClientMockRecorder is the mock recorder for MockUserClient.
+type MockUserClientMockRecorder struct {
+        mock *MockUserClient
 }
 
-// NewMockUserBuxClient creates a new mock instance.
-func NewMockUserBuxClient(ctrl *gomock.Controller) *MockUserBuxClient {
-        mock := &MockUserBuxClient{ctrl: ctrl}
-        mock.recorder = &MockUserBuxClientMockRecorder{mock}
+// NewMockUserClient creates a new mock instance.
+func NewMockUserClient(ctrl *gomock.Controller) *MockUserClient {
+        mock := &MockUserClient{ctrl: ctrl}
+        mock.recorder = &MockUserClientMockRecorder{mock}
         return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUserBuxClient) EXPECT() *MockUserBuxClientMockRecorder {
+func (m *MockUserClient) EXPECT() *MockUserClientMockRecorder {
         return m.recorder
 }
 
 // CreateAccessKey mocks base method.
-func (m *MockUserBuxClient) CreateAccessKey() (users.AccKey, error) {
+func (m *MockUserClient) CreateAccessKey() (users.AccKey, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateAccessKey")
         ret0, _ := ret[0].(users.AccKey)
@@ -541,13 +527,13 @@ func (m *MockUserBuxClient) CreateAccessKey() (users.AccKey, error) {
 }
 
 // CreateAccessKey indicates an expected call of CreateAccessKey.
-func (mr *MockUserBuxClientMockRecorder) CreateAccessKey() *gomock.Call {
+func (mr *MockUserClientMockRecorder) CreateAccessKey() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccessKey", reflect.TypeOf((*MockUserBuxClient)(nil).CreateAccessKey))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccessKey", reflect.TypeOf((*MockUserClient)(nil).CreateAccessKey))
 }
 
 // CreateAndFinalizeTransaction mocks base method.
-func (m *MockUserBuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (users.DraftTransaction, error) {
+func (m *MockUserClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (users.DraftTransaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateAndFinalizeTransaction", recipients, metadata)
         ret0, _ := ret[0].(users.DraftTransaction)
@@ -556,13 +542,13 @@ func (m *MockUserBuxClient) CreateAndFinalizeTransaction(recipients []*transport
 }
 
 // CreateAndFinalizeTransaction indicates an expected call of CreateAndFinalizeTransaction.
-func (mr *MockUserBuxClientMockRecorder) CreateAndFinalizeTransaction(recipients, metadata interface{}) *gomock.Call {
+func (mr *MockUserClientMockRecorder) CreateAndFinalizeTransaction(recipients, metadata interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAndFinalizeTransaction", reflect.TypeOf((*MockUserBuxClient)(nil).CreateAndFinalizeTransaction), recipients, metadata)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAndFinalizeTransaction", reflect.TypeOf((*MockUserClient)(nil).CreateAndFinalizeTransaction), recipients, metadata)
 }
 
 // GetAccessKey mocks base method.
-func (m *MockUserBuxClient) GetAccessKey(accessKeyId string) (users.AccKey, error) {
+func (m *MockUserClient) GetAccessKey(accessKeyId string) (users.AccKey, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetAccessKey", accessKeyId)
         ret0, _ := ret[0].(users.AccKey)
@@ -571,13 +557,13 @@ func (m *MockUserBuxClient) GetAccessKey(accessKeyId string) (users.AccKey, erro
 }
 
 // GetAccessKey indicates an expected call of GetAccessKey.
-func (mr *MockUserBuxClientMockRecorder) GetAccessKey(accessKeyId interface{}) *gomock.Call {
+func (mr *MockUserClientMockRecorder) GetAccessKey(accessKeyId interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccessKey", reflect.TypeOf((*MockUserBuxClient)(nil).GetAccessKey), accessKeyId)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccessKey", reflect.TypeOf((*MockUserClient)(nil).GetAccessKey), accessKeyId)
 }
 
 // GetTransaction mocks base method.
-func (m *MockUserBuxClient) GetTransaction(transactionId, userPaymail string) (users.FullTransaction, error) {
+func (m *MockUserClient) GetTransaction(transactionId, userPaymail string) (users.FullTransaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetTransaction", transactionId, userPaymail)
         ret0, _ := ret[0].(users.FullTransaction)
@@ -586,13 +572,13 @@ func (m *MockUserBuxClient) GetTransaction(transactionId, userPaymail string) (u
 }
 
 // GetTransaction indicates an expected call of GetTransaction.
-func (mr *MockUserBuxClientMockRecorder) GetTransaction(transactionId, userPaymail interface{}) *gomock.Call {
+func (mr *MockUserClientMockRecorder) GetTransaction(transactionId, userPaymail interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransaction", reflect.TypeOf((*MockUserBuxClient)(nil).GetTransaction), transactionId, userPaymail)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransaction", reflect.TypeOf((*MockUserClient)(nil).GetTransaction), transactionId, userPaymail)
 }
 
 // GetTransactions mocks base method.
-func (m *MockUserBuxClient) GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]users.Transaction, error) {
+func (m *MockUserClient) GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]users.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetTransactions", queryParam, userPaymail)
         ret0, _ := ret[0].([]users.Transaction)
@@ -601,13 +587,13 @@ func (m *MockUserBuxClient) GetTransactions(queryParam transports.QueryParams, u
 }
 
 // GetTransactions indicates an expected call of GetTransactions.
-func (mr *MockUserBuxClientMockRecorder) GetTransactions(queryParam, userPaymail interface{}) *gomock.Call {
+func (mr *MockUserClientMockRecorder) GetTransactions(queryParam, userPaymail interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactions", reflect.TypeOf((*MockUserBuxClient)(nil).GetTransactions), queryParam, userPaymail)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactions", reflect.TypeOf((*MockUserClient)(nil).GetTransactions), queryParam, userPaymail)
 }
 
 // GetTransactionsCount mocks base method.
-func (m *MockUserBuxClient) GetTransactionsCount() (int64, error) {
+func (m *MockUserClient) GetTransactionsCount() (int64, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetTransactionsCount")
         ret0, _ := ret[0].(int64)
@@ -616,13 +602,13 @@ func (m *MockUserBuxClient) GetTransactionsCount() (int64, error) {
 }
 
 // GetTransactionsCount indicates an expected call of GetTransactionsCount.
-func (mr *MockUserBuxClientMockRecorder) GetTransactionsCount() *gomock.Call {
+func (mr *MockUserClientMockRecorder) GetTransactionsCount() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionsCount", reflect.TypeOf((*MockUserBuxClient)(nil).GetTransactionsCount))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionsCount", reflect.TypeOf((*MockUserClient)(nil).GetTransactionsCount))
 }
 
 // GetXPub mocks base method.
-func (m *MockUserBuxClient) GetXPub() (users.PubKey, error) {
+func (m *MockUserClient) GetXPub() (users.PubKey, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetXPub")
         ret0, _ := ret[0].(users.PubKey)
@@ -631,41 +617,28 @@ func (m *MockUserBuxClient) GetXPub() (users.PubKey, error) {
 }
 
 // GetXPub indicates an expected call of GetXPub.
-func (mr *MockUserBuxClientMockRecorder) GetXPub() *gomock.Call {
+func (mr *MockUserClientMockRecorder) GetXPub() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetXPub", reflect.TypeOf((*MockUserBuxClient)(nil).GetXPub))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetXPub", reflect.TypeOf((*MockUserClient)(nil).GetXPub))
 }
 
 // RecordTransaction mocks base method.
-func (m *MockUserBuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) (*buxmodels.Transaction, error) {
+func (m *MockUserClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) (*buxmodels.Transaction, error) {
         m.ctrl.T.Helper()
-        ret:= m.ctrl.Call(m, "RecordTransaction", hex, draftTxId, metadata)
+        ret := m.ctrl.Call(m, "RecordTransaction", hex, draftTxId, metadata)
+        ret0, _ := ret[0].(*buxmodels.Transaction)
         ret1, _ := ret[1].(error)
-        return nil, ret1
+        return ret0, ret1
 }
 
 // RecordTransaction indicates an expected call of RecordTransaction.
-func (mr *MockUserBuxClientMockRecorder) RecordTransaction(hex, draftTxId, metadata interface{}) *gomock.Call {
+func (mr *MockUserClientMockRecorder) RecordTransaction(hex, draftTxId, metadata interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecordTransaction", reflect.TypeOf((*MockUserBuxClient)(nil).RecordTransaction), hex, draftTxId, metadata)
-}
-
-// UnreserveUtxos mocks base method.
-func (m *MockUserBuxClient) UnreserveUtxos(draftTxId string) error {
-        m.ctrl.T.Helper()
-        ret:=   m.ctrl.Call(m, "UnreserveUtxos", draftTxId)
-        ret0, _ := ret[0].(error)
-        return ret0
-}
-
-// UnreserveUtxos indicates an expected call of UnreserveUtxos.
-func (mr *MockUserBuxClientMockRecorder) UnreserveUtxos(draftTxId interface{}) *gomock.Call {
-        mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnreserveUtxos", reflect.TypeOf((*MockUserBuxClient)(nil).UnreserveUtxos), draftTxId)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecordTransaction", reflect.TypeOf((*MockUserClient)(nil).RecordTransaction), hex, draftTxId, metadata)
 }
 
 // RevokeAccessKey mocks base method.
-func (m *MockUserBuxClient) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
+func (m *MockUserClient) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "RevokeAccessKey", accessKeyId)
         ret0, _ := ret[0].(users.AccKey)
@@ -674,13 +647,13 @@ func (m *MockUserBuxClient) RevokeAccessKey(accessKeyId string) (users.AccKey, e
 }
 
 // RevokeAccessKey indicates an expected call of RevokeAccessKey.
-func (mr *MockUserBuxClientMockRecorder) RevokeAccessKey(accessKeyId interface{}) *gomock.Call {
+func (mr *MockUserClientMockRecorder) RevokeAccessKey(accessKeyId interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAccessKey", reflect.TypeOf((*MockUserBuxClient)(nil).RevokeAccessKey), accessKeyId)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAccessKey", reflect.TypeOf((*MockUserClient)(nil).RevokeAccessKey), accessKeyId)
 }
 
 // SendToRecipients mocks base method.
-func (m *MockUserBuxClient) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
+func (m *MockUserClient) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "SendToRecipients", recipients, senderPaymail)
         ret0, _ := ret[0].(users.Transaction)
@@ -689,36 +662,50 @@ func (m *MockUserBuxClient) SendToRecipients(recipients []*transports.Recipients
 }
 
 // SendToRecipients indicates an expected call of SendToRecipients.
-func (mr *MockUserBuxClientMockRecorder) SendToRecipients(recipients, senderPaymail interface{}) *gomock.Call {
+func (mr *MockUserClientMockRecorder) SendToRecipients(recipients, senderPaymail interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendToRecipients", reflect.TypeOf((*MockUserBuxClient)(nil).SendToRecipients), recipients, senderPaymail)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendToRecipients", reflect.TypeOf((*MockUserClient)(nil).SendToRecipients), recipients, senderPaymail)
 }
 
-// MockAdmBuxClient is a mock of AdmBuxClient interface.
-type MockAdmBuxClient struct {
+// UnreserveUtxos mocks base method.
+func (m *MockUserClient) UnreserveUtxos(draftTxId string) error {
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "UnreserveUtxos", draftTxId)
+        ret0, _ := ret[0].(error)
+        return ret0
+}
+
+// UnreserveUtxos indicates an expected call of UnreserveUtxos.
+func (mr *MockUserClientMockRecorder) UnreserveUtxos(draftTxId interface{}) *gomock.Call {
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnreserveUtxos", reflect.TypeOf((*MockUserClient)(nil).UnreserveUtxos), draftTxId)
+}
+
+// MockAdminClient is a mock of AdminClient interface.
+type MockAdminClient struct {
         ctrl     *gomock.Controller
-        recorder *MockAdmBuxClientMockRecorder
+        recorder *MockAdminClientMockRecorder
 }
 
-// MockAdmBuxClientMockRecorder is the mock recorder for MockAdmBuxClient.
-type MockAdmBuxClientMockRecorder struct {
-        mock *MockAdmBuxClient
+// MockAdminClientMockRecorder is the mock recorder for MockAdminClient.
+type MockAdminClientMockRecorder struct {
+        mock *MockAdminClient
 }
 
-// NewMockAdmBuxClient creates a new mock instance.
-func NewMockAdmBuxClient(ctrl *gomock.Controller) *MockAdmBuxClient {
-        mock := &MockAdmBuxClient{ctrl: ctrl}
-        mock.recorder = &MockAdmBuxClientMockRecorder{mock}
+// NewMockAdminClient creates a new mock instance.
+func NewMockAdminClient(ctrl *gomock.Controller) *MockAdminClient {
+        mock := &MockAdminClient{ctrl: ctrl}
+        mock.recorder = &MockAdminClientMockRecorder{mock}
         return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAdmBuxClient) EXPECT() *MockAdmBuxClientMockRecorder {
+func (m *MockAdminClient) EXPECT() *MockAdminClientMockRecorder {
         return m.recorder
 }
 
 // RegisterPaymail mocks base method.
-func (m *MockAdmBuxClient) RegisterPaymail(alias, xpub string) (string, error) {
+func (m *MockAdminClient) RegisterPaymail(alias, xpub string) (string, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "RegisterPaymail", alias, xpub)
         ret0, _ := ret[0].(string)
@@ -727,13 +714,13 @@ func (m *MockAdmBuxClient) RegisterPaymail(alias, xpub string) (string, error) {
 }
 
 // RegisterPaymail indicates an expected call of RegisterPaymail.
-func (mr *MockAdmBuxClientMockRecorder) RegisterPaymail(alias, xpub interface{}) *gomock.Call {
+func (mr *MockAdminClientMockRecorder) RegisterPaymail(alias, xpub interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterPaymail", reflect.TypeOf((*MockAdmBuxClient)(nil).RegisterPaymail), alias, xpub)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterPaymail", reflect.TypeOf((*MockAdminClient)(nil).RegisterPaymail), alias, xpub)
 }
 
 // RegisterXpub mocks base method.
-func (m *MockAdmBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
+func (m *MockAdminClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "RegisterXpub", xpriv)
         ret0, _ := ret[0].(string)
@@ -742,36 +729,36 @@ func (m *MockAdmBuxClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error
 }
 
 // RegisterXpub indicates an expected call of RegisterXpub.
-func (mr *MockAdmBuxClientMockRecorder) RegisterXpub(xpriv interface{}) *gomock.Call {
+func (mr *MockAdminClientMockRecorder) RegisterXpub(xpriv interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterXpub", reflect.TypeOf((*MockAdmBuxClient)(nil).RegisterXpub), xpriv)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterXpub", reflect.TypeOf((*MockAdminClient)(nil).RegisterXpub), xpriv)
 }
 
-// MockBuxClientFactory is a mock of BuxClientFactory interface.
-type MockBuxClientFactory struct {
+// MockClientFactory is a mock of ClientFactory interface.
+type MockClientFactory struct {
         ctrl     *gomock.Controller
-        recorder *MockBuxClientFactoryMockRecorder
+        recorder *MockClientFactoryMockRecorder
 }
 
-// MockBuxClientFactoryMockRecorder is the mock recorder for MockBuxClientFactory.
-type MockBuxClientFactoryMockRecorder struct {
-        mock *MockBuxClientFactory
+// MockClientFactoryMockRecorder is the mock recorder for MockClientFactory.
+type MockClientFactoryMockRecorder struct {
+        mock *MockClientFactory
 }
 
-// NewMockBuxClientFactory creates a new mock instance.
-func NewMockBuxClientFactory(ctrl *gomock.Controller) *MockBuxClientFactory {
-        mock := &MockBuxClientFactory{ctrl: ctrl}
-        mock.recorder = &MockBuxClientFactoryMockRecorder{mock}
+// NewMockClientFactory creates a new mock instance.
+func NewMockClientFactory(ctrl *gomock.Controller) *MockClientFactory {
+        mock := &MockClientFactory{ctrl: ctrl}
+        mock.recorder = &MockClientFactoryMockRecorder{mock}
         return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockBuxClientFactory) EXPECT() *MockBuxClientFactoryMockRecorder {
+func (m *MockClientFactory) EXPECT() *MockClientFactoryMockRecorder {
         return m.recorder
 }
 
 // CreateAdminClient mocks base method.
-func (m *MockBuxClientFactory) CreateAdminClient() (users.AdminClient, error) {
+func (m *MockClientFactory) CreateAdminClient() (users.AdminClient, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateAdminClient")
         ret0, _ := ret[0].(users.AdminClient)
@@ -780,13 +767,13 @@ func (m *MockBuxClientFactory) CreateAdminClient() (users.AdminClient, error) {
 }
 
 // CreateAdminClient indicates an expected call of CreateAdminClient.
-func (mr *MockBuxClientFactoryMockRecorder) CreateAdminClient() *gomock.Call {
+func (mr *MockClientFactoryMockRecorder) CreateAdminClient() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAdminClient", reflect.TypeOf((*MockBuxClientFactory)(nil).CreateAdminClient))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAdminClient", reflect.TypeOf((*MockClientFactory)(nil).CreateAdminClient))
 }
 
 // CreateWithAccessKey mocks base method.
-func (m *MockBuxClientFactory) CreateWithAccessKey(accessKey string) (users.UserClient, error) {
+func (m *MockClientFactory) CreateWithAccessKey(accessKey string) (users.UserClient, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateWithAccessKey", accessKey)
         ret0, _ := ret[0].(users.UserClient)
@@ -795,13 +782,13 @@ func (m *MockBuxClientFactory) CreateWithAccessKey(accessKey string) (users.User
 }
 
 // CreateWithAccessKey indicates an expected call of CreateWithAccessKey.
-func (mr *MockBuxClientFactoryMockRecorder) CreateWithAccessKey(accessKey interface{}) *gomock.Call {
+func (mr *MockClientFactoryMockRecorder) CreateWithAccessKey(accessKey interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWithAccessKey", reflect.TypeOf((*MockBuxClientFactory)(nil).CreateWithAccessKey), accessKey)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWithAccessKey", reflect.TypeOf((*MockClientFactory)(nil).CreateWithAccessKey), accessKey)
 }
 
 // CreateWithXpriv mocks base method.
-func (m *MockBuxClientFactory) CreateWithXpriv(xpriv string) (users.UserClient, error) {
+func (m *MockClientFactory) CreateWithXpriv(xpriv string) (users.UserClient, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateWithXpriv", xpriv)
         ret0, _ := ret[0].(users.UserClient)
@@ -810,7 +797,7 @@ func (m *MockBuxClientFactory) CreateWithXpriv(xpriv string) (users.UserClient, 
 }
 
 // CreateWithXpriv indicates an expected call of CreateWithXpriv.
-func (mr *MockBuxClientFactoryMockRecorder) CreateWithXpriv(xpriv interface{}) *gomock.Call {
+func (mr *MockClientFactoryMockRecorder) CreateWithXpriv(xpriv interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWithXpriv", reflect.TypeOf((*MockBuxClientFactory)(nil).CreateWithXpriv), xpriv)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWithXpriv", reflect.TypeOf((*MockClientFactory)(nil).CreateWithXpriv), xpriv)
 }

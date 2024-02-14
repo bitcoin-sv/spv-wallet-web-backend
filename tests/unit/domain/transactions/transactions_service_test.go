@@ -36,7 +36,7 @@ func TestCreateTransaction(t *testing.T) {
 
 		tr := client.DraftTransaction{}
 
-		mockUserClient := mock.NewMockUserBuxClient(ctrl)
+		mockUserClient := mock.NewMockUserClient(ctrl)
 		mockUserClient.EXPECT().
 			CreateAndFinalizeTransaction(gomock.Any(), gomock.Any()).
 			Return(&tr, nil)
@@ -45,12 +45,12 @@ func TestCreateTransaction(t *testing.T) {
 			RecordTransaction(gomock.Any(), gomock.Any(), gomock.Any()).
 			AnyTimes()
 
-		clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
+		clientFctrMq := mock.NewMockClientFactory(ctrl)
 		clientFctrMq.EXPECT().
 			CreateWithXpriv(xpriv).
 			Return(mockUserClient, nil)
 
-		sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
+		sut := transactions.NewTransactionService(mock.NewMockAdminClient(ctrl), clientFctrMq, &testLogger)
 
 		// Act
 		txs := make(chan notification.TransactionEvent, 1)
@@ -84,17 +84,17 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 			paymail := "paymail@example.com"
 			accessKey := gofakeit.HexUint256()
 
-			mockUserClient := mock.NewMockUserBuxClient(ctrl)
+			mockUserClient := mock.NewMockUserClient(ctrl)
 			mockUserClient.EXPECT().
 				GetTransaction(tc.transactionId, paymail).
 				Return(findById(ts, tc.transactionId))
 
-			clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
+			clientFctrMq := mock.NewMockClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
 				Return(mockUserClient, nil)
 
-			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
+			sut := transactions.NewTransactionService(mock.NewMockAdminClient(ctrl), clientFctrMq, &testLogger)
 
 			// Act
 			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
@@ -133,17 +133,17 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 			paymail := "paymail@example.com"
 			accessKey := gofakeit.HexUint256()
 
-			mockUserClient := mock.NewMockUserBuxClient(ctrl)
+			mockUserClient := mock.NewMockUserClient(ctrl)
 			mockUserClient.EXPECT().
 				GetTransaction(tc.transactionId, paymail).
 				Return(findById(ts, tc.transactionId))
 
-			clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
+			clientFctrMq := mock.NewMockClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
 				Return(mockUserClient, nil)
 
-			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
+			sut := transactions.NewTransactionService(mock.NewMockAdminClient(ctrl), clientFctrMq, &testLogger)
 
 			// Act
 			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
