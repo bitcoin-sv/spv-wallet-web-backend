@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is an API for bux wallet.",
-        "title": "Bux Wallet API",
+        "description": "This is an API for the spv-wallet-web-frontend.",
+        "title": "SPV Wallet web-backend",
         "contact": {},
         "version": "1.0"
     },
@@ -26,7 +26,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/access.SignInUser"
+                            "$ref": "#/definitions/transports_http_endpoints_api_access.SignInUser"
                         }
                     }
                 ],
@@ -34,7 +34,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/access.SignInResponse"
+                            "$ref": "#/definitions/transports_http_endpoints_api_access.SignInResponse"
                         }
                     }
                 }
@@ -74,7 +74,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/buxclient.Transaction"
+                                "$ref": "#/definitions/buxmodels.Transaction"
                             }
                         }
                     }
@@ -95,7 +95,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/transactions.CreateTransaction"
+                            "$ref": "#/definitions/transports_http_endpoints_api_transactions.CreateTransaction"
                         }
                     }
                 ],
@@ -103,7 +103,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/buxclient.FullTransaction"
+                            "$ref": "#/definitions/buxmodels.Transaction"
                         }
                     }
                 }
@@ -131,7 +131,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/buxclient.FullTransaction"
+                            "$ref": "#/definitions/buxmodels.Transaction"
                         }
                     }
                 }
@@ -157,7 +157,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.RegisterUser"
+                            "$ref": "#/definitions/transports_http_endpoints_api_users.RegisterUser"
                         }
                     }
                 ],
@@ -165,7 +165,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.RegisterResponse"
+                            "$ref": "#/definitions/transports_http_endpoints_api_users.RegisterResponse"
                         }
                     }
                 }
@@ -206,7 +206,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.UserResponse"
+                            "$ref": "#/definitions/transports_http_endpoints_api_users.UserResponse"
                         }
                     }
                 }
@@ -214,18 +214,109 @@
         }
     },
     "definitions": {
-        "access.SignInResponse": {
+        "buxmodels.Transaction": {
+            "type": "object",
+            "properties": {
+                "block_hash": {
+                    "description": "BlockHash is a block hash that transaction is in.",
+                    "type": "string"
+                },
+                "block_height": {
+                    "description": "BlockHeight is a block height that transaction is in.",
+                    "type": "integer"
+                },
+                "created_at": {
+                    "description": "CreatedAt is a time when outer model was created.",
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "description": "DeletedAt is a time when outer model was deleted.",
+                    "type": "string"
+                },
+                "direction": {
+                    "description": "TransactionDirection is a transaction direction (inbound/outbound).",
+                    "type": "string"
+                },
+                "draft_id": {
+                    "description": "DraftID is a transaction related draft id.",
+                    "type": "string"
+                },
+                "fee": {
+                    "description": "Fee is a transaction fee.",
+                    "type": "integer"
+                },
+                "hex": {
+                    "description": "Hex is a transaction hex.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID is a transaction id.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "Metadata is a metadata map of outer model.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "number_of_inputs": {
+                    "description": "NumberOfInputs is a number of transaction inputs.",
+                    "type": "integer"
+                },
+                "number_of_outputs": {
+                    "description": "NumberOfOutputs is a number of transaction outputs.",
+                    "type": "integer"
+                },
+                "output_value": {
+                    "description": "OutputValue is a total output value.",
+                    "type": "integer"
+                },
+                "outputs": {
+                    "description": "Outputs represents all bux-transaction outputs. Will be shown only for admin.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "status": {
+                    "description": "Status is a transaction status.",
+                    "type": "string"
+                },
+                "total_value": {
+                    "description": "TotalValue is a total input value.",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt is a time when outer model was updated.",
+                    "type": "string"
+                },
+                "xpub_in_ids": {
+                    "description": "XpubInIDs is a slice of xpub input ids.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "xpub_out_ids": {
+                    "description": "XpubOutIDs is a slice of xpub output ids.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "transports_http_endpoints_api_access.SignInResponse": {
             "type": "object",
             "properties": {
                 "balance": {
-                    "$ref": "#/definitions/users.Balance"
+                    "$ref": "#/definitions/web-backend_domain_users.Balance"
                 },
                 "paymail": {
                     "type": "string"
                 }
             }
         },
-        "access.SignInUser": {
+        "transports_http_endpoints_api_access.SignInUser": {
             "type": "object",
             "properties": {
                 "email": {
@@ -236,77 +327,7 @@
                 }
             }
         },
-        "buxclient.FullTransaction": {
-            "type": "object",
-            "properties": {
-                "blockHash": {
-                    "type": "string"
-                },
-                "blockHeight": {
-                    "type": "integer"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "direction": {
-                    "type": "string"
-                },
-                "fee": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "numberOfInputs": {
-                    "type": "integer"
-                },
-                "numberOfOutputs": {
-                    "type": "integer"
-                },
-                "receiver": {
-                    "type": "string"
-                },
-                "sender": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "totalValue": {
-                    "type": "integer"
-                }
-            }
-        },
-        "buxclient.Transaction": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "direction": {
-                    "type": "string"
-                },
-                "fee": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "receiver": {
-                    "type": "string"
-                },
-                "sender": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "totalValue": {
-                    "type": "integer"
-                }
-            }
-        },
-        "transactions.CreateTransaction": {
+        "transports_http_endpoints_api_transactions.CreateTransaction": {
             "type": "object",
             "properties": {
                 "password": {
@@ -320,21 +341,7 @@
                 }
             }
         },
-        "users.Balance": {
-            "type": "object",
-            "properties": {
-                "bsv": {
-                    "type": "number"
-                },
-                "satoshis": {
-                    "type": "integer"
-                },
-                "usd": {
-                    "type": "number"
-                }
-            }
-        },
-        "users.RegisterResponse": {
+        "transports_http_endpoints_api_users.RegisterResponse": {
             "type": "object",
             "properties": {
                 "mnemonic": {
@@ -345,7 +352,7 @@
                 }
             }
         },
-        "users.RegisterUser": {
+        "transports_http_endpoints_api_users.RegisterUser": {
             "type": "object",
             "properties": {
                 "email": {
@@ -359,11 +366,11 @@
                 }
             }
         },
-        "users.UserResponse": {
+        "transports_http_endpoints_api_users.UserResponse": {
             "type": "object",
             "properties": {
                 "balance": {
-                    "$ref": "#/definitions/users.Balance"
+                    "$ref": "#/definitions/web-backend_domain_users.Balance"
                 },
                 "email": {
                     "type": "string"
@@ -373,6 +380,20 @@
                 },
                 "userId": {
                     "type": "integer"
+                }
+            }
+        },
+        "web-backend_domain_users.Balance": {
+            "type": "object",
+            "properties": {
+                "bsv": {
+                    "type": "number"
+                },
+                "satoshis": {
+                    "type": "integer"
+                },
+                "usd": {
+                    "type": "number"
                 }
             }
         }
