@@ -7,7 +7,7 @@ import (
 
 	"web-backend/notification"
 
-	buxmodels "github.com/BuxOrg/bux-models"
+	models "github.com/BuxOrg/bux-models"
 	"github.com/centrifugal/centrifuge"
 )
 
@@ -36,7 +36,7 @@ func (s *Socket) Notify(event any) {
 }
 
 // NotifyAboutTransaction will send notification about new transaction.
-func (s *Socket) NotifyAboutTransaction(tx *buxmodels.Transaction) {
+func (s *Socket) NotifyAboutTransaction(tx *models.Transaction) {
 	txEvent := notification.PrepareTransactionEvent(tx)
 	s.Notify(txEvent)
 }

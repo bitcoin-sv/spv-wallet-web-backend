@@ -1,6 +1,6 @@
 package config
 
-// Define basic db config.
+// Define basic db config keys.
 const (
 	// EnvDbHost define the database host.
 	EnvDbHost = "db.host"
@@ -18,7 +18,7 @@ const (
 	EnvDbMigrationsPath = "db.migrationsPath"
 )
 
-// Define basic http server config.
+// Define basic http server config keys.
 const (
 	// EnvHttpServerReadTimeout http server read timeout.
 	EnvHttpServerReadTimeout = "http.server.readTimeout"
@@ -34,20 +34,20 @@ const (
 	EnvHttpServerCorsAllowedDomains = "http.server.cors.allowedDomains"
 )
 
-// Define basic bux config.
+// Define basic spv-wallet config keys.
 const (
-	// EnvBuxAdminXpriv define the bux admin xpriv.
-	EnvBuxAdminXpriv = "bux.admin.xpriv"
-	// EnvBuxServerUrl define the bux server url.
-	EnvBuxServerUrl = "bux.server.url"
-	// EnvBuxWithDebug define whether to turn debugging on.
-	EnvBuxWithDebug = "bux.withDebug"
-	// EnvBuxSignRequest define whether to sign all requests.
-	EnvBuxSignRequest = "bux.sign.request"
-	// EnvBuxPaymailDomain define the bux paymail domain.
-	EnvBuxPaymailDomain = "bux.paymail.domain"
-	// EnvBuxPaymailAvatar define the bux paymail avatar url.
-	EnvBuxPaymailAvatar = "bux.paymail.avatar"
+	// EnvAdminXpriv define the admin xpriv.
+	EnvAdminXpriv = "spvwallet.admin.xpriv"
+	// EnvServerUrl define the url of the spv-wallet (non-custodial wallet) service.
+	EnvServerUrl = "spvwallet.server.url"
+	// EnvWithDebug define whether to turn debugging on.
+	EnvWithDebug = "spvwallet.withDebug"
+	// EnvSignRequest define whether to sign all requests.
+	EnvSignRequest = "spvwallet.sign.request"
+	// EnvPaymailDomain define the paymail domain.
+	EnvPaymailDomain = "spvwallet.paymail.domain"
+	// EnvPaymailAvatar define the paymail avatar url.
+	EnvPaymailAvatar = "spvwallet.paymail.avatar"
 )
 
 const (

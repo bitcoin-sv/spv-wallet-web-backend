@@ -48,13 +48,13 @@ func (c *AdminClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
 // RegisterPaymail registers new paymail in SPV Wallet.
 func (c *AdminClient) RegisterPaymail(alias, xpub string) (string, error) {
 	// Get paymail domain from env.
-	domain := viper.GetString(config.EnvBuxPaymailDomain)
+	domain := viper.GetString(config.EnvPaymailDomain)
 
 	// Create paymail address.
 	address := fmt.Sprintf("%s@%s", alias, domain)
 
 	// Get avatar url from env.
-	avatar := viper.GetString(config.EnvBuxPaymailAvatar)
+	avatar := viper.GetString(config.EnvPaymailAvatar)
 
 	// Register new xpub in SPV Wallet.
 	err := c.client.NewPaymail(context.Background(), xpub, address, avatar, alias, &models.Metadata{})

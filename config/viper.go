@@ -11,7 +11,7 @@ func NewViperConfig(appname string) *Config {
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	setHttpServerDefaults()
-	setBuxDefaults()
+	setSpvWalletDefaults()
 	setHashDefaults()
 	setLoggingDefaults()
 	setEndpointsDefaults()
@@ -51,14 +51,14 @@ func setHttpServerDefaults() {
 	viper.SetDefault(EnvHttpServerCorsAllowedDomains, []string{})
 }
 
-// setBuxDefaults sets default values for bux connection.
-func setBuxDefaults() {
-	viper.SetDefault(EnvBuxAdminXpriv, "xprv9s21ZrQH143K3CbJXirfrtpLvhT3Vgusdo8coBritQ3rcS7Jy7sxWhatuxG5h2y1Cqj8FKmPp69536gmjYRpfga2MJdsGyBsnB12E19CESK")
-	viper.SetDefault(EnvBuxServerUrl, "http://localhost:3003/v1")
-	viper.SetDefault(EnvBuxWithDebug, true)
-	viper.SetDefault(EnvBuxSignRequest, true)
-	viper.SetDefault(EnvBuxPaymailDomain, "bux.com")
-	viper.SetDefault(EnvBuxPaymailAvatar, "http://localhost:3003/static/paymail/avatar.jpg")
+// setSpvWalletDefaults sets default values for spv-wallet connection.
+func setSpvWalletDefaults() {
+	viper.SetDefault(EnvAdminXpriv, "xprv9s21ZrQH143K3CbJXirfrtpLvhT3Vgusdo8coBritQ3rcS7Jy7sxWhatuxG5h2y1Cqj8FKmPp69536gmjYRpfga2MJdsGyBsnB12E19CESK")
+	viper.SetDefault(EnvServerUrl, "http://localhost:3003/v1")
+	viper.SetDefault(EnvWithDebug, true)
+	viper.SetDefault(EnvSignRequest, true)
+	viper.SetDefault(EnvPaymailDomain, "example.com")
+	viper.SetDefault(EnvPaymailAvatar, "http://localhost:3003/static/paymail/avatar.jpg")
 }
 
 // setHashDefaults sets default values for hash.

@@ -1,4 +1,4 @@
-project_name: bux-wallet-backend
+project_name: spv-wallet-web-backend
 env:
   - CGO_ENABLED=0
 

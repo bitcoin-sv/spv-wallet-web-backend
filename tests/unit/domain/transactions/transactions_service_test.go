@@ -29,26 +29,26 @@ func TestCreateTransaction(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		paymail := "paymail@4chain.com"
+		paymail := "paymail@example.com"
 		xpriv := gofakeit.HexUint256()
-		recipient := "recipient.paymail@4chain.com"
+		recipient := "recipient.paymail@example.com"
 		txValueInSatoshis := uint64(500)
 
 		tr := client.DraftTransaction{}
 
-		buxClientMq := mock.NewMockUserBuxClient(ctrl)
-		buxClientMq.EXPECT().
+		mockUserClient := mock.NewMockUserBuxClient(ctrl)
+		mockUserClient.EXPECT().
 			CreateAndFinalizeTransaction(gomock.Any(), gomock.Any()).
 			Return(&tr, nil)
 
-		buxClientMq.EXPECT().
+		mockUserClient.EXPECT().
 			RecordTransaction(gomock.Any(), gomock.Any(), gomock.Any()).
 			AnyTimes()
 
 		clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
 		clientFctrMq.EXPECT().
 			CreateWithXpriv(xpriv).
-			Return(buxClientMq, nil)
+			Return(mockUserClient, nil)
 
 		sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
 
@@ -81,18 +81,18 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			paymail := "paymail@4chain.com"
+			paymail := "paymail@example.com"
 			accessKey := gofakeit.HexUint256()
 
-			buxClientMq := mock.NewMockUserBuxClient(ctrl)
-			buxClientMq.EXPECT().
+			mockUserClient := mock.NewMockUserBuxClient(ctrl)
+			mockUserClient.EXPECT().
 				GetTransaction(tc.transactionId, paymail).
 				Return(findById(ts, tc.transactionId))
 
 			clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
-				Return(buxClientMq, nil)
+				Return(mockUserClient, nil)
 
 			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
 
@@ -130,18 +130,18 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			paymail := "paymail@4chain.com"
+			paymail := "paymail@example.com"
 			accessKey := gofakeit.HexUint256()
 
-			buxClientMq := mock.NewMockUserBuxClient(ctrl)
-			buxClientMq.EXPECT().
+			mockUserClient := mock.NewMockUserBuxClient(ctrl)
+			mockUserClient.EXPECT().
 				GetTransaction(tc.transactionId, paymail).
 				Return(findById(ts, tc.transactionId))
 
 			clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
-				Return(buxClientMq, nil)
+				Return(mockUserClient, nil)
 
 			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
 

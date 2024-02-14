@@ -43,7 +43,7 @@ func TestCreateNewUser_ReturnsUser(t *testing.T) {
 			defer ctrl.Finish()
 
 			repoMq := mock.NewMockUsersRepository(ctrl)
-			buxClientMq := mock.NewMockAdmBuxClient(ctrl)
+			mockAdminClient := mock.NewMockAdmBuxClient(ctrl)
 
 			repoMq.EXPECT().
 				GetUserByEmail(gomock.Any(), tc.userEmail).
@@ -51,14 +51,14 @@ func TestCreateNewUser_ReturnsUser(t *testing.T) {
 
 			repoMq.EXPECT().InsertUser(gomock.Any(), gomock.Any())
 
-			buxClientMq.EXPECT().
+			mockAdminClient.EXPECT().
 				RegisterXpub(gomock.Any()).
 				Return(gomock.Any().String(), nil)
-			buxClientMq.EXPECT().
+			mockAdminClient.EXPECT().
 				RegisterPaymail(gomock.Any(), gomock.Any()).
 				Return(tc.expectedUser.User.Paymail, nil)
 
-			sut := users.NewUserService(repoMq, buxClientMq, nil, &testLogger)
+			sut := users.NewUserService(repoMq, mockAdminClient, nil, &testLogger)
 
 			// Act
 			result, err := sut.CreateNewUser(tc.userEmail, tc.userPswd)
@@ -107,14 +107,14 @@ func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
 			defer ctrl.Finish()
 
 			repoMq := mock.NewMockUsersRepository(ctrl)
-			buxClientMq := mock.NewMockAdmBuxClient(ctrl)
+			mockAdminClient := mock.NewMockAdmBuxClient(ctrl)
 
 			repoMq.EXPECT().
 				GetUserByEmail(gomock.Any(), tc.userEmail).
 				Return(nil, nil).
 				AnyTimes()
 
-			sut := users.NewUserService(repoMq, buxClientMq, nil, &testLogger)
+			sut := users.NewUserService(repoMq, mockAdminClient, nil, &testLogger)
 
 			// Act
 			result, err := sut.CreateNewUser(tc.userEmail, tc.userPswd)

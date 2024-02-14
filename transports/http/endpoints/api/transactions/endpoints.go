@@ -50,7 +50,7 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 //	@Summary Get all transactions.
 //	@Tags transaction
 //	@Produce json
-//	@Success 200 {object} []buxclient.Transaction
+//	@Success 200 {object} []walletclient.Transaction
 //	@Router /api/v1/transaction [get]
 func (h *handler) getTransactions(c *gin.Context) {
 	page := c.Query("page")
@@ -91,7 +91,7 @@ func (h *handler) getTransactions(c *gin.Context) {
 //	@Summary Get transaction by id.
 //	@Tags transaction
 //	@Produce json
-//	@Success 200 {object} buxclient.FullTransaction
+//	@Success 200 {object} walletclient.FullTransaction
 //	@Router /api/v1/transaction/{id} [get]
 //	@Param id path string true "Transaction id"
 func (h *handler) getTransaction(c *gin.Context) {
@@ -113,7 +113,7 @@ func (h *handler) getTransaction(c *gin.Context) {
 //	@Summary Create transaction.
 //	@Tags transaction
 //	@Produce json
-//	@Success 200 {object} buxclient.FullTransaction
+//	@Success 200 {object} walletclient.FullTransaction
 //	@Router /api/v1/transaction [post]
 //	@Param data body CreateTransaction true "Create transaction data"
 func (h *handler) createTransaction(c *gin.Context) {

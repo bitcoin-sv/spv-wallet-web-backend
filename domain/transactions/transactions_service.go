@@ -85,17 +85,17 @@ func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (
 // GetTransactions returns transactions by access key.
 func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam transports.QueryParams) (*PaginatedTransactions, error) {
 	// Try to generate user-client with decrypted xpriv.
-	buxClient, err := s.clientFactory.CreateWithAccessKey(accessKey)
+	userClient, err := s.clientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
 	}
 
-	count, err := buxClient.GetTransactionsCount()
+	count, err := userClient.GetTransactionsCount()
 	if err != nil {
 		return nil, err
 	}
 
-	transactions, err := buxClient.GetTransactions(queryParam, userPaymail)
+	transactions, err := userClient.GetTransactions(queryParam, userPaymail)
 	if err != nil {
 		return nil, err
 	}

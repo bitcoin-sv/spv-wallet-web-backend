@@ -16,15 +16,15 @@ type clientFactory struct {
 
 // NewClientFactory implements the ClientFactory.
 func NewClientFactory(log *zerolog.Logger) users.ClientFactory {
-	buxClientLogger := log.With().Str("service", "spv-wallet-client").Logger()
+	logger := log.With().Str("service", "spv-wallet-client").Logger()
 	return &clientFactory{
-		log: &buxClientLogger,
+		log: &logger,
 	}
 }
 
 // CreateAdminClient returns AdminClient as spv-wallet-go-client instance with admin key.
 func (bf *clientFactory) CreateAdminClient() (users.AdminClient, error) {
-	xpriv := viper.GetString(config.EnvBuxAdminXpriv)
+	xpriv := viper.GetString(config.EnvAdminXpriv)
 	serverUrl, debug, signRequest := getServerData()
 
 	adminClient, err := walletclient.New(
@@ -90,9 +90,9 @@ func (bf *clientFactory) CreateWithAccessKey(accessKey string) (users.UserClient
 
 func getServerData() (serverUrl string, debug, signRequest bool) {
 	// Get env variables.
-	serverUrl = viper.GetString(config.EnvBuxServerUrl)
-	debug = viper.GetBool(config.EnvBuxWithDebug)
-	signRequest = viper.GetBool(config.EnvBuxSignRequest)
+	serverUrl = viper.GetString(config.EnvServerUrl)
+	debug = viper.GetBool(config.EnvWithDebug)
+	signRequest = viper.GetBool(config.EnvSignRequest)
 
 	return serverUrl, debug, signRequest
 }
