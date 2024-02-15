@@ -21,7 +21,7 @@ import (
 const appname = "spv-wallet-web-backend"
 
 // nolint: godot
-// @title           SPV Wallet web-backend
+// @title           SPV Wallet WEB Backend
 // @version			1.0
 // @description     This is an API for the spv-wallet-web-frontend.
 func main() {
