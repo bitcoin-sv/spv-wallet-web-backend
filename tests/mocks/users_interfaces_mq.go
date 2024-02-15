@@ -757,19 +757,19 @@ func (m *MockWalletClientFactory) EXPECT() *MockWalletClientFactoryMockRecorder 
         return m.recorder
 }
 
-// CreateAdminWalletClient mocks base method.
-func (m *MockWalletClientFactory) CreateAdminWalletClient() (users.AdminWalletClient, error) {
+// CreateAdminClient mocks base method.
+func (m *MockWalletClientFactory) CreateAdminClient() (users.AdminWalletClient, error) {
         m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "CreateAdminWalletClient")
+        ret := m.ctrl.Call(m, "CreateAdminClient")
         ret0, _ := ret[0].(users.AdminWalletClient)
         ret1, _ := ret[1].(error)
         return ret0, ret1
 }
 
-// CreateAdminWalletClient indicates an expected call of CreateAdminWalletClient.
-func (mr *MockWalletClientFactoryMockRecorder) CreateAdminWalletClient() *gomock.Call {
+// CreateAdminClient indicates an expected call of CreateAdminClient.
+func (mr *MockWalletClientFactoryMockRecorder) CreateAdminClient() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAdminWalletClient", reflect.TypeOf((*MockWalletClientFactory)(nil).CreateAdminWalletClient))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAdminClient", reflect.TypeOf((*MockWalletClientFactory)(nil).CreateAdminClient))
 }
 
 // CreateWithAccessKey mocks base method.

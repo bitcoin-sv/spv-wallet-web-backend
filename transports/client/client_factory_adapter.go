@@ -22,8 +22,8 @@ func NewWalletClientFactory(log *zerolog.Logger) users.WalletClientFactory {
 	}
 }
 
-// CreateAdminWalletClient returns AdminWalletClient as spv-wallet-go-client instance with admin key.
-func (bf *walletClientFactory) CreateAdminWalletClient() (users.AdminWalletClient, error) {
+// CreateAdminClient returns AdminWalletClient as spv-wallet-go-client instance with admin key.
+func (bf *walletClientFactory) CreateAdminClient() (users.AdminWalletClient, error) {
 	xpriv := viper.GetString(config.EnvAdminXpriv)
 	serverUrl, debug, signRequest := getServerData()
 

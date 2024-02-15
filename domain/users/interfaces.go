@@ -82,6 +82,6 @@ type (
 	WalletClientFactory interface {
 		CreateWithXpriv(xpriv string) (UserWalletClient, error)
 		CreateWithAccessKey(accessKey string) (UserWalletClient, error)
-		CreateAdminWalletClient() (AdminWalletClient, error)
+		CreateAdminClient() (AdminWalletClient, error)
 	}
 )

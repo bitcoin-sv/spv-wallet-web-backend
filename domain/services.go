@@ -19,7 +19,7 @@ type Services struct {
 // NewServices creates services instance.
 func NewServices(usersRepo *db_users.UsersRepository, log *zerolog.Logger) (*Services, error) {
 	walletClientFactory := client.NewWalletClientFactory(log)
-	adminWalletClient, err := walletClientFactory.CreateAdminWalletClient()
+	adminWalletClient, err := walletClientFactory.CreateAdminClient()
 	if err != nil {
 		return nil, err
 	}

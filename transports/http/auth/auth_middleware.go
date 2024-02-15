@@ -24,7 +24,7 @@ type AuthMiddleware struct {
 
 // NewAuthMiddleware create middleware that is checking the variables in session.
 func NewAuthMiddleware(s *domain.Services) *AuthMiddleware {
-	adminWalletClient, err := s.WalletClientFactory.CreateAdminWalletClient()
+	adminWalletClient, err := s.WalletClientFactory.CreateAdminClient()
 	if err != nil {
 		panic(fmt.Errorf("error during creating adminWalletClient: %w", err))
 	}
