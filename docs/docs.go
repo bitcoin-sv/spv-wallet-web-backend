@@ -313,11 +313,25 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance": {
+            "type": "object",
+            "properties": {
+                "bsv": {
+                    "type": "number"
+                },
+                "satoshis": {
+                    "type": "integer"
+                },
+                "usd": {
+                    "type": "number"
+                }
+            }
+        },
         "transports_http_endpoints_api_access.SignInResponse": {
             "type": "object",
             "properties": {
                 "balance": {
-                    "$ref": "#/definitions/web-backend_domain_users.Balance"
+                    "$ref": "#/definitions/github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance"
                 },
                 "paymail": {
                     "type": "string"
@@ -378,7 +392,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "balance": {
-                    "$ref": "#/definitions/web-backend_domain_users.Balance"
+                    "$ref": "#/definitions/github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance"
                 },
                 "email": {
                     "type": "string"
@@ -388,20 +402,6 @@ const docTemplate = `{
                 },
                 "userId": {
                     "type": "integer"
-                }
-            }
-        },
-        "web-backend_domain_users.Balance": {
-            "type": "object",
-            "properties": {
-                "bsv": {
-                    "type": "number"
-                },
-                "satoshis": {
-                    "type": "integer"
-                },
-                "usd": {
-                    "type": "number"
                 }
             }
         }
@@ -414,7 +414,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "SPV Wallet web-backend",
+	Title:            "SPV Wallet WEB Backend",
 	Description:      "This is an API for the spv-wallet-web-frontend.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

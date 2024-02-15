@@ -67,10 +67,19 @@ definitions:
           type: string
         type: array
     type: object
+  github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance:
+    properties:
+      bsv:
+        type: number
+      satoshis:
+        type: integer
+      usd:
+        type: number
+    type: object
   transports_http_endpoints_api_access.SignInResponse:
     properties:
       balance:
-        $ref: '#/definitions/web-backend_domain_users.Balance'
+        $ref: '#/definitions/github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance'
       paymail:
         type: string
     type: object
@@ -109,7 +118,7 @@ definitions:
   transports_http_endpoints_api_users.UserResponse:
     properties:
       balance:
-        $ref: '#/definitions/web-backend_domain_users.Balance'
+        $ref: '#/definitions/github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance'
       email:
         type: string
       paymail:
@@ -117,19 +126,10 @@ definitions:
       userId:
         type: integer
     type: object
-  web-backend_domain_users.Balance:
-    properties:
-      bsv:
-        type: number
-      satoshis:
-        type: integer
-      usd:
-        type: number
-    type: object
 info:
   contact: {}
   description: This is an API for the spv-wallet-web-frontend.
-  title: SPV Wallet web-backend
+  title: SPV Wallet WEB Backend
   version: "1.0"
 paths:
   /api/v1/sign-in:
