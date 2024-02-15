@@ -261,7 +261,7 @@ func (s *UserService) SignOutUser(accessKeyId, accessKey string) error {
 
 	/// Right now we cannot revoke access key without authentication with XPriv, which is impossible here.
 
-	// userWalletClient, err := s.clientFactory.CreateWithAccessKey(accessKey)
+	// userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	// if err != nil {
 	// 	return err
 	// }

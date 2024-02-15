@@ -13,23 +13,23 @@ import (
 type Services struct {
 	UsersService        *users.UserService
 	TransactionsService *transactions.TransactionService
-	ClientFactory       users.WalletClientFactory
+	WalletClientFactory users.WalletClientFactory
 }
 
 // NewServices creates services instance.
 func NewServices(usersRepo *db_users.UsersRepository, log *zerolog.Logger) (*Services, error) {
-	bf := client.NewClientFactory(log)
-	adminWalletClient, err := bf.CreateAdminWalletClient()
+	walletClientFactory := client.NewWalletClientFactory(log)
+	adminWalletClient, err := walletClientFactory.CreateAdminWalletClient()
 	if err != nil {
 		return nil, err
 	}
 
 	// Create User services.
-	uService := users.NewUserService(usersRepo, adminWalletClient, bf, log)
+	uService := users.NewUserService(usersRepo, adminWalletClient, walletClientFactory, log)
 
 	return &Services{
 		UsersService:        uService,
-		TransactionsService: transactions.NewTransactionService(adminWalletClient, bf, log),
-		ClientFactory:       bf,
+		TransactionsService: transactions.NewTransactionService(adminWalletClient, walletClientFactory, log),
+		WalletClientFactory: walletClientFactory,
 	}, nil
 }

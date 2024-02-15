@@ -14,8 +14,8 @@ type walletClientFactory struct {
 	log *zerolog.Logger
 }
 
-// NewClientFactory implements the ClientFactory.
-func NewClientFactory(log *zerolog.Logger) users.WalletClientFactory {
+// NewWalletClientFactory implements the ClientFactory.
+func NewWalletClientFactory(log *zerolog.Logger) users.WalletClientFactory {
 	logger := log.With().Str("service", "spv-wallet-client").Logger()
 	return &walletClientFactory{
 		log: &logger,
