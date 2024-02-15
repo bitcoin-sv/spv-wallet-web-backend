@@ -7,7 +7,7 @@ import (
 
 	"github.com/rs/zerolog"
 
-	models "github.com/BuxOrg/bux-models"
+	walletmodels "github.com/BuxOrg/bux-models"
 	walletclient "github.com/BuxOrg/go-buxclient"
 	"github.com/BuxOrg/go-buxclient/transports"
 
@@ -22,7 +22,7 @@ type Client struct {
 
 // CreateAccessKey creates new access key for user.
 func (c *Client) CreateAccessKey() (users.AccKey, error) {
-	accessKey, err := c.client.CreateAccessKey(context.Background(), &models.Metadata{})
+	accessKey, err := c.client.CreateAccessKey(context.Background(), &walletmodels.Metadata{})
 	if err != nil {
 		c.log.Error().Msgf("Error while creating new accessKey: %v", err.Error())
 		return nil, err
@@ -91,7 +91,7 @@ func (c *Client) GetXPub() (users.PubKey, error) {
 // SendToRecipients sends satoshis to recipients.
 func (c *Client) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
 	// Create matadata with sender and receiver paymails.
-	metadata := &models.Metadata{
+	metadata := &walletmodels.Metadata{
 		"receiver": recipients[0].To,
 		"sender":   senderPaymail,
 	}
@@ -114,7 +114,7 @@ func (c *Client) SendToRecipients(recipients []*transports.Recipients, senderPay
 }
 
 // CreateAndFinalizeTransaction creates draft transaction and finalizes it.
-func (c *Client) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *models.Metadata) (users.DraftTransaction, error) {
+func (c *Client) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *walletmodels.Metadata) (users.DraftTransaction, error) {
 	// Create draft transaction.
 	draftTx, err := c.client.DraftToRecipients(context.Background(), recipients, metadata)
 	if err != nil {
@@ -138,7 +138,7 @@ func (c *Client) CreateAndFinalizeTransaction(recipients []*transports.Recipient
 }
 
 // RecordTransaction records transaction in SPV Wallet.
-func (c *Client) RecordTransaction(hex, draftTxId string, metadata *models.Metadata) (*models.Transaction, error) {
+func (c *Client) RecordTransaction(hex, draftTxId string, metadata *walletmodels.Metadata) (*walletmodels.Transaction, error) {
 	tx, err := c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata)
 	if err != nil {
 		c.log.Error().Str("draftTxID", draftTxId).Msgf("Error while recording tx: %v", err.Error())
@@ -164,7 +164,7 @@ func (c *Client) GetTransactions(queryParam transports.QueryParams, userPaymail 
 		queryParam.SortDirection = "desc"
 	}
 
-	transactions, err := c.client.GetTransactions(context.Background(), conditions, &models.Metadata{}, &queryParam)
+	transactions, err := c.client.GetTransactions(context.Background(), conditions, &walletmodels.Metadata{}, &queryParam)
 	if err != nil {
 		c.log.Error().
 			Str("userPaymail", userPaymail).
@@ -230,7 +230,7 @@ func (c *Client) GetTransaction(transactionId, userPaymail string) (users.FullTr
 func (c *Client) GetTransactionsCount() (int64, error) {
 	conditions := make(map[string]interface{})
 
-	count, err := c.client.GetTransactionsCount(context.Background(), conditions, &models.Metadata{})
+	count, err := c.client.GetTransactionsCount(context.Background(), conditions, &walletmodels.Metadata{})
 	if err != nil {
 		c.log.Error().Msgf("Error while getting transactions count: %v", err.Error())
 		return 0, err

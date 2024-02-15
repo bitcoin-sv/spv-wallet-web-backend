@@ -3,7 +3,7 @@ package users
 import (
 	"time"
 
-	models "github.com/BuxOrg/bux-models"
+	walletmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/libsv/go-bk/bip32"
 )
@@ -67,8 +67,8 @@ type (
 		GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
-		CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *models.Metadata) (DraftTransaction, error)
-		RecordTransaction(hex, draftTxId string, metadata *models.Metadata) (*models.Transaction, error)
+		CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *walletmodels.Metadata) (DraftTransaction, error)
+		RecordTransaction(hex, draftTxId string, metadata *walletmodels.Metadata) (*walletmodels.Transaction, error)
 		UnreserveUtxos(draftTxId string) error
 	}
 

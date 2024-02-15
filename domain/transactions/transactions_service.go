@@ -9,7 +9,7 @@ import (
 
 	"github.com/rs/zerolog"
 
-	models "github.com/BuxOrg/bux-models"
+	walletmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/avast/retry-go/v4"
 )
@@ -45,7 +45,7 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		},
 	}
 
-	metadata := &models.Metadata{
+	metadata := &walletmodels.Metadata{
 		"receiver": recipient,
 		"sender":   userPaymail,
 	}
@@ -113,7 +113,7 @@ func (s *TransactionService) GetTransactions(accessKey, userPaymail string, quer
 	return pTransactions, nil
 }
 
-func tryRecordTransaction(userClient users.UserClient, draftTx users.DraftTransaction, metadata *models.Metadata, log *zerolog.Logger) (*models.Transaction, error) {
+func tryRecordTransaction(userClient users.UserClient, draftTx users.DraftTransaction, metadata *walletmodels.Metadata, log *zerolog.Logger) (*walletmodels.Transaction, error) {
 	retries := uint(3)
 	tx, recordErr := tryRecord(userClient, draftTx, metadata, log, retries)
 
@@ -138,12 +138,12 @@ func tryRecordTransaction(userClient users.UserClient, draftTx users.DraftTransa
 	return tx, nil
 }
 
-func tryRecord(userClient users.UserClient, draftTx users.DraftTransaction, metadata *models.Metadata, log *zerolog.Logger, retries uint) (*models.Transaction, error) {
+func tryRecord(userClient users.UserClient, draftTx users.DraftTransaction, metadata *walletmodels.Metadata, log *zerolog.Logger, retries uint) (*walletmodels.Transaction, error) {
 	log.Debug().
 		Str("draftTxId", draftTx.GetDraftTransactionId()).
 		Msg("record transaction")
 
-	tx := &models.Transaction{}
+	tx := &walletmodels.Transaction{}
 	err := retry.Do(
 		func() error {
 			var err error
