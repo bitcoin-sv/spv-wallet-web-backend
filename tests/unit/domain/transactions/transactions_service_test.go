@@ -36,21 +36,21 @@ func TestCreateTransaction(t *testing.T) {
 
 		tr := client.DraftTransaction{}
 
-		mockUserClient := mock.NewMockUserClient(ctrl)
-		mockUserClient.EXPECT().
+		mockUserWalletClient := mock.NewMockUserWalletClient(ctrl)
+		mockUserWalletClient.EXPECT().
 			CreateAndFinalizeTransaction(gomock.Any(), gomock.Any()).
 			Return(&tr, nil)
 
-		mockUserClient.EXPECT().
+		mockUserWalletClient.EXPECT().
 			RecordTransaction(gomock.Any(), gomock.Any(), gomock.Any()).
 			AnyTimes()
 
-		clientFctrMq := mock.NewMockClientFactory(ctrl)
+		clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 		clientFctrMq.EXPECT().
 			CreateWithXpriv(xpriv).
-			Return(mockUserClient, nil)
+			Return(mockUserWalletClient, nil)
 
-		sut := transactions.NewTransactionService(mock.NewMockAdminClient(ctrl), clientFctrMq, &testLogger)
+		sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
 		// Act
 		txs := make(chan notification.TransactionEvent, 1)
@@ -84,17 +84,17 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 			paymail := "paymail@example.com"
 			accessKey := gofakeit.HexUint256()
 
-			mockUserClient := mock.NewMockUserClient(ctrl)
-			mockUserClient.EXPECT().
+			mockUserWalletClient := mock.NewMockUserWalletClient(ctrl)
+			mockUserWalletClient.EXPECT().
 				GetTransaction(tc.transactionId, paymail).
 				Return(findById(ts, tc.transactionId))
 
-			clientFctrMq := mock.NewMockClientFactory(ctrl)
+			clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
-				Return(mockUserClient, nil)
+				Return(mockUserWalletClient, nil)
 
-			sut := transactions.NewTransactionService(mock.NewMockAdminClient(ctrl), clientFctrMq, &testLogger)
+			sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
 			// Act
 			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
@@ -133,17 +133,17 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 			paymail := "paymail@example.com"
 			accessKey := gofakeit.HexUint256()
 
-			mockUserClient := mock.NewMockUserClient(ctrl)
-			mockUserClient.EXPECT().
+			mockUserWalletClient := mock.NewMockUserWalletClient(ctrl)
+			mockUserWalletClient.EXPECT().
 				GetTransaction(tc.transactionId, paymail).
 				Return(findById(ts, tc.transactionId))
 
-			clientFctrMq := mock.NewMockClientFactory(ctrl)
+			clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
-				Return(mockUserClient, nil)
+				Return(mockUserWalletClient, nil)
 
-			sut := transactions.NewTransactionService(mock.NewMockAdminClient(ctrl), clientFctrMq, &testLogger)
+			sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
 			// Act
 			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)

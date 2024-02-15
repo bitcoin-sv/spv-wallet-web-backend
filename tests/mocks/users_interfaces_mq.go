@@ -7,10 +7,10 @@ package mock
 import (
         reflect "reflect"
         time "time"
-        users "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 
         buxmodels "github.com/BuxOrg/bux-models"
         transports "github.com/BuxOrg/go-buxclient/transports"
+        users "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
         gomock "github.com/golang/mock/gomock"
         bip32 "github.com/libsv/go-bk/bip32"
 )
@@ -494,31 +494,31 @@ func (mr *MockDraftTransactionMockRecorder) GetDraftTransactionId() *gomock.Call
         return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDraftTransactionId", reflect.TypeOf((*MockDraftTransaction)(nil).GetDraftTransactionId))
 }
 
-// MockUserClient is a mock of UserClient interface.
-type MockUserClient struct {
+// MockUserWalletClient is a mock of UserWalletClient interface.
+type MockUserWalletClient struct {
         ctrl     *gomock.Controller
-        recorder *MockUserClientMockRecorder
+        recorder *MockUserWalletClientMockRecorder
 }
 
-// MockUserClientMockRecorder is the mock recorder for MockUserClient.
-type MockUserClientMockRecorder struct {
-        mock *MockUserClient
+// MockUserWalletClientMockRecorder is the mock recorder for MockUserWalletClient.
+type MockUserWalletClientMockRecorder struct {
+        mock *MockUserWalletClient
 }
 
-// NewMockUserClient creates a new mock instance.
-func NewMockUserClient(ctrl *gomock.Controller) *MockUserClient {
-        mock := &MockUserClient{ctrl: ctrl}
-        mock.recorder = &MockUserClientMockRecorder{mock}
+// NewMockUserWalletClient creates a new mock instance.
+func NewMockUserWalletClient(ctrl *gomock.Controller) *MockUserWalletClient {
+        mock := &MockUserWalletClient{ctrl: ctrl}
+        mock.recorder = &MockUserWalletClientMockRecorder{mock}
         return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUserClient) EXPECT() *MockUserClientMockRecorder {
+func (m *MockUserWalletClient) EXPECT() *MockUserWalletClientMockRecorder {
         return m.recorder
 }
 
 // CreateAccessKey mocks base method.
-func (m *MockUserClient) CreateAccessKey() (users.AccKey, error) {
+func (m *MockUserWalletClient) CreateAccessKey() (users.AccKey, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateAccessKey")
         ret0, _ := ret[0].(users.AccKey)
@@ -527,13 +527,13 @@ func (m *MockUserClient) CreateAccessKey() (users.AccKey, error) {
 }
 
 // CreateAccessKey indicates an expected call of CreateAccessKey.
-func (mr *MockUserClientMockRecorder) CreateAccessKey() *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) CreateAccessKey() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccessKey", reflect.TypeOf((*MockUserClient)(nil).CreateAccessKey))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccessKey", reflect.TypeOf((*MockUserWalletClient)(nil).CreateAccessKey))
 }
 
 // CreateAndFinalizeTransaction mocks base method.
-func (m *MockUserClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (users.DraftTransaction, error) {
+func (m *MockUserWalletClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (users.DraftTransaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateAndFinalizeTransaction", recipients, metadata)
         ret0, _ := ret[0].(users.DraftTransaction)
@@ -542,13 +542,13 @@ func (m *MockUserClient) CreateAndFinalizeTransaction(recipients []*transports.R
 }
 
 // CreateAndFinalizeTransaction indicates an expected call of CreateAndFinalizeTransaction.
-func (mr *MockUserClientMockRecorder) CreateAndFinalizeTransaction(recipients, metadata interface{}) *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) CreateAndFinalizeTransaction(recipients, metadata interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAndFinalizeTransaction", reflect.TypeOf((*MockUserClient)(nil).CreateAndFinalizeTransaction), recipients, metadata)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAndFinalizeTransaction", reflect.TypeOf((*MockUserWalletClient)(nil).CreateAndFinalizeTransaction), recipients, metadata)
 }
 
 // GetAccessKey mocks base method.
-func (m *MockUserClient) GetAccessKey(accessKeyId string) (users.AccKey, error) {
+func (m *MockUserWalletClient) GetAccessKey(accessKeyId string) (users.AccKey, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetAccessKey", accessKeyId)
         ret0, _ := ret[0].(users.AccKey)
@@ -557,13 +557,13 @@ func (m *MockUserClient) GetAccessKey(accessKeyId string) (users.AccKey, error) 
 }
 
 // GetAccessKey indicates an expected call of GetAccessKey.
-func (mr *MockUserClientMockRecorder) GetAccessKey(accessKeyId interface{}) *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) GetAccessKey(accessKeyId interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccessKey", reflect.TypeOf((*MockUserClient)(nil).GetAccessKey), accessKeyId)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccessKey", reflect.TypeOf((*MockUserWalletClient)(nil).GetAccessKey), accessKeyId)
 }
 
 // GetTransaction mocks base method.
-func (m *MockUserClient) GetTransaction(transactionId, userPaymail string) (users.FullTransaction, error) {
+func (m *MockUserWalletClient) GetTransaction(transactionId, userPaymail string) (users.FullTransaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetTransaction", transactionId, userPaymail)
         ret0, _ := ret[0].(users.FullTransaction)
@@ -572,13 +572,13 @@ func (m *MockUserClient) GetTransaction(transactionId, userPaymail string) (user
 }
 
 // GetTransaction indicates an expected call of GetTransaction.
-func (mr *MockUserClientMockRecorder) GetTransaction(transactionId, userPaymail interface{}) *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) GetTransaction(transactionId, userPaymail interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransaction", reflect.TypeOf((*MockUserClient)(nil).GetTransaction), transactionId, userPaymail)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransaction", reflect.TypeOf((*MockUserWalletClient)(nil).GetTransaction), transactionId, userPaymail)
 }
 
 // GetTransactions mocks base method.
-func (m *MockUserClient) GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]users.Transaction, error) {
+func (m *MockUserWalletClient) GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]users.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetTransactions", queryParam, userPaymail)
         ret0, _ := ret[0].([]users.Transaction)
@@ -587,13 +587,13 @@ func (m *MockUserClient) GetTransactions(queryParam transports.QueryParams, user
 }
 
 // GetTransactions indicates an expected call of GetTransactions.
-func (mr *MockUserClientMockRecorder) GetTransactions(queryParam, userPaymail interface{}) *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) GetTransactions(queryParam, userPaymail interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactions", reflect.TypeOf((*MockUserClient)(nil).GetTransactions), queryParam, userPaymail)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactions", reflect.TypeOf((*MockUserWalletClient)(nil).GetTransactions), queryParam, userPaymail)
 }
 
 // GetTransactionsCount mocks base method.
-func (m *MockUserClient) GetTransactionsCount() (int64, error) {
+func (m *MockUserWalletClient) GetTransactionsCount() (int64, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetTransactionsCount")
         ret0, _ := ret[0].(int64)
@@ -602,13 +602,13 @@ func (m *MockUserClient) GetTransactionsCount() (int64, error) {
 }
 
 // GetTransactionsCount indicates an expected call of GetTransactionsCount.
-func (mr *MockUserClientMockRecorder) GetTransactionsCount() *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) GetTransactionsCount() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionsCount", reflect.TypeOf((*MockUserClient)(nil).GetTransactionsCount))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionsCount", reflect.TypeOf((*MockUserWalletClient)(nil).GetTransactionsCount))
 }
 
 // GetXPub mocks base method.
-func (m *MockUserClient) GetXPub() (users.PubKey, error) {
+func (m *MockUserWalletClient) GetXPub() (users.PubKey, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetXPub")
         ret0, _ := ret[0].(users.PubKey)
@@ -617,13 +617,13 @@ func (m *MockUserClient) GetXPub() (users.PubKey, error) {
 }
 
 // GetXPub indicates an expected call of GetXPub.
-func (mr *MockUserClientMockRecorder) GetXPub() *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) GetXPub() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetXPub", reflect.TypeOf((*MockUserClient)(nil).GetXPub))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetXPub", reflect.TypeOf((*MockUserWalletClient)(nil).GetXPub))
 }
 
 // RecordTransaction mocks base method.
-func (m *MockUserClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) (*buxmodels.Transaction, error) {
+func (m *MockUserWalletClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) (*buxmodels.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "RecordTransaction", hex, draftTxId, metadata)
         ret0, _ := ret[0].(*buxmodels.Transaction)
@@ -632,13 +632,13 @@ func (m *MockUserClient) RecordTransaction(hex, draftTxId string, metadata *buxm
 }
 
 // RecordTransaction indicates an expected call of RecordTransaction.
-func (mr *MockUserClientMockRecorder) RecordTransaction(hex, draftTxId, metadata interface{}) *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) RecordTransaction(hex, draftTxId, metadata interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecordTransaction", reflect.TypeOf((*MockUserClient)(nil).RecordTransaction), hex, draftTxId, metadata)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecordTransaction", reflect.TypeOf((*MockUserWalletClient)(nil).RecordTransaction), hex, draftTxId, metadata)
 }
 
 // RevokeAccessKey mocks base method.
-func (m *MockUserClient) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
+func (m *MockUserWalletClient) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "RevokeAccessKey", accessKeyId)
         ret0, _ := ret[0].(users.AccKey)
@@ -647,13 +647,13 @@ func (m *MockUserClient) RevokeAccessKey(accessKeyId string) (users.AccKey, erro
 }
 
 // RevokeAccessKey indicates an expected call of RevokeAccessKey.
-func (mr *MockUserClientMockRecorder) RevokeAccessKey(accessKeyId interface{}) *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) RevokeAccessKey(accessKeyId interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAccessKey", reflect.TypeOf((*MockUserClient)(nil).RevokeAccessKey), accessKeyId)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAccessKey", reflect.TypeOf((*MockUserWalletClient)(nil).RevokeAccessKey), accessKeyId)
 }
 
 // SendToRecipients mocks base method.
-func (m *MockUserClient) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
+func (m *MockUserWalletClient) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "SendToRecipients", recipients, senderPaymail)
         ret0, _ := ret[0].(users.Transaction)
@@ -662,13 +662,13 @@ func (m *MockUserClient) SendToRecipients(recipients []*transports.Recipients, s
 }
 
 // SendToRecipients indicates an expected call of SendToRecipients.
-func (mr *MockUserClientMockRecorder) SendToRecipients(recipients, senderPaymail interface{}) *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) SendToRecipients(recipients, senderPaymail interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendToRecipients", reflect.TypeOf((*MockUserClient)(nil).SendToRecipients), recipients, senderPaymail)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendToRecipients", reflect.TypeOf((*MockUserWalletClient)(nil).SendToRecipients), recipients, senderPaymail)
 }
 
 // UnreserveUtxos mocks base method.
-func (m *MockUserClient) UnreserveUtxos(draftTxId string) error {
+func (m *MockUserWalletClient) UnreserveUtxos(draftTxId string) error {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "UnreserveUtxos", draftTxId)
         ret0, _ := ret[0].(error)
@@ -676,36 +676,36 @@ func (m *MockUserClient) UnreserveUtxos(draftTxId string) error {
 }
 
 // UnreserveUtxos indicates an expected call of UnreserveUtxos.
-func (mr *MockUserClientMockRecorder) UnreserveUtxos(draftTxId interface{}) *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) UnreserveUtxos(draftTxId interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnreserveUtxos", reflect.TypeOf((*MockUserClient)(nil).UnreserveUtxos), draftTxId)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnreserveUtxos", reflect.TypeOf((*MockUserWalletClient)(nil).UnreserveUtxos), draftTxId)
 }
 
-// MockAdminClient is a mock of AdminClient interface.
-type MockAdminClient struct {
+// MockAdminWalletClient is a mock of AdminWalletClient interface.
+type MockAdminWalletClient struct {
         ctrl     *gomock.Controller
-        recorder *MockAdminClientMockRecorder
+        recorder *MockAdminWalletClientMockRecorder
 }
 
-// MockAdminClientMockRecorder is the mock recorder for MockAdminClient.
-type MockAdminClientMockRecorder struct {
-        mock *MockAdminClient
+// MockAdminWalletClientMockRecorder is the mock recorder for MockAdminWalletClient.
+type MockAdminWalletClientMockRecorder struct {
+        mock *MockAdminWalletClient
 }
 
-// NewMockAdminClient creates a new mock instance.
-func NewMockAdminClient(ctrl *gomock.Controller) *MockAdminClient {
-        mock := &MockAdminClient{ctrl: ctrl}
-        mock.recorder = &MockAdminClientMockRecorder{mock}
+// NewMockAdminWalletClient creates a new mock instance.
+func NewMockAdminWalletClient(ctrl *gomock.Controller) *MockAdminWalletClient {
+        mock := &MockAdminWalletClient{ctrl: ctrl}
+        mock.recorder = &MockAdminWalletClientMockRecorder{mock}
         return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAdminClient) EXPECT() *MockAdminClientMockRecorder {
+func (m *MockAdminWalletClient) EXPECT() *MockAdminWalletClientMockRecorder {
         return m.recorder
 }
 
 // RegisterPaymail mocks base method.
-func (m *MockAdminClient) RegisterPaymail(alias, xpub string) (string, error) {
+func (m *MockAdminWalletClient) RegisterPaymail(alias, xpub string) (string, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "RegisterPaymail", alias, xpub)
         ret0, _ := ret[0].(string)
@@ -714,13 +714,13 @@ func (m *MockAdminClient) RegisterPaymail(alias, xpub string) (string, error) {
 }
 
 // RegisterPaymail indicates an expected call of RegisterPaymail.
-func (mr *MockAdminClientMockRecorder) RegisterPaymail(alias, xpub interface{}) *gomock.Call {
+func (mr *MockAdminWalletClientMockRecorder) RegisterPaymail(alias, xpub interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterPaymail", reflect.TypeOf((*MockAdminClient)(nil).RegisterPaymail), alias, xpub)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterPaymail", reflect.TypeOf((*MockAdminWalletClient)(nil).RegisterPaymail), alias, xpub)
 }
 
 // RegisterXpub mocks base method.
-func (m *MockAdminClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
+func (m *MockAdminWalletClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "RegisterXpub", xpriv)
         ret0, _ := ret[0].(string)
@@ -729,75 +729,75 @@ func (m *MockAdminClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error)
 }
 
 // RegisterXpub indicates an expected call of RegisterXpub.
-func (mr *MockAdminClientMockRecorder) RegisterXpub(xpriv interface{}) *gomock.Call {
+func (mr *MockAdminWalletClientMockRecorder) RegisterXpub(xpriv interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterXpub", reflect.TypeOf((*MockAdminClient)(nil).RegisterXpub), xpriv)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterXpub", reflect.TypeOf((*MockAdminWalletClient)(nil).RegisterXpub), xpriv)
 }
 
-// MockClientFactory is a mock of ClientFactory interface.
-type MockClientFactory struct {
+// MockWalletClientFactory is a mock of WalletClientFactory interface.
+type MockWalletClientFactory struct {
         ctrl     *gomock.Controller
-        recorder *MockClientFactoryMockRecorder
+        recorder *MockWalletClientFactoryMockRecorder
 }
 
-// MockClientFactoryMockRecorder is the mock recorder for MockClientFactory.
-type MockClientFactoryMockRecorder struct {
-        mock *MockClientFactory
+// MockWalletClientFactoryMockRecorder is the mock recorder for MockWalletClientFactory.
+type MockWalletClientFactoryMockRecorder struct {
+        mock *MockWalletClientFactory
 }
 
-// NewMockClientFactory creates a new mock instance.
-func NewMockClientFactory(ctrl *gomock.Controller) *MockClientFactory {
-        mock := &MockClientFactory{ctrl: ctrl}
-        mock.recorder = &MockClientFactoryMockRecorder{mock}
+// NewMockWalletClientFactory creates a new mock instance.
+func NewMockWalletClientFactory(ctrl *gomock.Controller) *MockWalletClientFactory {
+        mock := &MockWalletClientFactory{ctrl: ctrl}
+        mock.recorder = &MockWalletClientFactoryMockRecorder{mock}
         return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockClientFactory) EXPECT() *MockClientFactoryMockRecorder {
+func (m *MockWalletClientFactory) EXPECT() *MockWalletClientFactoryMockRecorder {
         return m.recorder
 }
 
-// CreateAdminClient mocks base method.
-func (m *MockClientFactory) CreateAdminClient() (users.AdminClient, error) {
+// CreateAdminWalletClient mocks base method.
+func (m *MockWalletClientFactory) CreateAdminWalletClient() (users.AdminWalletClient, error) {
         m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "CreateAdminClient")
-        ret0, _ := ret[0].(users.AdminClient)
+        ret := m.ctrl.Call(m, "CreateAdminWalletClient")
+        ret0, _ := ret[0].(users.AdminWalletClient)
         ret1, _ := ret[1].(error)
         return ret0, ret1
 }
 
-// CreateAdminClient indicates an expected call of CreateAdminClient.
-func (mr *MockClientFactoryMockRecorder) CreateAdminClient() *gomock.Call {
+// CreateAdminWalletClient indicates an expected call of CreateAdminWalletClient.
+func (mr *MockWalletClientFactoryMockRecorder) CreateAdminWalletClient() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAdminClient", reflect.TypeOf((*MockClientFactory)(nil).CreateAdminClient))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAdminWalletClient", reflect.TypeOf((*MockWalletClientFactory)(nil).CreateAdminWalletClient))
 }
 
 // CreateWithAccessKey mocks base method.
-func (m *MockClientFactory) CreateWithAccessKey(accessKey string) (users.UserClient, error) {
+func (m *MockWalletClientFactory) CreateWithAccessKey(accessKey string) (users.UserWalletClient, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateWithAccessKey", accessKey)
-        ret0, _ := ret[0].(users.UserClient)
+        ret0, _ := ret[0].(users.UserWalletClient)
         ret1, _ := ret[1].(error)
         return ret0, ret1
 }
 
 // CreateWithAccessKey indicates an expected call of CreateWithAccessKey.
-func (mr *MockClientFactoryMockRecorder) CreateWithAccessKey(accessKey interface{}) *gomock.Call {
+func (mr *MockWalletClientFactoryMockRecorder) CreateWithAccessKey(accessKey interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWithAccessKey", reflect.TypeOf((*MockClientFactory)(nil).CreateWithAccessKey), accessKey)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWithAccessKey", reflect.TypeOf((*MockWalletClientFactory)(nil).CreateWithAccessKey), accessKey)
 }
 
 // CreateWithXpriv mocks base method.
-func (m *MockClientFactory) CreateWithXpriv(xpriv string) (users.UserClient, error) {
+func (m *MockWalletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletClient, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateWithXpriv", xpriv)
-        ret0, _ := ret[0].(users.UserClient)
+        ret0, _ := ret[0].(users.UserWalletClient)
         ret1, _ := ret[1].(error)
         return ret0, ret1
 }
 
 // CreateWithXpriv indicates an expected call of CreateWithXpriv.
-func (mr *MockClientFactoryMockRecorder) CreateWithXpriv(xpriv interface{}) *gomock.Call {
+func (mr *MockWalletClientFactoryMockRecorder) CreateWithXpriv(xpriv interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWithXpriv", reflect.TypeOf((*MockClientFactory)(nil).CreateWithXpriv), xpriv)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWithXpriv", reflect.TypeOf((*MockWalletClientFactory)(nil).CreateWithXpriv), xpriv)
 }

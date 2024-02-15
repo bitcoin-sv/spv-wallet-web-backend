@@ -54,8 +54,8 @@ type (
 		GetDraftTransactionId() string
 	}
 
-	// UserClient defines methods which are available for a user with access key.
-	UserClient interface {
+	// UserWalletClient defines methods which are available for a user with access key.
+	UserWalletClient interface {
 		// Access Key methods
 		CreateAccessKey() (AccKey, error)
 		GetAccessKey(accessKeyId string) (AccKey, error)
@@ -72,16 +72,16 @@ type (
 		UnreserveUtxos(draftTxId string) error
 	}
 
-	// AdminClient defines methods which are available for an admin with admin key.
-	AdminClient interface {
+	// AdminWalletClient defines methods which are available for an admin with admin key.
+	AdminWalletClient interface {
 		RegisterXpub(xpriv *bip32.ExtendedKey) (string, error)
 		RegisterPaymail(alias, xpub string) (string, error)
 	}
 
-	// ClientFactory defines methods to create user and admin clients.
-	ClientFactory interface {
-		CreateWithXpriv(xpriv string) (UserClient, error)
-		CreateWithAccessKey(accessKey string) (UserClient, error)
-		CreateAdminClient() (AdminClient, error)
+	// WalletClientFactory defines methods to create user and admin clients.
+	WalletClientFactory interface {
+		CreateWithXpriv(xpriv string) (UserWalletClient, error)
+		CreateWithAccessKey(accessKey string) (UserWalletClient, error)
+		CreateAdminWalletClient() (AdminWalletClient, error)
 	}
 )

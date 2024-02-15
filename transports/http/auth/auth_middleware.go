@@ -17,21 +17,21 @@ var ErrorUnauthorized = errors.New("unauthorized")
 
 // AuthMiddleware middleware that is checking the variables set in session.
 type AuthMiddleware struct {
-	adminClient   users.AdminClient
-	clientFactory users.ClientFactory
-	services      *domain.Services
+	adminWalletClient   users.AdminWalletClient
+	walletClientFactory users.WalletClientFactory
+	services            *domain.Services
 }
 
 // NewAuthMiddleware create middleware that is checking the variables in session.
 func NewAuthMiddleware(s *domain.Services) *AuthMiddleware {
-	adminClient, err := s.ClientFactory.CreateAdminClient()
+	adminWalletClient, err := s.ClientFactory.CreateAdminWalletClient()
 	if err != nil {
-		panic(fmt.Errorf("error during creating adminClient: %w", err))
+		panic(fmt.Errorf("error during creating adminWalletClient: %w", err))
 	}
 	return &AuthMiddleware{
-		adminClient:   adminClient,
-		clientFactory: s.ClientFactory,
-		services:      s,
+		adminWalletClient:   adminWalletClient,
+		walletClientFactory: s.ClientFactory,
+		services:            s,
 	}
 }
 
@@ -77,11 +77,11 @@ func isNilOrEmpty(s interface{}) bool {
 }
 
 func (h *AuthMiddleware) checkAccessKey(accessKey, accessKeyId string) error {
-	userClient, err := h.clientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := h.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return err
 	}
 
-	_, err = userClient.GetAccessKey(accessKeyId)
+	_, err = userWalletClient.GetAccessKey(accessKeyId)
 	return err
 }

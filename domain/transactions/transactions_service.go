@@ -16,24 +16,24 @@ import (
 
 // TransactionService represents service whoch contains methods linked with transactions.
 type TransactionService struct {
-	adminClient   users.AdminClient
-	clientFactory users.ClientFactory
-	log           *zerolog.Logger
+	adminWalletClient   users.AdminWalletClient
+	walletClientFactory users.WalletClientFactory
+	log                 *zerolog.Logger
 }
 
 // NewTransactionService creates new transaction service.
-func NewTransactionService(adminClient users.AdminClient, clientFactory users.ClientFactory, log *zerolog.Logger) *TransactionService {
+func NewTransactionService(adminWalletClient users.AdminWalletClient, walletClientFactory users.WalletClientFactory, log *zerolog.Logger) *TransactionService {
 	transactionServiceLogger := log.With().Str("service", "user-service").Logger()
 	return &TransactionService{
-		adminClient:   adminClient,
-		clientFactory: clientFactory,
-		log:           &transactionServiceLogger,
+		adminWalletClient:   adminWalletClient,
+		walletClientFactory: walletClientFactory,
+		log:                 &transactionServiceLogger,
 	}
 }
 
 // CreateTransaction creates transaction.
 func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, satoshis uint64, events chan notification.TransactionEvent) error {
-	userClient, err := s.clientFactory.CreateWithXpriv(xpriv)
+	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xpriv)
 	if err != nil {
 		return err
 	}
@@ -50,13 +50,13 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		"sender":   userPaymail,
 	}
 
-	draftTransaction, err := userClient.CreateAndFinalizeTransaction(recipients, metadata)
+	draftTransaction, err := userWalletClient.CreateAndFinalizeTransaction(recipients, metadata)
 	if err != nil {
 		return err
 	}
 
 	go func() {
-		tx, err := tryRecordTransaction(userClient, draftTransaction, metadata, s.log)
+		tx, err := tryRecordTransaction(userWalletClient, draftTransaction, metadata, s.log)
 		if err != nil {
 			events <- notification.PrepareTransactionErrorEvent(err)
 		} else if tx != nil {
@@ -70,12 +70,12 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 // GetTransaction returns transaction by id.
 func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (users.FullTransaction, error) {
 	// Try to generate user-client with decrypted xpriv.
-	userClient, err := s.clientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
 	}
 
-	transaction, err := userClient.GetTransaction(id, userPaymail)
+	transaction, err := userWalletClient.GetTransaction(id, userPaymail)
 	if err != nil {
 		return nil, err
 	}
@@ -86,17 +86,17 @@ func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (
 // GetTransactions returns transactions by access key.
 func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam transports.QueryParams) (*PaginatedTransactions, error) {
 	// Try to generate user-client with decrypted xpriv.
-	userClient, err := s.clientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
 	}
 
-	count, err := userClient.GetTransactionsCount()
+	count, err := userWalletClient.GetTransactionsCount()
 	if err != nil {
 		return nil, err
 	}
 
-	transactions, err := userClient.GetTransactions(queryParam, userPaymail)
+	transactions, err := userWalletClient.GetTransactions(queryParam, userPaymail)
 	if err != nil {
 		return nil, err
 	}
@@ -113,9 +113,9 @@ func (s *TransactionService) GetTransactions(accessKey, userPaymail string, quer
 	return pTransactions, nil
 }
 
-func tryRecordTransaction(userClient users.UserClient, draftTx users.DraftTransaction, metadata *walletmodels.Metadata, log *zerolog.Logger) (*walletmodels.Transaction, error) {
+func tryRecordTransaction(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, metadata *walletmodels.Metadata, log *zerolog.Logger) (*walletmodels.Transaction, error) {
 	retries := uint(3)
-	tx, recordErr := tryRecord(userClient, draftTx, metadata, log, retries)
+	tx, recordErr := tryRecord(userWalletClient, draftTx, metadata, log, retries)
 
 	// unreserve utxos if failed
 	if recordErr != nil {
@@ -123,7 +123,7 @@ func tryRecordTransaction(userClient users.UserClient, draftTx users.DraftTransa
 			Str("draftTxId", draftTx.GetDraftTransactionId()).
 			Msgf("record transaction failed: %s", recordErr.Error())
 
-		unreserveErr := tryUnreserve(userClient, draftTx, log, retries)
+		unreserveErr := tryUnreserve(userWalletClient, draftTx, log, retries)
 		if unreserveErr != nil {
 			log.Error().
 				Str("draftTxId", draftTx.GetDraftTransactionId()).
@@ -138,7 +138,7 @@ func tryRecordTransaction(userClient users.UserClient, draftTx users.DraftTransa
 	return tx, nil
 }
 
-func tryRecord(userClient users.UserClient, draftTx users.DraftTransaction, metadata *walletmodels.Metadata, log *zerolog.Logger, retries uint) (*walletmodels.Transaction, error) {
+func tryRecord(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, metadata *walletmodels.Metadata, log *zerolog.Logger, retries uint) (*walletmodels.Transaction, error) {
 	log.Debug().
 		Str("draftTxId", draftTx.GetDraftTransactionId()).
 		Msg("record transaction")
@@ -147,7 +147,7 @@ func tryRecord(userClient users.UserClient, draftTx users.DraftTransaction, meta
 	err := retry.Do(
 		func() error {
 			var err error
-			tx, err = userClient.RecordTransaction(draftTx.GetDraftTransactionHex(), draftTx.GetDraftTransactionId(), metadata)
+			tx, err = userWalletClient.RecordTransaction(draftTx.GetDraftTransactionHex(), draftTx.GetDraftTransactionId(), metadata)
 			return err
 		},
 		retry.Attempts(retries),
@@ -161,14 +161,14 @@ func tryRecord(userClient users.UserClient, draftTx users.DraftTransaction, meta
 	return tx, err
 }
 
-func tryUnreserve(userClient users.UserClient, draftTx users.DraftTransaction, log *zerolog.Logger, retries uint) error {
+func tryUnreserve(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, log *zerolog.Logger, retries uint) error {
 	log.Debug().
 		Str("draftTxId", draftTx.GetDraftTransactionId()).
 		Msg("unreserve UTXOs from draft")
 
 	return retry.Do(
 		func() error {
-			return userClient.UnreserveUtxos(draftTx.GetDraftTransactionId())
+			return userWalletClient.UnreserveUtxos(draftTx.GetDraftTransactionId())
 		},
 		retry.Attempts(retries),
 		retry.Delay(1*time.Second),

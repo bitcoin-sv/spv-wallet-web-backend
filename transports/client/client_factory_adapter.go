@@ -10,24 +10,24 @@ import (
 	"github.com/spf13/viper"
 )
 
-type clientFactory struct {
+type walletClientFactory struct {
 	log *zerolog.Logger
 }
 
 // NewClientFactory implements the ClientFactory.
-func NewClientFactory(log *zerolog.Logger) users.ClientFactory {
+func NewClientFactory(log *zerolog.Logger) users.WalletClientFactory {
 	logger := log.With().Str("service", "spv-wallet-client").Logger()
-	return &clientFactory{
+	return &walletClientFactory{
 		log: &logger,
 	}
 }
 
-// CreateAdminClient returns AdminClient as spv-wallet-go-client instance with admin key.
-func (bf *clientFactory) CreateAdminClient() (users.AdminClient, error) {
+// CreateAdminWalletClient returns AdminWalletClient as spv-wallet-go-client instance with admin key.
+func (bf *walletClientFactory) CreateAdminWalletClient() (users.AdminWalletClient, error) {
 	xpriv := viper.GetString(config.EnvAdminXpriv)
 	serverUrl, debug, signRequest := getServerData()
 
-	adminClient, err := walletclient.New(
+	adminWalletClient, err := walletclient.New(
 		walletclient.WithXPriv(xpriv),
 		walletclient.WithAdminKey(xpriv),
 		walletclient.WithHTTP(serverUrl),
@@ -39,17 +39,17 @@ func (bf *clientFactory) CreateAdminClient() (users.AdminClient, error) {
 		return nil, err
 	}
 
-	return &AdminClient{
-		client: adminClient,
+	return &AdminWalletClient{
+		client: adminWalletClient,
 		log:    bf.log,
 	}, nil
 }
 
-// CreateWithXpriv returns UserClient as spv-wallet-go-client instance with given xpriv.
-func (bf *clientFactory) CreateWithXpriv(xpriv string) (users.UserClient, error) {
+// CreateWithXpriv returns UserWalletClient as spv-wallet-go-client instance with given xpriv.
+func (bf *walletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletClient, error) {
 	serverUrl, debug, signRequest := getServerData()
 
-	userClient, err := walletclient.New(
+	userWalletClient, err := walletclient.New(
 		walletclient.WithXPriv(xpriv),
 		walletclient.WithHTTP(serverUrl),
 		walletclient.WithDebugging(debug),
@@ -61,17 +61,17 @@ func (bf *clientFactory) CreateWithXpriv(xpriv string) (users.UserClient, error)
 	}
 
 	return &Client{
-		client: userClient,
+		client: userWalletClient,
 		log:    bf.log,
 	}, nil
 }
 
-// CreateWithXpriv returns UserClient as spv-wallet-go-client instance with given access key.
-func (bf *clientFactory) CreateWithAccessKey(accessKey string) (users.UserClient, error) {
+// CreateWithXpriv returns UserWalletClient as spv-wallet-go-client instance with given access key.
+func (bf *walletClientFactory) CreateWithAccessKey(accessKey string) (users.UserWalletClient, error) {
 	// Get env variables.
 	serverUrl, debug, signRequest := getServerData()
 
-	userclient, err := walletclient.New(
+	userWalletClient, err := walletclient.New(
 		walletclient.WithAccessKey(accessKey),
 		walletclient.WithHTTP(serverUrl),
 		walletclient.WithDebugging(debug),
@@ -83,7 +83,7 @@ func (bf *clientFactory) CreateWithAccessKey(accessKey string) (users.UserClient
 	}
 
 	return &Client{
-		client: userclient,
+		client: userWalletClient,
 		log:    bf.log,
 	}, nil
 }

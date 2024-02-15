@@ -68,20 +68,20 @@ var ErrUserAlreadyExists = &UserError{"user already exists"}
 
 // UserService represents User service and provide access to repository.
 type UserService struct {
-	repo          UsersRepository
-	adminClient   AdminClient
-	clientFactory ClientFactory
-	log           *zerolog.Logger
+	repo                UsersRepository
+	adminWalletClient   AdminWalletClient
+	walletClientFactory WalletClientFactory
+	log                 *zerolog.Logger
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo UsersRepository, adminClient AdminClient, bf ClientFactory, l *zerolog.Logger) *UserService {
+func NewUserService(repo UsersRepository, adminWalletClient AdminWalletClient, walletClientFactory WalletClientFactory, l *zerolog.Logger) *UserService {
 	userServiceLogger := l.With().Str("service", "user-service").Logger()
 	s := &UserService{
-		repo:          repo,
-		adminClient:   adminClient,
-		clientFactory: bf,
-		log:           &userServiceLogger,
+		repo:                repo,
+		adminWalletClient:   adminWalletClient,
+		walletClientFactory: walletClientFactory,
+		log:                 &userServiceLogger,
 	}
 
 	return s
@@ -142,7 +142,7 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 		return nil, e
 	}
 
-	xpub, err := s.adminClient.RegisterXpub(xpriv)
+	xpub, err := s.adminWalletClient.RegisterXpub(xpriv)
 	if err != nil {
 		e := &XPubError{fmt.Sprintf("error registering xpub in spv-wallet: %s", err)}
 		s.log.Error().
@@ -153,7 +153,7 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 
 	username, _ := splitEmail(email)
 
-	paymail, err := s.adminClient.RegisterPaymail(username, xpub)
+	paymail, err := s.adminWalletClient.RegisterPaymail(username, xpub)
 	if err != nil {
 		e := &PaymailError{fmt.Sprintf("error registering paymail in spv-wallet: %s", err)}
 		s.log.Error().
@@ -208,11 +208,11 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, err
 	}
 
-	userClient, err := s.clientFactory.CreateWithXpriv(decryptedXpriv)
+	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(decryptedXpriv)
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
-			Msgf("Error while creating userClient: %v", err.Error())
+			Msgf("Error while creating userWalletClient: %v", err.Error())
 		// "no keys available" error is a custom spv-wallet-go-client error which says that the client can't be provided(in our case due to wrong xpriv)
 		if err.Error() == "no keys available" {
 			return nil, ErrInvalidCredentials
@@ -220,7 +220,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, err
 	}
 
-	accessKey, err := userClient.CreateAccessKey()
+	accessKey, err := userWalletClient.CreateAccessKey()
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
@@ -228,7 +228,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, err
 	}
 
-	xpub, err := userClient.GetXPub()
+	xpub, err := userWalletClient.GetXPub()
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
@@ -261,12 +261,12 @@ func (s *UserService) SignOutUser(accessKeyId, accessKey string) error {
 
 	/// Right now we cannot revoke access key without authentication with XPriv, which is impossible here.
 
-	// userClient, err := s.clientFactory.CreateWithAccessKey(accessKey)
+	// userWalletClient, err := s.clientFactory.CreateWithAccessKey(accessKey)
 	// if err != nil {
 	// 	return err
 	// }
 
-	// _, err = userClient.RevokeAccessKey(accessKeyId)
+	// _, err = userWalletClient.RevokeAccessKey(accessKeyId)
 	// if err != nil {
 	// 	return err
 	// }
@@ -289,15 +289,15 @@ func (s *UserService) GetUserById(userId int) (*User, error) {
 
 // GetUserBalance returns user balance using access key.
 func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
-	userClient, err := s.clientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		s.log.Error().
-			Msgf("Error while creating userClient: %v", err.Error())
+			Msgf("Error while creating userWalletClient: %v", err.Error())
 		return nil, err
 	}
 
 	// Get xpub.
-	xpub, err := userClient.GetXPub()
+	xpub, err := userWalletClient.GetXPub()
 	if err != nil {
 		s.log.Error().
 			Msgf("Error while getting xPub: %v", err.Error())

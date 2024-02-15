@@ -14,14 +14,14 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 )
 
-// AdminClient is a wrapper for Admin SPV Wallet Client.
-type AdminClient struct {
+// AdminWalletClient is a wrapper for Admin SPV Wallet Client.
+type AdminWalletClient struct {
 	client *walletclient.BuxClient
 	log    *zerolog.Logger
 }
 
 // RegisterXpub registers xpub in SPV Wallet.
-func (c *AdminClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
+func (c *AdminWalletClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
 	// Get xpub from xpriv.
 	xpub, err := xpriv.Neuter()
 
@@ -46,7 +46,7 @@ func (c *AdminClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
 }
 
 // RegisterPaymail registers new paymail in SPV Wallet.
-func (c *AdminClient) RegisterPaymail(alias, xpub string) (string, error) {
+func (c *AdminWalletClient) RegisterPaymail(alias, xpub string) (string, error) {
 	// Get paymail domain from env.
 	domain := viper.GetString(config.EnvPaymailDomain)
 

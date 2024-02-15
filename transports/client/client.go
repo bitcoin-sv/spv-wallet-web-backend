@@ -14,7 +14,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 )
 
-// Client implements UserClient interface which wraps the spv-wallet-go-client and provides methods for user.
+// Client implements UserWalletClient interface which wraps the spv-wallet-go-client and provides methods for user.
 type Client struct {
 	client *walletclient.BuxClient
 	log    *zerolog.Logger
