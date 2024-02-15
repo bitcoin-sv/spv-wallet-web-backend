@@ -5,7 +5,7 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"web-backend/notification"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 
 	models "github.com/BuxOrg/bux-models"
 	"github.com/centrifugal/centrifuge"

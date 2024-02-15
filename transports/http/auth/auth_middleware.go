@@ -4,8 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"web-backend/domain"
-	"web-backend/domain/users"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"

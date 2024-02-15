@@ -3,13 +3,14 @@ package access
 import (
 	"errors"
 	"net/http"
-	"web-backend/domain"
-	"web-backend/domain/users"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 
 	"github.com/rs/zerolog"
 
-	"web-backend/transports/http/auth"
-	router "web-backend/transports/http/endpoints/routes"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
+	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
 )

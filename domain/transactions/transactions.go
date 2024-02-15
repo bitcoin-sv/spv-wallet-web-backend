@@ -1,6 +1,6 @@
 package transactions
 
-import "web-backend/domain/users"
+import "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 
 // PaginatedTransactions represents transactions with pagination details
 // like transactins count and number of pages.

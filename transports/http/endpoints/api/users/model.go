@@ -1,6 +1,6 @@
 package users
 
-import "web-backend/domain/users"
+import "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 
 // RegisterUser is a struct that contains user register data.
 type RegisterUser struct {

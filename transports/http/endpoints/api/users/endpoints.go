@@ -8,10 +8,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"web-backend/domain"
-	"web-backend/domain/users"
-	"web-backend/transports/http/auth"
-	router "web-backend/transports/http/endpoints/routes"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
+	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 )
 
 type handler struct {

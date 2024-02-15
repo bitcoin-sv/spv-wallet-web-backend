@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"web-backend/domain/users"
-	mock "web-backend/tests/mocks"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	mock "github.com/bitcoin-sv/spv-wallet-web-backend/tests/mocks"
 )
 
 func TestCreateNewUser_ReturnsUser(t *testing.T) {

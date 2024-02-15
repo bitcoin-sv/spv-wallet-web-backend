@@ -3,7 +3,7 @@ package cors
 import (
 	"net/http"
 
-	"web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"

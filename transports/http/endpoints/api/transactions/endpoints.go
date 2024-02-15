@@ -3,17 +3,18 @@ package transactions
 import (
 	"net/http"
 	"strconv"
-	"web-backend/domain"
-	"web-backend/domain/transactions"
-	"web-backend/domain/users"
-	"web-backend/notification"
-	"web-backend/transports/websocket"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
 
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/rs/zerolog"
 
-	"web-backend/transports/http/auth"
-	router "web-backend/transports/http/endpoints/routes"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
+	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
 )

@@ -20,8 +20,8 @@ import (
 	"github.com/libsv/go-bk/chaincfg"
 	"github.com/spf13/viper"
 
-	"web-backend/config"
-	"web-backend/encryption"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/encryption"
 )
 
 // CredentialsError Generic error type / wrapper for Credentials errors.

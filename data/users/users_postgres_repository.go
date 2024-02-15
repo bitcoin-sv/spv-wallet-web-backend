@@ -3,7 +3,8 @@ package users
 import (
 	"context"
 	"database/sql"
-	"web-backend/domain/users"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 )
 
 const (

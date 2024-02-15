@@ -7,7 +7,7 @@ package mock
 import (
         reflect "reflect"
         time "time"
-        users "web-backend/domain/users"
+        users "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 
         buxmodels "github.com/BuxOrg/bux-models"
         transports "github.com/BuxOrg/go-buxclient/transports"

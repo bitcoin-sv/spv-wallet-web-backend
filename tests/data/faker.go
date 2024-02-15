@@ -1,7 +1,7 @@
 package data
 
 import (
-	"web-backend/transports/client"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/client"
 
 	"github.com/brianvoe/gofakeit/v6"
 )

@@ -3,8 +3,9 @@ package transactions
 import (
 	"math"
 	"time"
-	"web-backend/domain/users"
-	"web-backend/notification"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 
 	"github.com/rs/zerolog"
 

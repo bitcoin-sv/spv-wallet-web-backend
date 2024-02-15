@@ -11,7 +11,7 @@ import (
 	walletclient "github.com/BuxOrg/go-buxclient"
 	"github.com/BuxOrg/go-buxclient/transports"
 
-	"web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 )
 
 // Client implements UserClient interface which wraps the spv-wallet-go-client and provides methods for user.

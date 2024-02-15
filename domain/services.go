@@ -1,10 +1,10 @@
 package domain
 
 import (
-	db_users "web-backend/data/users"
-	"web-backend/domain/transactions"
-	"web-backend/domain/users"
-	"web-backend/transports/client"
+	db_users "github.com/bitcoin-sv/spv-wallet-web-backend/data/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/client"
 
 	"github.com/rs/zerolog"
 )

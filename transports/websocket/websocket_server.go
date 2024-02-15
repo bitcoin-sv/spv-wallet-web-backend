@@ -10,9 +10,9 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"web-backend/domain"
-	"web-backend/transports/http/auth"
-	router "web-backend/transports/http/endpoints/routes"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
+	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 
 	"github.com/centrifugal/centrifuge"
 	"github.com/gin-gonic/gin"

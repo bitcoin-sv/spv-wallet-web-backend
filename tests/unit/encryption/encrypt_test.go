@@ -2,7 +2,8 @@ package encryption_test
 
 import (
 	"testing"
-	"web-backend/encryption"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/encryption"
 
 	"github.com/stretchr/testify/assert"
 )

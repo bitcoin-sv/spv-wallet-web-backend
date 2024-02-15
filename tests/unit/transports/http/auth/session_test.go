@@ -4,8 +4,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"web-backend/domain/users"
-	"web-backend/transports/http/auth"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"

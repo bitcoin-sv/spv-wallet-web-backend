@@ -3,8 +3,9 @@ package auth
 import (
 	"database/sql"
 	"net/http"
-	"web-backend/config"
-	router "web-backend/transports/http/endpoints/routes"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/postgres"

@@ -1,4 +1,4 @@
-module web-backend
+module github.com/bitcoin-sv/spv-wallet-web-backend
 
 go 1.21.5
 

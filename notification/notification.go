@@ -3,7 +3,8 @@ package notification
 import (
 	"fmt"
 	"time"
-	"web-backend/transports/client"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/client"
 
 	models "github.com/BuxOrg/bux-models"
 )

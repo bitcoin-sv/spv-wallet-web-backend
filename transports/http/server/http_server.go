@@ -9,9 +9,9 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"web-backend/config"
-	"web-backend/transports/http/endpoints/api/cors"
-	"web-backend/util"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/cors"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"

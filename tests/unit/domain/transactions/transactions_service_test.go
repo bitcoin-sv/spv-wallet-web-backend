@@ -1,7 +1,7 @@
 package transactions_test
 
 import (
-	"web-backend/notification"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
@@ -9,13 +9,13 @@ import (
 	"errors"
 	"testing"
 
-	"web-backend/tests/data"
-	mock "web-backend/tests/mocks"
-	"web-backend/tests/utils"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/tests/data"
+	mock "github.com/bitcoin-sv/spv-wallet-web-backend/tests/mocks"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/tests/utils"
 
-	"web-backend/domain/transactions"
-	"web-backend/domain/users"
-	"web-backend/transports/client"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/client"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang/mock/gomock"

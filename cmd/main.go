@@ -6,14 +6,15 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"web-backend/config"
-	"web-backend/config/databases"
-	db_users "web-backend/data/users"
-	"web-backend/domain"
-	"web-backend/logging"
-	"web-backend/transports/http/endpoints"
-	httpserver "web-backend/transports/http/server"
-	"web-backend/transports/websocket"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config/databases"
+	db_users "github.com/bitcoin-sv/spv-wallet-web-backend/data/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/logging"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints"
+	httpserver "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/server"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
 
 	"github.com/spf13/viper"
 )

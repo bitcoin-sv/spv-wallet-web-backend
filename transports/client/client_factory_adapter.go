@@ -1,8 +1,8 @@
 package client
 
 import (
-	"web-backend/config"
-	"web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 
 	"github.com/rs/zerolog"
 

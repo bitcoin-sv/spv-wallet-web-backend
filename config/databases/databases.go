@@ -1,7 +1,7 @@
 package databases
 
 import (
-	"web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 
 	"github.com/rs/zerolog"
 
