@@ -1,4 +1,4 @@
-package client
+package spvwallet
 
 import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"

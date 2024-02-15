@@ -1,4 +1,4 @@
-package client
+package spvwallet
 
 import (
 	walletmodels "github.com/BuxOrg/bux-models"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/client"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 
 	walletmodels "github.com/BuxOrg/bux-models"
 )
@@ -35,7 +35,7 @@ type Transaction struct {
 
 // PrepareTransactionEvent prepares event in NewTransactionEvent struct.
 func PrepareTransactionEvent(tx *walletmodels.Transaction) TransactionEvent {
-	sender, receiver := client.GetPaymailsFromMetadata(tx, "unknown")
+	sender, receiver := spvwallet.GetPaymailsFromMetadata(tx, "unknown")
 	status := "unconfirmed"
 	if tx.BlockHeight > 0 {
 		status = "confirmed"

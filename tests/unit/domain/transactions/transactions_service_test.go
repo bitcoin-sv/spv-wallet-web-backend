@@ -15,7 +15,7 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/client"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang/mock/gomock"
@@ -34,7 +34,7 @@ func TestCreateTransaction(t *testing.T) {
 		recipient := "recipient.paymail@example.com"
 		txValueInSatoshis := uint64(500)
 
-		tr := client.DraftTransaction{}
+		tr := spvwallet.DraftTransaction{}
 
 		mockUserWalletClient := mock.NewMockUserWalletClient(ctrl)
 		mockUserWalletClient.EXPECT().
@@ -155,8 +155,8 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 	}
 }
 
-func findById(collection []client.FullTransaction, id string) (users.FullTransaction, error) {
-	result := utils.Find(collection, func(t client.FullTransaction) bool { return t.Id == id })
+func findById(collection []spvwallet.FullTransaction, id string) (users.FullTransaction, error) {
+	result := utils.Find(collection, func(t spvwallet.FullTransaction) bool { return t.Id == id })
 
 	if result == nil {
 		return nil, errors.New("Not found")

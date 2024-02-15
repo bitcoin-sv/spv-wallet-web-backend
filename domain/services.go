@@ -4,7 +4,7 @@ import (
 	db_users "github.com/bitcoin-sv/spv-wallet-web-backend/data/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/client"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 
 	"github.com/rs/zerolog"
 )
@@ -18,7 +18,7 @@ type Services struct {
 
 // NewServices creates services instance.
 func NewServices(usersRepo *db_users.UsersRepository, log *zerolog.Logger) (*Services, error) {
-	walletClientFactory := client.NewWalletClientFactory(log)
+	walletClientFactory := spvwallet.NewWalletClientFactory(log)
 	adminWalletClient, err := walletClientFactory.CreateAdminClient()
 	if err != nil {
 		return nil, err
