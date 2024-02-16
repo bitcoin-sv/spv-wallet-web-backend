@@ -1,10 +1,12 @@
 package notification
 
 import (
-	buxclient "bux-wallet/transports/bux/client"
 	"fmt"
-	buxmodels "github.com/BuxOrg/bux-models"
 	"time"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
+
+	walletmodels "github.com/BuxOrg/bux-models"
 )
 
 // BaseEvent represents base of notification.
@@ -32,8 +34,8 @@ type Transaction struct {
 }
 
 // PrepareTransactionEvent prepares event in NewTransactionEvent struct.
-func PrepareTransactionEvent(tx *buxmodels.Transaction) TransactionEvent {
-	sender, receiver := buxclient.GetPaymailsFromMetadata(tx, "unknown")
+func PrepareTransactionEvent(tx *walletmodels.Transaction) TransactionEvent {
+	sender, receiver := spvwallet.GetPaymailsFromMetadata(tx, "unknown")
 	status := "unconfirmed"
 	if tx.BlockHeight > 0 {
 		status = "confirmed"

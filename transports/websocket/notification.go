@@ -2,10 +2,12 @@ package websocket
 
 import (
 	"encoding/json"
+
 	"github.com/rs/zerolog"
 
-	"bux-wallet/notification"
-	buxmodels "github.com/BuxOrg/bux-models"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
+
+	walletmodels "github.com/BuxOrg/bux-models"
 	"github.com/centrifugal/centrifuge"
 )
 
@@ -34,7 +36,7 @@ func (s *Socket) Notify(event any) {
 }
 
 // NotifyAboutTransaction will send notification about new transaction.
-func (s *Socket) NotifyAboutTransaction(tx *buxmodels.Transaction) {
+func (s *Socket) NotifyAboutTransaction(tx *walletmodels.Transaction) {
 	txEvent := notification.PrepareTransactionEvent(tx)
 	s.Notify(txEvent)
 }

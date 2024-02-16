@@ -1,11 +1,12 @@
 package auth
 
 import (
-	"bux-wallet/domain"
-	"bux-wallet/domain/users"
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -16,21 +17,21 @@ var ErrorUnauthorized = errors.New("unauthorized")
 
 // AuthMiddleware middleware that is checking the variables set in session.
 type AuthMiddleware struct {
-	adminBuxClient   users.AdmBuxClient
-	buxClientFactory users.BuxClientFactory
-	services         *domain.Services
+	adminWalletClient   users.AdminWalletClient
+	walletClientFactory users.WalletClientFactory
+	services            *domain.Services
 }
 
 // NewAuthMiddleware create middleware that is checking the variables in session.
 func NewAuthMiddleware(s *domain.Services) *AuthMiddleware {
-	adminBuxClient, err := s.BuxClientFactory.CreateAdminBuxClient()
+	adminWalletClient, err := s.WalletClientFactory.CreateAdminClient()
 	if err != nil {
-		panic(fmt.Errorf("error during creating admin bux client: %w", err))
+		panic(fmt.Errorf("error during creating adminWalletClient: %w", err))
 	}
 	return &AuthMiddleware{
-		adminBuxClient:   adminBuxClient,
-		buxClientFactory: s.BuxClientFactory,
-		services:         s,
+		adminWalletClient:   adminWalletClient,
+		walletClientFactory: s.WalletClientFactory,
+		services:            s,
 	}
 }
 
@@ -75,18 +76,12 @@ func isNilOrEmpty(s interface{}) bool {
 	return s == nil || s == ""
 }
 
-// checkAccessKey checks if access key is valid by getting it from BUX.
 func (h *AuthMiddleware) checkAccessKey(accessKey, accessKeyId string) error {
-	// Create bux client with keys from session
-	buxClient, err := h.buxClientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := h.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return err
 	}
 
-	_, err = buxClient.GetAccessKey(accessKeyId)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, err = userWalletClient.GetAccessKey(accessKeyId)
+	return err
 }

@@ -1,9 +1,10 @@
 package users
 
 import (
-	"bux-wallet/domain/users"
 	"context"
 	"database/sql"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 )
 
 const (

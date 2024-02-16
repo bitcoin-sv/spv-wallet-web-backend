@@ -1,20 +1,21 @@
 package transactions_test
 
 import (
-	"bux-wallet/notification"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
+
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 
 	"errors"
 	"testing"
 
-	"bux-wallet/tests/data"
-	mock "bux-wallet/tests/mocks"
-	"bux-wallet/tests/utils"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/tests/data"
+	mock "github.com/bitcoin-sv/spv-wallet-web-backend/tests/mocks"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/tests/utils"
 
-	"bux-wallet/domain/transactions"
-	"bux-wallet/domain/users"
-	buxclient "bux-wallet/transports/bux/client"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang/mock/gomock"
@@ -28,28 +29,28 @@ func TestCreateTransaction(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 
-		paymail := "paymail@4chain.com"
+		paymail := "paymail@example.com"
 		xpriv := gofakeit.HexUint256()
-		recipient := "recipient.paymail@4chain.com"
+		recipient := "recipient.paymail@example.com"
 		txValueInSatoshis := uint64(500)
 
-		tr := buxclient.DraftTransaction{}
+		tr := spvwallet.DraftTransaction{}
 
-		buxClientMq := mock.NewMockUserBuxClient(ctrl)
-		buxClientMq.EXPECT().
+		mockUserWalletClient := mock.NewMockUserWalletClient(ctrl)
+		mockUserWalletClient.EXPECT().
 			CreateAndFinalizeTransaction(gomock.Any(), gomock.Any()).
 			Return(&tr, nil)
 
-		buxClientMq.EXPECT().
+		mockUserWalletClient.EXPECT().
 			RecordTransaction(gomock.Any(), gomock.Any(), gomock.Any()).
 			AnyTimes()
 
-		clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
+		clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 		clientFctrMq.EXPECT().
 			CreateWithXpriv(xpriv).
-			Return(buxClientMq, nil)
+			Return(mockUserWalletClient, nil)
 
-		sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
+		sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
 		// Act
 		txs := make(chan notification.TransactionEvent, 1)
@@ -80,20 +81,20 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			paymail := "paymail@4chain.com"
+			paymail := "paymail@example.com"
 			accessKey := gofakeit.HexUint256()
 
-			buxClientMq := mock.NewMockUserBuxClient(ctrl)
-			buxClientMq.EXPECT().
+			mockUserWalletClient := mock.NewMockUserWalletClient(ctrl)
+			mockUserWalletClient.EXPECT().
 				GetTransaction(tc.transactionId, paymail).
 				Return(findById(ts, tc.transactionId))
 
-			clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
+			clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
-				Return(buxClientMq, nil)
+				Return(mockUserWalletClient, nil)
 
-			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
+			sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
 			// Act
 			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
@@ -129,20 +130,20 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			paymail := "paymail@4chain.com"
+			paymail := "paymail@example.com"
 			accessKey := gofakeit.HexUint256()
 
-			buxClientMq := mock.NewMockUserBuxClient(ctrl)
-			buxClientMq.EXPECT().
+			mockUserWalletClient := mock.NewMockUserWalletClient(ctrl)
+			mockUserWalletClient.EXPECT().
 				GetTransaction(tc.transactionId, paymail).
 				Return(findById(ts, tc.transactionId))
 
-			clientFctrMq := mock.NewMockBuxClientFactory(ctrl)
+			clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
-				Return(buxClientMq, nil)
+				Return(mockUserWalletClient, nil)
 
-			sut := transactions.NewTransactionService(mock.NewMockAdmBuxClient(ctrl), clientFctrMq, &testLogger)
+			sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
 			// Act
 			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
@@ -154,8 +155,8 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 	}
 }
 
-func findById(collection []buxclient.FullTransaction, id string) (users.FullTransaction, error) {
-	result := utils.Find(collection, func(t buxclient.FullTransaction) bool { return t.Id == id })
+func findById(collection []spvwallet.FullTransaction, id string) (users.FullTransaction, error) {
+	result := utils.Find(collection, func(t spvwallet.FullTransaction) bool { return t.Id == id })
 
 	if result == nil {
 		return nil, errors.New("Not found")

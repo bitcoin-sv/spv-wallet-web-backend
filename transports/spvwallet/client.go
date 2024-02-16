@@ -1,27 +1,28 @@
-package buxclient
+package spvwallet
 
 import (
 	"context"
 	"fmt"
-	"github.com/rs/zerolog"
 	"math"
 
-	buxmodels "github.com/BuxOrg/bux-models"
-	"github.com/BuxOrg/go-buxclient"
+	"github.com/rs/zerolog"
+
+	walletmodels "github.com/BuxOrg/bux-models"
+	walletclient "github.com/BuxOrg/go-buxclient"
 	"github.com/BuxOrg/go-buxclient/transports"
 
-	"bux-wallet/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 )
 
-// BuxClient is a wrapper for Bux Client.
-type BuxClient struct {
-	client *buxclient.BuxClient
+// Client implements UserWalletClient interface which wraps the spv-wallet-go-client and provides methods for user.
+type Client struct {
+	client *walletclient.BuxClient
 	log    *zerolog.Logger
 }
 
 // CreateAccessKey creates new access key for user.
-func (c *BuxClient) CreateAccessKey() (users.AccKey, error) {
-	accessKey, err := c.client.CreateAccessKey(context.Background(), &buxmodels.Metadata{})
+func (c *Client) CreateAccessKey() (users.AccKey, error) {
+	accessKey, err := c.client.CreateAccessKey(context.Background(), &walletmodels.Metadata{})
 	if err != nil {
 		c.log.Error().Msgf("Error while creating new accessKey: %v", err.Error())
 		return nil, err
@@ -36,7 +37,7 @@ func (c *BuxClient) CreateAccessKey() (users.AccKey, error) {
 }
 
 // GetAccessKey checks if access key is valid.
-func (c *BuxClient) GetAccessKey(accessKeyId string) (users.AccKey, error) {
+func (c *Client) GetAccessKey(accessKeyId string) (users.AccKey, error) {
 	accessKey, err := c.client.GetAccessKey(context.Background(), accessKeyId)
 	if err != nil {
 		c.log.Error().
@@ -54,7 +55,7 @@ func (c *BuxClient) GetAccessKey(accessKeyId string) (users.AccKey, error) {
 }
 
 // RevokeAccessKey revokes access key.
-func (c *BuxClient) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
+func (c *Client) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
 	accessKey, err := c.client.RevokeAccessKey(context.Background(), accessKeyId)
 	if err != nil {
 		c.log.Error().
@@ -72,7 +73,7 @@ func (c *BuxClient) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
 }
 
 // GetXPub returns xpub.
-func (c *BuxClient) GetXPub() (users.PubKey, error) {
+func (c *Client) GetXPub() (users.PubKey, error) {
 	xpub, err := c.client.GetXPub(context.Background())
 	if err != nil {
 		c.log.Error().Msgf("Error while getting new xPub: %v", err.Error())
@@ -88,9 +89,9 @@ func (c *BuxClient) GetXPub() (users.PubKey, error) {
 }
 
 // SendToRecipients sends satoshis to recipients.
-func (c *BuxClient) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
+func (c *Client) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
 	// Create matadata with sender and receiver paymails.
-	metadata := &buxmodels.Metadata{
+	metadata := &walletmodels.Metadata{
 		"receiver": recipients[0].To,
 		"sender":   senderPaymail,
 	}
@@ -113,7 +114,7 @@ func (c *BuxClient) SendToRecipients(recipients []*transports.Recipients, sender
 }
 
 // CreateAndFinalizeTransaction creates draft transaction and finalizes it.
-func (c *BuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (users.DraftTransaction, error) {
+func (c *Client) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *walletmodels.Metadata) (users.DraftTransaction, error) {
 	// Create draft transaction.
 	draftTx, err := c.client.DraftToRecipients(context.Background(), recipients, metadata)
 	if err != nil {
@@ -136,8 +137,8 @@ func (c *BuxClient) CreateAndFinalizeTransaction(recipients []*transports.Recipi
 	return &draftTransaction, nil
 }
 
-// RecordTransaction records transaction in BUX.
-func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) (*buxmodels.Transaction, error) {
+// RecordTransaction records transaction in SPV Wallet.
+func (c *Client) RecordTransaction(hex, draftTxId string, metadata *walletmodels.Metadata) (*walletmodels.Transaction, error) {
 	tx, err := c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata)
 	if err != nil {
 		c.log.Error().Str("draftTxID", draftTxId).Msgf("Error while recording tx: %v", err.Error())
@@ -146,13 +147,13 @@ func (c *BuxClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels
 	return tx, nil
 }
 
-// UnreserveUtxos removes utxos from draft transaction in BUX.
-func (c *BuxClient) UnreserveUtxos(draftTxId string) error {
+// UnreserveUtxos removes utxos from draft transaction in SPV Wallet.
+func (c *Client) UnreserveUtxos(draftTxId string) error {
 	return c.client.UnreserveUtxos(context.Background(), draftTxId)
 }
 
 // GetTransactions returns all transactions.
-func (c *BuxClient) GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]users.Transaction, error) {
+func (c *Client) GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]users.Transaction, error) {
 	conditions := make(map[string]interface{})
 
 	if queryParam.OrderByField == "" {
@@ -163,7 +164,7 @@ func (c *BuxClient) GetTransactions(queryParam transports.QueryParams, userPayma
 		queryParam.SortDirection = "desc"
 	}
 
-	transactions, err := c.client.GetTransactions(context.Background(), conditions, &buxmodels.Metadata{}, &queryParam)
+	transactions, err := c.client.GetTransactions(context.Background(), conditions, &walletmodels.Metadata{}, &queryParam)
 	if err != nil {
 		c.log.Error().
 			Str("userPaymail", userPaymail).
@@ -195,7 +196,7 @@ func (c *BuxClient) GetTransactions(queryParam transports.QueryParams, userPayma
 }
 
 // GetTransaction returns transaction by id.
-func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.FullTransaction, error) {
+func (c *Client) GetTransaction(transactionId, userPaymail string) (users.FullTransaction, error) {
 	transaction, err := c.client.GetTransaction(context.Background(), transactionId)
 	if err != nil {
 		c.log.Error().
@@ -226,10 +227,10 @@ func (c *BuxClient) GetTransaction(transactionId, userPaymail string) (users.Ful
 }
 
 // GetTransactionsCount returns number of transactions.
-func (c *BuxClient) GetTransactionsCount() (int64, error) {
+func (c *Client) GetTransactionsCount() (int64, error) {
 	conditions := make(map[string]interface{})
 
-	count, err := c.client.GetTransactionsCount(context.Background(), conditions, &buxmodels.Metadata{})
+	count, err := c.client.GetTransactionsCount(context.Background(), conditions, &walletmodels.Metadata{})
 	if err != nil {
 		c.log.Error().Msgf("Error while getting transactions count: %v", err.Error())
 		return 0, err

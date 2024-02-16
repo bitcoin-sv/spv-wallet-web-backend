@@ -5,7 +5,7 @@
 package mock
 
 import (
-	users "bux-wallet/domain/users"
+	users "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	context "context"
 	reflect "reflect"
 

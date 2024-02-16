@@ -1,20 +1,22 @@
 package endpoints
 
 import (
-	"bux-wallet/domain"
-	"bux-wallet/transports/http/endpoints/status"
-	"bux-wallet/transports/http/endpoints/swagger"
-	"bux-wallet/transports/websocket"
 	"database/sql"
 	"errors"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/status"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/swagger"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
+
 	"github.com/rs/zerolog"
 
-	"bux-wallet/transports/http/auth"
-	"bux-wallet/transports/http/endpoints/api/access"
-	"bux-wallet/transports/http/endpoints/api/transactions"
-	"bux-wallet/transports/http/endpoints/api/users"
-	router "bux-wallet/transports/http/endpoints/routes"
-	httpserver "bux-wallet/transports/http/server"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/access"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/transactions"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/users"
+	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
+	httpserver "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/server"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,8 +1,9 @@
 package users
 
 import (
-	"bux-wallet/domain/users"
 	"time"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 )
 
 // UserDto is a struct that represent user database record.

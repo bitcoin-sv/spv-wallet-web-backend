@@ -1,10 +1,11 @@
 package domain
 
 import (
-	db_users "bux-wallet/data/users"
-	"bux-wallet/domain/transactions"
-	"bux-wallet/domain/users"
-	buxclient "bux-wallet/transports/bux/client"
+	db_users "github.com/bitcoin-sv/spv-wallet-web-backend/data/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
+
 	"github.com/rs/zerolog"
 )
 
@@ -12,23 +13,23 @@ import (
 type Services struct {
 	UsersService        *users.UserService
 	TransactionsService *transactions.TransactionService
-	BuxClientFactory    users.BuxClientFactory
+	WalletClientFactory users.WalletClientFactory
 }
 
 // NewServices creates services instance.
 func NewServices(usersRepo *db_users.UsersRepository, log *zerolog.Logger) (*Services, error) {
-	bf := buxclient.NewBuxClientFactory(log)
-	adminBuxClient, err := bf.CreateAdminBuxClient()
+	walletClientFactory := spvwallet.NewWalletClientFactory(log)
+	adminWalletClient, err := walletClientFactory.CreateAdminClient()
 	if err != nil {
 		return nil, err
 	}
 
 	// Create User services.
-	uService := users.NewUserService(usersRepo, adminBuxClient, bf, log)
+	uService := users.NewUserService(usersRepo, adminWalletClient, walletClientFactory, log)
 
 	return &Services{
 		UsersService:        uService,
-		TransactionsService: transactions.NewTransactionService(adminBuxClient, bf, log),
-		BuxClientFactory:    bf,
+		TransactionsService: transactions.NewTransactionService(adminWalletClient, walletClientFactory, log),
+		WalletClientFactory: walletClientFactory,
 	}, nil
 }

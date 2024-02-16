@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/rs/zerolog"
 	"io"
 	"net/http"
 	"net/mail"
@@ -14,13 +13,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/rs/zerolog"
+
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
 	"github.com/libsv/go-bk/chaincfg"
 	"github.com/spf13/viper"
 
-	"bux-wallet/config"
-	"bux-wallet/encryption"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/encryption"
 )
 
 // CredentialsError Generic error type / wrapper for Credentials errors.
@@ -67,20 +68,20 @@ var ErrUserAlreadyExists = &UserError{"user already exists"}
 
 // UserService represents User service and provide access to repository.
 type UserService struct {
-	repo             UsersRepository
-	buxClient        AdmBuxClient
-	buxClientFactory BuxClientFactory
-	log              *zerolog.Logger
+	repo                UsersRepository
+	adminWalletClient   AdminWalletClient
+	walletClientFactory WalletClientFactory
+	log                 *zerolog.Logger
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo UsersRepository, adminBuxClient AdmBuxClient, bf BuxClientFactory, l *zerolog.Logger) *UserService {
+func NewUserService(repo UsersRepository, adminWalletClient AdminWalletClient, walletClientFactory WalletClientFactory, l *zerolog.Logger) *UserService {
 	userServiceLogger := l.With().Str("service", "user-service").Logger()
 	s := &UserService{
-		repo:             repo,
-		buxClient:        adminBuxClient,
-		buxClientFactory: bf,
-		log:              &userServiceLogger,
+		repo:                repo,
+		adminWalletClient:   adminWalletClient,
+		walletClientFactory: walletClientFactory,
+		log:                 &userServiceLogger,
 	}
 
 	return s
@@ -98,7 +99,6 @@ func (s *UserService) InsertUser(user *User) error {
 
 // CreateNewUser creates new user.
 func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error) {
-	// Validate password.
 	if err := validatePassword(password); err != nil {
 		e := &UserError{err.Error()}
 		s.log.Error().
@@ -107,7 +107,6 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 		return nil, e
 	}
 
-	// Validate user.
 	if err := s.validateUser(email); err != nil {
 		e := &UserError{err.Error()}
 		s.log.Error().
@@ -116,7 +115,6 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 		return nil, e
 	}
 
-	// Generate mnemonic and seed
 	mnemonic, seed, err := generateMnemonic()
 	if err != nil {
 		e := &UserError{err.Error()}
@@ -135,7 +133,6 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 		return nil, e
 	}
 
-	// Encrypt xpriv
 	encryptedXpriv, err := encryptXpriv(password, xpriv.String())
 	if err != nil {
 		e := &UserError{err.Error()}
@@ -145,30 +142,26 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 		return nil, e
 	}
 
-	// Register xpub in BUX.
-	xpub, err := s.buxClient.RegisterXpub(xpriv)
+	xpub, err := s.adminWalletClient.RegisterXpub(xpriv)
 	if err != nil {
-		e := &XPubError{fmt.Sprintf("error registering xpub in BUX: %s", err)}
+		e := &XPubError{fmt.Sprintf("error registering xpub in spv-wallet: %s", err)}
 		s.log.Error().
 			Str("newUserEmail", email).
 			Msgf("Error while registering xPub: %v", e.Error())
 		return nil, e
 	}
 
-	// Get username from email which will be used as paymail alias.
 	username, _ := splitEmail(email)
 
-	// Register paymail in BUX.
-	paymail, err := s.buxClient.RegisterPaymail(username, xpub)
+	paymail, err := s.adminWalletClient.RegisterPaymail(username, xpub)
 	if err != nil {
-		e := &PaymailError{fmt.Sprintf("error registering paymail in BUX: %s", err)}
+		e := &PaymailError{fmt.Sprintf("error registering paymail in spv-wallet: %s", err)}
 		s.log.Error().
 			Str("newUserEmail", email).
 			Msgf("Error while registering paymail: %v", e.Error())
 		return nil, e
 	}
 
-	// Create and save new user.
 	user := &User{
 		Email:     email,
 		Xpriv:     encryptedXpriv,
@@ -215,21 +208,19 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, err
 	}
 
-	// Try to generate BUX client with decrypted xpriv.
-	buxClient, err := s.buxClientFactory.CreateWithXpriv(decryptedXpriv)
+	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(decryptedXpriv)
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
-			Msgf("Error while creating BUX client: %v", err.Error())
-		// "no keys available" error is a custom bux-client error which says that bux-client can't be provided(in our case due to wrong xpriv)
+			Msgf("Error while creating userWalletClient: %v", err.Error())
+		// "no keys available" error is a custom spv-wallet-go-client error which says that the client can't be provided(in our case due to wrong xpriv)
 		if err.Error() == "no keys available" {
 			return nil, ErrInvalidCredentials
 		}
 		return nil, err
 	}
 
-	// Create access key.
-	accessKey, err := buxClient.CreateAccessKey()
+	accessKey, err := userWalletClient.CreateAccessKey()
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
@@ -237,7 +228,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, err
 	}
 
-	xpub, err := buxClient.GetXPub()
+	xpub, err := userWalletClient.GetXPub()
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
@@ -268,14 +259,14 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 // SignOutUser signs out user by revoking access key. (Not possible at the moment, method is just a mock.)
 func (s *UserService) SignOutUser(accessKeyId, accessKey string) error {
 
-	/// Right now we cannot revoke access key without Bux Client authentication with XPriv, which is impossible here.
+	/// Right now we cannot revoke access key without authentication with XPriv, which is impossible here.
 
-	// buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
+	// userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	// if err != nil {
 	// 	return err
 	// }
 
-	// _, err = buxClient.RevokeAccessKey(accessKeyId)
+	// _, err = userWalletClient.RevokeAccessKey(accessKeyId)
 	// if err != nil {
 	// 	return err
 	// }
@@ -296,18 +287,17 @@ func (s *UserService) GetUserById(userId int) (*User, error) {
 	return user, nil
 }
 
-// GetUserBalance returns user balance. Bux client is created with access key.
+// GetUserBalance returns user balance using access key.
 func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
-	// Create BUX client with access key.
-	buxClient, err := s.buxClientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		s.log.Error().
-			Msgf("Error while creating BUX client: %v", err.Error())
+			Msgf("Error while creating userWalletClient: %v", err.Error())
 		return nil, err
 	}
 
 	// Get xpub.
-	xpub, err := buxClient.GetXPub()
+	xpub, err := userWalletClient.GetXPub()
 	if err != nil {
 		s.log.Error().
 			Msgf("Error while getting xPub: %v", err.Error())

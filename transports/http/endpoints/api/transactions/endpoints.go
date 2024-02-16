@@ -1,18 +1,20 @@
 package transactions
 
 import (
-	"bux-wallet/domain"
-	"bux-wallet/domain/transactions"
-	"bux-wallet/domain/users"
-	"bux-wallet/notification"
-	"bux-wallet/transports/websocket"
-	"github.com/BuxOrg/go-buxclient/transports"
-	"github.com/rs/zerolog"
 	"net/http"
 	"strconv"
 
-	"bux-wallet/transports/http/auth"
-	router "bux-wallet/transports/http/endpoints/routes"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
+
+	"github.com/BuxOrg/go-buxclient/transports"
+	"github.com/rs/zerolog"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
+	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,7 +51,7 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 //	@Summary Get all transactions.
 //	@Tags transaction
 //	@Produce json
-//	@Success 200 {object} []buxclient.Transaction
+//	@Success 200 {object} []spvwallet.Transaction
 //	@Router /api/v1/transaction [get]
 func (h *handler) getTransactions(c *gin.Context) {
 	page := c.Query("page")
@@ -90,7 +92,7 @@ func (h *handler) getTransactions(c *gin.Context) {
 //	@Summary Get transaction by id.
 //	@Tags transaction
 //	@Produce json
-//	@Success 200 {object} buxclient.FullTransaction
+//	@Success 200 {object} spvwallet.FullTransaction
 //	@Router /api/v1/transaction/{id} [get]
 //	@Param id path string true "Transaction id"
 func (h *handler) getTransaction(c *gin.Context) {
@@ -112,7 +114,7 @@ func (h *handler) getTransaction(c *gin.Context) {
 //	@Summary Create transaction.
 //	@Tags transaction
 //	@Produce json
-//	@Success 200 {object} buxclient.FullTransaction
+//	@Success 200 {object} spvwallet.FullTransaction
 //	@Router /api/v1/transaction [post]
 //	@Param data body CreateTransaction true "Create transaction data"
 func (h *handler) createTransaction(c *gin.Context) {

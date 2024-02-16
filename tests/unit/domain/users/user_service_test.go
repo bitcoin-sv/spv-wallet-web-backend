@@ -3,15 +3,16 @@ package users_test
 import (
 	"database/sql"
 	"errors"
-	"github.com/rs/zerolog"
 	"testing"
+
+	"github.com/rs/zerolog"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"bux-wallet/domain/users"
-	mock "bux-wallet/tests/mocks"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	mock "github.com/bitcoin-sv/spv-wallet-web-backend/tests/mocks"
 )
 
 func TestCreateNewUser_ReturnsUser(t *testing.T) {
@@ -24,11 +25,11 @@ func TestCreateNewUser_ReturnsUser(t *testing.T) {
 	}{
 		{
 			name:      "Insert valid user",
-			userEmail: "homer.simpson@4chain.com",
+			userEmail: "homer.simpson@example.com",
 			userPswd:  "strongP4$$word",
 			expectedUser: &users.CreatedUser{
 				User: &users.User{
-					Email:   "homer.simpson@4chain.com",
+					Email:   "homer.simpson@example.com",
 					Paymail: "homer.simpson@homer.simpson.space",
 				},
 			},
@@ -42,7 +43,7 @@ func TestCreateNewUser_ReturnsUser(t *testing.T) {
 			defer ctrl.Finish()
 
 			repoMq := mock.NewMockUsersRepository(ctrl)
-			buxClientMq := mock.NewMockAdmBuxClient(ctrl)
+			mockAdminWalletClient := mock.NewMockAdminWalletClient(ctrl)
 
 			repoMq.EXPECT().
 				GetUserByEmail(gomock.Any(), tc.userEmail).
@@ -50,14 +51,14 @@ func TestCreateNewUser_ReturnsUser(t *testing.T) {
 
 			repoMq.EXPECT().InsertUser(gomock.Any(), gomock.Any())
 
-			buxClientMq.EXPECT().
+			mockAdminWalletClient.EXPECT().
 				RegisterXpub(gomock.Any()).
 				Return(gomock.Any().String(), nil)
-			buxClientMq.EXPECT().
+			mockAdminWalletClient.EXPECT().
 				RegisterPaymail(gomock.Any(), gomock.Any()).
 				Return(tc.expectedUser.User.Paymail, nil)
 
-			sut := users.NewUserService(repoMq, buxClientMq, nil, &testLogger)
+			sut := users.NewUserService(repoMq, mockAdminWalletClient, nil, &testLogger)
 
 			// Act
 			result, err := sut.CreateNewUser(tc.userEmail, tc.userPswd)
@@ -81,19 +82,19 @@ func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
 	}{
 		{
 			name:        "User already exists",
-			userEmail:   "marge.simpson@4chain.com",
+			userEmail:   "marge.simpson@example.com",
 			userPswd:    "strongP4$$word",
 			expectedErr: users.ErrUserAlreadyExists,
 		},
 		{
 			name:        "Invalid email",
-			userEmail:   "bart.simpson_4chain.com",
+			userEmail:   "bart.simpson_example.com",
 			userPswd:    "strongP4$$word",
 			expectedErr: errors.New("invalid email address"),
 		},
 		{
 			name:        "Invalid password",
-			userEmail:   "ned.flanders@4chain.com",
+			userEmail:   "ned.flanders@example.com",
 			userPswd:    "",
 			expectedErr: errors.New("correct password is required"),
 		},
@@ -106,14 +107,14 @@ func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
 			defer ctrl.Finish()
 
 			repoMq := mock.NewMockUsersRepository(ctrl)
-			buxClientMq := mock.NewMockAdmBuxClient(ctrl)
+			mockAdminWalletClient := mock.NewMockAdminWalletClient(ctrl)
 
 			repoMq.EXPECT().
 				GetUserByEmail(gomock.Any(), tc.userEmail).
 				Return(nil, nil).
 				AnyTimes()
 
-			sut := users.NewUserService(repoMq, buxClientMq, nil, &testLogger)
+			sut := users.NewUserService(repoMq, mockAdminWalletClient, nil, &testLogger)
 
 			// Act
 			result, err := sut.CreateNewUser(tc.userEmail, tc.userPswd)

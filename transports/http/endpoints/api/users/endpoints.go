@@ -2,15 +2,16 @@ package users
 
 import (
 	"fmt"
-	"github.com/rs/zerolog"
 	"net/http"
+
+	"github.com/rs/zerolog"
 
 	"github.com/gin-gonic/gin"
 
-	"bux-wallet/domain"
-	"bux-wallet/domain/users"
-	"bux-wallet/transports/http/auth"
-	router "bux-wallet/transports/http/endpoints/routes"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
+	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 )
 
 type handler struct {

@@ -3,14 +3,15 @@ package httpserver
 import (
 	"context"
 	"fmt"
-	"github.com/rs/zerolog"
 	"io"
 	"net/http"
 	"time"
 
-	"bux-wallet/config"
-	"bux-wallet/transports/http/endpoints/api/cors"
-	"bux-wallet/util"
+	"github.com/rs/zerolog"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/cors"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"

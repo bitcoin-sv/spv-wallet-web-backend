@@ -3,7 +3,7 @@ package users
 import (
 	"time"
 
-	buxmodels "github.com/BuxOrg/bux-models"
+	walletmodels "github.com/BuxOrg/bux-models"
 	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/libsv/go-bk/bip32"
 )
@@ -54,8 +54,8 @@ type (
 		GetDraftTransactionId() string
 	}
 
-	// UserBuxClient defines methods for bux client with user key.
-	UserBuxClient interface {
+	// UserWalletClient defines methods which are available for a user with access key.
+	UserWalletClient interface {
 		// Access Key methods
 		CreateAccessKey() (AccKey, error)
 		GetAccessKey(accessKeyId string) (AccKey, error)
@@ -67,21 +67,21 @@ type (
 		GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
-		CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (DraftTransaction, error)
-		RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) (*buxmodels.Transaction, error)
+		CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *walletmodels.Metadata) (DraftTransaction, error)
+		RecordTransaction(hex, draftTxId string, metadata *walletmodels.Metadata) (*walletmodels.Transaction, error)
 		UnreserveUtxos(draftTxId string) error
 	}
 
-	// AdmBuxClient defines methods for bux client with admin key.
-	AdmBuxClient interface {
+	// AdminWalletClient defines methods which are available for an admin with admin key.
+	AdminWalletClient interface {
 		RegisterXpub(xpriv *bip32.ExtendedKey) (string, error)
 		RegisterPaymail(alias, xpub string) (string, error)
 	}
 
-	// BuxClientFactory defines methods for bux client factory.
-	BuxClientFactory interface {
-		CreateWithXpriv(xpriv string) (UserBuxClient, error)
-		CreateWithAccessKey(accessKey string) (UserBuxClient, error)
-		CreateAdminBuxClient() (AdmBuxClient, error)
+	// WalletClientFactory defines methods to create user and admin clients.
+	WalletClientFactory interface {
+		CreateWithXpriv(xpriv string) (UserWalletClient, error)
+		CreateWithAccessKey(accessKey string) (UserWalletClient, error)
+		CreateAdminClient() (AdminWalletClient, error)
 	}
 )

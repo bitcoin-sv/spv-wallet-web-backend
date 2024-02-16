@@ -1,4 +1,4 @@
-package buxclient
+package spvwallet
 
 import "time"
 

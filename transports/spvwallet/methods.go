@@ -1,12 +1,12 @@
-package buxclient
+package spvwallet
 
 import (
-	buxmodels "github.com/BuxOrg/bux-models"
+	walletmodels "github.com/BuxOrg/bux-models"
 )
 
 // GetPaymailsFromMetadata returns sender and receiver paymails from metadata.
 // If no paymail was found in metadata, fallback paymail is returned.
-func GetPaymailsFromMetadata(transaction *buxmodels.Transaction, fallbackPaymail string) (string, string) {
+func GetPaymailsFromMetadata(transaction *walletmodels.Transaction, fallbackPaymail string) (string, string) {
 	senderPaymail := ""
 	receiverPaymail := ""
 
@@ -15,7 +15,7 @@ func GetPaymailsFromMetadata(transaction *buxmodels.Transaction, fallbackPaymail
 	}
 
 	if transaction.Model.Metadata != nil {
-		// Try to get paymails from metadata if the transaction was made in BUX.
+		// Try to get paymails from metadata if the transaction was made in SPV Wallet.
 		if transaction.Model.Metadata["sender"] != nil {
 			senderPaymail = transaction.Model.Metadata["sender"].(string)
 		}
@@ -24,7 +24,7 @@ func GetPaymailsFromMetadata(transaction *buxmodels.Transaction, fallbackPaymail
 		}
 
 		if senderPaymail == "" {
-			// Try to get paymails from metadata if the transaction was made outside BUX.
+			// Try to get paymails from metadata if the transaction was made outside SPV Wallet.
 			if transaction.Model.Metadata["p2p_tx_metadata"] != nil {
 				p2pTxMetadata := transaction.Model.Metadata["p2p_tx_metadata"].(map[string]interface{})
 				if p2pTxMetadata["sender"] != nil {

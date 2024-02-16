@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is an API for bux wallet.",
-        "title": "Bux Wallet API",
+        "description": "This is an API for the spv-wallet-web-frontend.",
+        "title": "SPV Wallet WEB Backend",
         "contact": {},
         "version": "1.0"
     },
@@ -74,7 +74,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/buxclient.Transaction"
+                                "$ref": "#/definitions/spvwallet.Transaction"
                             }
                         }
                     }
@@ -103,7 +103,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/buxclient.FullTransaction"
+                            "$ref": "#/definitions/spvwallet.FullTransaction"
                         }
                     }
                 }
@@ -131,7 +131,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/buxclient.FullTransaction"
+                            "$ref": "#/definitions/spvwallet.FullTransaction"
                         }
                     }
                 }
@@ -236,7 +236,7 @@
                 }
             }
         },
-        "buxclient.FullTransaction": {
+        "spvwallet.FullTransaction": {
             "type": "object",
             "properties": {
                 "blockHash": {
@@ -277,7 +277,7 @@
                 }
             }
         },
-        "buxclient.Transaction": {
+        "spvwallet.Transaction": {
             "type": "object",
             "properties": {
                 "createdAt": {

@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"bux-wallet/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"

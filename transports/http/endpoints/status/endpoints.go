@@ -1,7 +1,7 @@
 package status
 
 import (
-	router "bux-wallet/transports/http/endpoints/routes"
+	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
 )

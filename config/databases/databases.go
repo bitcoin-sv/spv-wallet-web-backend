@@ -1,7 +1,8 @@
 package databases
 
 import (
-	"bux-wallet/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+
 	"github.com/rs/zerolog"
 
 	"database/sql"

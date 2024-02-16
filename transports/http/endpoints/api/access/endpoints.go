@@ -1,14 +1,16 @@
 package access
 
 import (
-	"bux-wallet/domain"
-	"bux-wallet/domain/users"
 	"errors"
-	"github.com/rs/zerolog"
 	"net/http"
 
-	"bux-wallet/transports/http/auth"
-	router "bux-wallet/transports/http/endpoints/routes"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+
+	"github.com/rs/zerolog"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
+	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 
 	"github.com/gin-gonic/gin"
 )

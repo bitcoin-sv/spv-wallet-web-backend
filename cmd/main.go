@@ -1,29 +1,30 @@
 package main
 
 import (
-	"bux-wallet/config"
-	"bux-wallet/config/databases"
-	db_users "bux-wallet/data/users"
-	"bux-wallet/domain"
-	"bux-wallet/logging"
-	"bux-wallet/transports/http/endpoints"
-	httpserver "bux-wallet/transports/http/server"
-	"bux-wallet/transports/websocket"
 	"errors"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config/databases"
+	db_users "github.com/bitcoin-sv/spv-wallet-web-backend/data/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/logging"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints"
+	httpserver "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/server"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
+
 	"github.com/spf13/viper"
 )
 
-const appname = "bux-wallet-backend"
+const appname = "spv-wallet-web-backend"
 
 // nolint: godot
-// @title           Bux Wallet API
+// @title           SPV Wallet WEB Backend
 // @version			1.0
-// @description     This is an API for bux wallet.
+// @description     This is an API for the spv-wallet-web-frontend.
 func main() {
 	defaultLogger := logging.GetDefaultLogger()
 

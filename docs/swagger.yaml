@@ -13,7 +13,7 @@ definitions:
       password:
         type: string
     type: object
-  buxclient.FullTransaction:
+  spvwallet.FullTransaction:
     properties:
       blockHash:
         type: string
@@ -40,7 +40,7 @@ definitions:
       totalValue:
         type: integer
     type: object
-  buxclient.Transaction:
+  spvwallet.Transaction:
     properties:
       createdAt:
         type: string
@@ -106,8 +106,8 @@ definitions:
     type: object
 info:
   contact: {}
-  description: This is an API for bux wallet.
-  title: Bux Wallet API
+  description: This is an API for the spv-wallet-web-frontend.
+  title: SPV Wallet WEB Backend
   version: "1.0"
 paths:
   /api/v1/sign-in:
@@ -152,7 +152,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/buxclient.Transaction'
+              $ref: '#/definitions/spvwallet.Transaction'
             type: array
       summary: Get all transactions.
       tags:
@@ -171,7 +171,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/buxclient.FullTransaction'
+            $ref: '#/definitions/spvwallet.FullTransaction'
       summary: Create transaction.
       tags:
       - transaction
@@ -189,7 +189,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/buxclient.FullTransaction'
+            $ref: '#/definitions/spvwallet.FullTransaction'
       summary: Get transaction by id.
       tags:
       - transaction
