@@ -34,7 +34,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/transports_http_endpoints_api_access.SignInUser"
+                            "$ref": "#/definitions/access.SignInUser"
                         }
                     }
                 ],
@@ -42,7 +42,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/transports_http_endpoints_api_access.SignInResponse"
+                            "$ref": "#/definitions/access.SignInResponse"
                         }
                     }
                 }
@@ -82,7 +82,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/buxmodels.Transaction"
+                                "$ref": "#/definitions/spvwallet.Transaction"
                             }
                         }
                     }
@@ -103,7 +103,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/transports_http_endpoints_api_transactions.CreateTransaction"
+                            "$ref": "#/definitions/transactions.CreateTransaction"
                         }
                     }
                 ],
@@ -111,7 +111,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/buxmodels.Transaction"
+                            "$ref": "#/definitions/spvwallet.FullTransaction"
                         }
                     }
                 }
@@ -139,7 +139,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/buxmodels.Transaction"
+                            "$ref": "#/definitions/spvwallet.FullTransaction"
                         }
                     }
                 }
@@ -165,7 +165,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/transports_http_endpoints_api_users.RegisterUser"
+                            "$ref": "#/definitions/users.RegisterUser"
                         }
                     }
                 ],
@@ -173,7 +173,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/transports_http_endpoints_api_users.RegisterResponse"
+                            "$ref": "#/definitions/users.RegisterResponse"
                         }
                     }
                 }
@@ -214,7 +214,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/transports_http_endpoints_api_users.UserResponse"
+                            "$ref": "#/definitions/users.UserResponse"
                         }
                     }
                 }
@@ -222,123 +222,18 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "buxmodels.Transaction": {
-            "type": "object",
-            "properties": {
-                "block_hash": {
-                    "description": "BlockHash is a block hash that transaction is in.",
-                    "type": "string"
-                },
-                "block_height": {
-                    "description": "BlockHeight is a block height that transaction is in.",
-                    "type": "integer"
-                },
-                "created_at": {
-                    "description": "CreatedAt is a time when outer model was created.",
-                    "type": "string"
-                },
-                "deleted_at": {
-                    "description": "DeletedAt is a time when outer model was deleted.",
-                    "type": "string"
-                },
-                "direction": {
-                    "description": "TransactionDirection is a transaction direction (inbound/outbound).",
-                    "type": "string"
-                },
-                "draft_id": {
-                    "description": "DraftID is a transaction related draft id.",
-                    "type": "string"
-                },
-                "fee": {
-                    "description": "Fee is a transaction fee.",
-                    "type": "integer"
-                },
-                "hex": {
-                    "description": "Hex is a transaction hex.",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "ID is a transaction id.",
-                    "type": "string"
-                },
-                "metadata": {
-                    "description": "Metadata is a metadata map of outer model.",
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "number_of_inputs": {
-                    "description": "NumberOfInputs is a number of transaction inputs.",
-                    "type": "integer"
-                },
-                "number_of_outputs": {
-                    "description": "NumberOfOutputs is a number of transaction outputs.",
-                    "type": "integer"
-                },
-                "output_value": {
-                    "description": "OutputValue is a total output value.",
-                    "type": "integer"
-                },
-                "outputs": {
-                    "description": "Outputs represents all bux-transaction outputs. Will be shown only for admin.",
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "integer"
-                    }
-                },
-                "status": {
-                    "description": "Status is a transaction status.",
-                    "type": "string"
-                },
-                "total_value": {
-                    "description": "TotalValue is a total input value.",
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "description": "UpdatedAt is a time when outer model was updated.",
-                    "type": "string"
-                },
-                "xpub_in_ids": {
-                    "description": "XpubInIDs is a slice of xpub input ids.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "xpub_out_ids": {
-                    "description": "XpubOutIDs is a slice of xpub output ids.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance": {
-            "type": "object",
-            "properties": {
-                "bsv": {
-                    "type": "number"
-                },
-                "satoshis": {
-                    "type": "integer"
-                },
-                "usd": {
-                    "type": "number"
-                }
-            }
-        },
-        "transports_http_endpoints_api_access.SignInResponse": {
+        "access.SignInResponse": {
             "type": "object",
             "properties": {
                 "balance": {
-                    "$ref": "#/definitions/github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance"
+                    "$ref": "#/definitions/users.Balance"
                 },
                 "paymail": {
                     "type": "string"
                 }
             }
         },
-        "transports_http_endpoints_api_access.SignInUser": {
+        "access.SignInUser": {
             "type": "object",
             "properties": {
                 "email": {
@@ -349,7 +244,77 @@ const docTemplate = `{
                 }
             }
         },
-        "transports_http_endpoints_api_transactions.CreateTransaction": {
+        "spvwallet.FullTransaction": {
+            "type": "object",
+            "properties": {
+                "blockHash": {
+                    "type": "string"
+                },
+                "blockHeight": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "direction": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "numberOfInputs": {
+                    "type": "integer"
+                },
+                "numberOfOutputs": {
+                    "type": "integer"
+                },
+                "receiver": {
+                    "type": "string"
+                },
+                "sender": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "totalValue": {
+                    "type": "integer"
+                }
+            }
+        },
+        "spvwallet.Transaction": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "direction": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "receiver": {
+                    "type": "string"
+                },
+                "sender": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "totalValue": {
+                    "type": "integer"
+                }
+            }
+        },
+        "transactions.CreateTransaction": {
             "type": "object",
             "properties": {
                 "password": {
@@ -363,7 +328,21 @@ const docTemplate = `{
                 }
             }
         },
-        "transports_http_endpoints_api_users.RegisterResponse": {
+        "users.Balance": {
+            "type": "object",
+            "properties": {
+                "bsv": {
+                    "type": "number"
+                },
+                "satoshis": {
+                    "type": "integer"
+                },
+                "usd": {
+                    "type": "number"
+                }
+            }
+        },
+        "users.RegisterResponse": {
             "type": "object",
             "properties": {
                 "mnemonic": {
@@ -374,7 +353,7 @@ const docTemplate = `{
                 }
             }
         },
-        "transports_http_endpoints_api_users.RegisterUser": {
+        "users.RegisterUser": {
             "type": "object",
             "properties": {
                 "email": {
@@ -388,11 +367,11 @@ const docTemplate = `{
                 }
             }
         },
-        "transports_http_endpoints_api_users.UserResponse": {
+        "users.UserResponse": {
             "type": "object",
             "properties": {
                 "balance": {
-                    "$ref": "#/definitions/github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance"
+                    "$ref": "#/definitions/users.Balance"
                 },
                 "email": {
                     "type": "string"
