@@ -117,12 +117,10 @@ func tryRecordTransaction(userWalletClient users.UserWalletClient, draftTx users
 	retries := uint(3)
 	tx, recordErr := tryRecord(userWalletClient, draftTx, metadata, log, retries)
 
-	// unreserve utxos if failed
 	if recordErr != nil {
 		log.Error().
 			Str("draftTxId", draftTx.GetDraftTransactionId()).
 			Msgf("record transaction failed: %s", recordErr.Error())
-
 		return nil, recordErr
 	}
 
