@@ -4,6 +4,8 @@ go 1.21.5
 
 require (
 	github.com/avast/retry-go/v4 v4.5.1
+	github.com/bitcoin-sv/spv-wallet-go-client v0.5.0
+	github.com/bitcoin-sv/spv-wallet/models v0.15.0
 	github.com/brianvoe/gofakeit/v6 v6.26.3
 	github.com/centrifugal/centrifuge v0.30.6
 	github.com/gin-contrib/sessions v0.0.5
@@ -24,8 +26,6 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/antonlindstrom/pgstore v0.0.0-20220421113606-e3a6e3fed12a // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/bitcoin-sv/spv-wallet-go-client v0.5.0 // indirect
-	github.com/bitcoin-sv/spv-wallet/models v0.15.0 // indirect
 	github.com/bitcoinschema/go-bitcoin/v2 v2.0.5 // indirect
 	github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173 // indirect
 	github.com/bytedance/sonic v1.10.2 // indirect
@@ -57,7 +57,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/libsv/go-bt/v2 v2.2.5 // indirect
-	github.com/machinebox/graphql v0.2.2 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
