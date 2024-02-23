@@ -10,7 +10,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
 
-	"github.com/BuxOrg/go-buxclient/transports"
+	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
 	"github.com/rs/zerolog"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"

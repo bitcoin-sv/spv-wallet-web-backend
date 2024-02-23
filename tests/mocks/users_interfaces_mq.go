@@ -8,8 +8,8 @@ import (
         reflect "reflect"
         time "time"
 
-        buxmodels "github.com/BuxOrg/bux-models"
-        transports "github.com/BuxOrg/go-buxclient/transports"
+        "github.com/bitcoin-sv/spv-wallet/models"
+        transports "github.com/bitcoin-sv/spv-wallet-go-client/transports"
         users "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
         gomock "github.com/golang/mock/gomock"
         bip32 "github.com/libsv/go-bk/bip32"
@@ -533,7 +533,7 @@ func (mr *MockUserWalletClientMockRecorder) CreateAccessKey() *gomock.Call {
 }
 
 // CreateAndFinalizeTransaction mocks base method.
-func (m *MockUserWalletClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *buxmodels.Metadata) (users.DraftTransaction, error) {
+func (m *MockUserWalletClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *models.Metadata) (users.DraftTransaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateAndFinalizeTransaction", recipients, metadata)
         ret0, _ := ret[0].(users.DraftTransaction)
@@ -623,10 +623,10 @@ func (mr *MockUserWalletClientMockRecorder) GetXPub() *gomock.Call {
 }
 
 // RecordTransaction mocks base method.
-func (m *MockUserWalletClient) RecordTransaction(hex, draftTxId string, metadata *buxmodels.Metadata) (*buxmodels.Transaction, error) {
+func (m *MockUserWalletClient) RecordTransaction(hex, draftTxId string, metadata *models.Metadata) (*models.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "RecordTransaction", hex, draftTxId, metadata)
-        ret0, _ := ret[0].(*buxmodels.Transaction)
+        ret0, _ := ret[0].(*models.Transaction)
         ret1, _ := ret[1].(error)
         return ret0, ret1
 }
@@ -665,20 +665,6 @@ func (m *MockUserWalletClient) SendToRecipients(recipients []*transports.Recipie
 func (mr *MockUserWalletClientMockRecorder) SendToRecipients(recipients, senderPaymail interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
         return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendToRecipients", reflect.TypeOf((*MockUserWalletClient)(nil).SendToRecipients), recipients, senderPaymail)
-}
-
-// UnreserveUtxos mocks base method.
-func (m *MockUserWalletClient) UnreserveUtxos(draftTxId string) error {
-        m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "UnreserveUtxos", draftTxId)
-        ret0, _ := ret[0].(error)
-        return ret0
-}
-
-// UnreserveUtxos indicates an expected call of UnreserveUtxos.
-func (mr *MockUserWalletClientMockRecorder) UnreserveUtxos(draftTxId interface{}) *gomock.Call {
-        mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnreserveUtxos", reflect.TypeOf((*MockUserWalletClient)(nil).UnreserveUtxos), draftTxId)
 }
 
 // MockAdminWalletClient is a mock of AdminWalletClient interface.

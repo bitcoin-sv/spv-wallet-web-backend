@@ -6,7 +6,7 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 
-	walletmodels "github.com/BuxOrg/bux-models"
+	"github.com/bitcoin-sv/spv-wallet/models"
 )
 
 // BaseEvent represents base of notification.
@@ -34,7 +34,7 @@ type Transaction struct {
 }
 
 // PrepareTransactionEvent prepares event in NewTransactionEvent struct.
-func PrepareTransactionEvent(tx *walletmodels.Transaction) TransactionEvent {
+func PrepareTransactionEvent(tx *models.Transaction) TransactionEvent {
 	sender, receiver := spvwallet.GetPaymailsFromMetadata(tx, "unknown")
 	status := "unconfirmed"
 	if tx.BlockHeight > 0 {

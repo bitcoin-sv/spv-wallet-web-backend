@@ -3,9 +3,9 @@ module github.com/bitcoin-sv/spv-wallet-web-backend
 go 1.21.5
 
 require (
-	github.com/BuxOrg/bux-models v0.3.0
-	github.com/BuxOrg/go-buxclient v0.4.0
 	github.com/avast/retry-go/v4 v4.5.1
+	github.com/bitcoin-sv/spv-wallet-go-client v0.5.0
+	github.com/bitcoin-sv/spv-wallet/models v0.15.0
 	github.com/brianvoe/gofakeit/v6 v6.26.3
 	github.com/centrifugal/centrifuge v0.30.6
 	github.com/gin-contrib/sessions v0.0.5
@@ -57,7 +57,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/libsv/go-bt/v2 v2.2.5 // indirect
-	github.com/machinebox/graphql v0.2.2 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
