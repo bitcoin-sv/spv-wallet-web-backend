@@ -1,12 +1,12 @@
 package spvwallet
 
 import (
-	walletmodels "github.com/BuxOrg/bux-models"
+	"github.com/bitcoin-sv/spv-wallet/models"
 )
 
 // GetPaymailsFromMetadata returns sender and receiver paymails from metadata.
 // If no paymail was found in metadata, fallback paymail is returned.
-func GetPaymailsFromMetadata(transaction *walletmodels.Transaction, fallbackPaymail string) (string, string) {
+func GetPaymailsFromMetadata(transaction *models.Transaction, fallbackPaymail string) (string, string) {
 	senderPaymail := ""
 	receiverPaymail := ""
 

@@ -9,9 +9,9 @@ import (
 
 	"github.com/rs/zerolog"
 
-	walletmodels "github.com/BuxOrg/bux-models"
-	"github.com/BuxOrg/go-buxclient/transports"
 	"github.com/avast/retry-go/v4"
+	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
+	"github.com/bitcoin-sv/spv-wallet/models"
 )
 
 // TransactionService represents service whoch contains methods linked with transactions.
@@ -45,7 +45,7 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		},
 	}
 
-	metadata := &walletmodels.Metadata{
+	metadata := &models.Metadata{
 		"receiver": recipient,
 		"sender":   userPaymail,
 	}
@@ -113,7 +113,7 @@ func (s *TransactionService) GetTransactions(accessKey, userPaymail string, quer
 	return pTransactions, nil
 }
 
-func tryRecordTransaction(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, metadata *walletmodels.Metadata, log *zerolog.Logger) (*walletmodels.Transaction, error) {
+func tryRecordTransaction(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, metadata *models.Metadata, log *zerolog.Logger) (*models.Transaction, error) {
 	retries := uint(3)
 	tx, recordErr := tryRecord(userWalletClient, draftTx, metadata, log, retries)
 
@@ -123,12 +123,6 @@ func tryRecordTransaction(userWalletClient users.UserWalletClient, draftTx users
 			Str("draftTxId", draftTx.GetDraftTransactionId()).
 			Msgf("record transaction failed: %s", recordErr.Error())
 
-		unreserveErr := tryUnreserve(userWalletClient, draftTx, log, retries)
-		if unreserveErr != nil {
-			log.Error().
-				Str("draftTxId", draftTx.GetDraftTransactionId()).
-				Msgf("unreserve transaction failed: %s", unreserveErr.Error())
-		}
 		return nil, recordErr
 	}
 
@@ -138,12 +132,12 @@ func tryRecordTransaction(userWalletClient users.UserWalletClient, draftTx users
 	return tx, nil
 }
 
-func tryRecord(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, metadata *walletmodels.Metadata, log *zerolog.Logger, retries uint) (*walletmodels.Transaction, error) {
+func tryRecord(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, metadata *models.Metadata, log *zerolog.Logger, retries uint) (*models.Transaction, error) {
 	log.Debug().
 		Str("draftTxId", draftTx.GetDraftTransactionId()).
 		Msg("record transaction")
 
-	tx := &walletmodels.Transaction{}
+	tx := &models.Transaction{}
 	err := retry.Do(
 		func() error {
 			var err error
@@ -159,23 +153,4 @@ func tryRecord(userWalletClient users.UserWalletClient, draftTx users.DraftTrans
 		}),
 	)
 	return tx, err
-}
-
-func tryUnreserve(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, log *zerolog.Logger, retries uint) error {
-	log.Debug().
-		Str("draftTxId", draftTx.GetDraftTransactionId()).
-		Msg("unreserve UTXOs from draft")
-
-	return retry.Do(
-		func() error {
-			return userWalletClient.UnreserveUtxos(draftTx.GetDraftTransactionId())
-		},
-		retry.Attempts(retries),
-		retry.Delay(1*time.Second),
-		retry.OnRetry(func(n uint, err error) {
-			log.Warn().
-				Str("draftTxId", draftTx.GetDraftTransactionId()).
-				Msgf("%d retry UnreserveUtxos after error: %v", n, err.Error())
-		}),
-	)
 }

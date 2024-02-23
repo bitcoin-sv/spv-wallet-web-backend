@@ -7,22 +7,22 @@ import (
 
 	"github.com/rs/zerolog"
 
-	walletmodels "github.com/BuxOrg/bux-models"
-	walletclient "github.com/BuxOrg/go-buxclient"
-	"github.com/BuxOrg/go-buxclient/transports"
+	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
+	"github.com/bitcoin-sv/spv-wallet/models"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 )
 
 // Client implements UserWalletClient interface which wraps the spv-wallet-go-client and provides methods for user.
 type Client struct {
-	client *walletclient.BuxClient
+	client *walletclient.WalletClient
 	log    *zerolog.Logger
 }
 
 // CreateAccessKey creates new access key for user.
 func (c *Client) CreateAccessKey() (users.AccKey, error) {
-	accessKey, err := c.client.CreateAccessKey(context.Background(), &walletmodels.Metadata{})
+	accessKey, err := c.client.CreateAccessKey(context.Background(), &models.Metadata{})
 	if err != nil {
 		c.log.Error().Msgf("Error while creating new accessKey: %v", err.Error())
 		return nil, err
@@ -91,7 +91,7 @@ func (c *Client) GetXPub() (users.PubKey, error) {
 // SendToRecipients sends satoshis to recipients.
 func (c *Client) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
 	// Create matadata with sender and receiver paymails.
-	metadata := &walletmodels.Metadata{
+	metadata := &models.Metadata{
 		"receiver": recipients[0].To,
 		"sender":   senderPaymail,
 	}
@@ -114,7 +114,7 @@ func (c *Client) SendToRecipients(recipients []*transports.Recipients, senderPay
 }
 
 // CreateAndFinalizeTransaction creates draft transaction and finalizes it.
-func (c *Client) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *walletmodels.Metadata) (users.DraftTransaction, error) {
+func (c *Client) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *models.Metadata) (users.DraftTransaction, error) {
 	// Create draft transaction.
 	draftTx, err := c.client.DraftToRecipients(context.Background(), recipients, metadata)
 	if err != nil {
@@ -138,18 +138,13 @@ func (c *Client) CreateAndFinalizeTransaction(recipients []*transports.Recipient
 }
 
 // RecordTransaction records transaction in SPV Wallet.
-func (c *Client) RecordTransaction(hex, draftTxId string, metadata *walletmodels.Metadata) (*walletmodels.Transaction, error) {
+func (c *Client) RecordTransaction(hex, draftTxId string, metadata *models.Metadata) (*models.Transaction, error) {
 	tx, err := c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata)
 	if err != nil {
 		c.log.Error().Str("draftTxID", draftTxId).Msgf("Error while recording tx: %v", err.Error())
 		return nil, err
 	}
 	return tx, nil
-}
-
-// UnreserveUtxos removes utxos from draft transaction in SPV Wallet.
-func (c *Client) UnreserveUtxos(draftTxId string) error {
-	return c.client.UnreserveUtxos(context.Background(), draftTxId)
 }
 
 // GetTransactions returns all transactions.
@@ -164,7 +159,7 @@ func (c *Client) GetTransactions(queryParam transports.QueryParams, userPaymail 
 		queryParam.SortDirection = "desc"
 	}
 
-	transactions, err := c.client.GetTransactions(context.Background(), conditions, &walletmodels.Metadata{}, &queryParam)
+	transactions, err := c.client.GetTransactions(context.Background(), conditions, &models.Metadata{}, &queryParam)
 	if err != nil {
 		c.log.Error().
 			Str("userPaymail", userPaymail).
@@ -230,7 +225,7 @@ func (c *Client) GetTransaction(transactionId, userPaymail string) (users.FullTr
 func (c *Client) GetTransactionsCount() (int64, error) {
 	conditions := make(map[string]interface{})
 
-	count, err := c.client.GetTransactionsCount(context.Background(), conditions, &walletmodels.Metadata{})
+	count, err := c.client.GetTransactionsCount(context.Background(), conditions, &models.Metadata{})
 	if err != nil {
 		c.log.Error().Msgf("Error while getting transactions count: %v", err.Error())
 		return 0, err

@@ -3,8 +3,6 @@ module github.com/bitcoin-sv/spv-wallet-web-backend
 go 1.21.5
 
 require (
-	github.com/BuxOrg/bux-models v0.3.0
-	github.com/BuxOrg/go-buxclient v0.4.0
 	github.com/avast/retry-go/v4 v4.5.1
 	github.com/brianvoe/gofakeit/v6 v6.26.3
 	github.com/centrifugal/centrifuge v0.30.6
@@ -26,6 +24,8 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/antonlindstrom/pgstore v0.0.0-20220421113606-e3a6e3fed12a // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bitcoin-sv/spv-wallet-go-client v0.5.0 // indirect
+	github.com/bitcoin-sv/spv-wallet/models v0.15.0 // indirect
 	github.com/bitcoinschema/go-bitcoin/v2 v2.0.5 // indirect
 	github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173 // indirect
 	github.com/bytedance/sonic v1.10.2 // indirect

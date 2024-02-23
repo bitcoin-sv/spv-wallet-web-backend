@@ -55,7 +55,6 @@ func setHttpServerDefaults() {
 func setSpvWalletDefaults() {
 	viper.SetDefault(EnvAdminXpriv, "xprv9s21ZrQH143K3CbJXirfrtpLvhT3Vgusdo8coBritQ3rcS7Jy7sxWhatuxG5h2y1Cqj8FKmPp69536gmjYRpfga2MJdsGyBsnB12E19CESK")
 	viper.SetDefault(EnvServerUrl, "http://localhost:3003/v1")
-	viper.SetDefault(EnvWithDebug, true)
 	viper.SetDefault(EnvSignRequest, true)
 	viper.SetDefault(EnvPaymailDomain, "example.com")
 	viper.SetDefault(EnvPaymailAvatar, "http://localhost:3003/static/paymail/avatar.jpg")

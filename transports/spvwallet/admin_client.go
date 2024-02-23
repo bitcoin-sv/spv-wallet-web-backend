@@ -6,8 +6,8 @@ import (
 
 	"github.com/rs/zerolog"
 
-	walletmodels "github.com/BuxOrg/bux-models"
-	walletclient "github.com/BuxOrg/go-buxclient"
+	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/libsv/go-bk/bip32"
 	"github.com/spf13/viper"
 
@@ -16,7 +16,7 @@ import (
 
 // AdminWalletClient is a wrapper for Admin SPV Wallet Client.
 type AdminWalletClient struct {
-	client *walletclient.BuxClient
+	client *walletclient.WalletClient
 	log    *zerolog.Logger
 }
 
@@ -32,7 +32,7 @@ func (c *AdminWalletClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, erro
 
 	// Register new xpub in SPV Wallet.
 	err = c.client.NewXpub(
-		context.Background(), xpub.String(), &walletmodels.Metadata{},
+		context.Background(), xpub.String(), &models.Metadata{},
 	)
 
 	if err != nil {
@@ -57,7 +57,7 @@ func (c *AdminWalletClient) RegisterPaymail(alias, xpub string) (string, error) 
 	avatar := viper.GetString(config.EnvPaymailAvatar)
 
 	// Register new xpub in SPV Wallet.
-	err := c.client.NewPaymail(context.Background(), xpub, address, avatar, alias, &walletmodels.Metadata{})
+	err := c.client.NewPaymail(context.Background(), xpub, address, avatar, alias, &models.Metadata{})
 
 	if err != nil {
 		c.log.Error().Msgf("Error while registering new paymail: %v", err.Error())

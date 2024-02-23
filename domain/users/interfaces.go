@@ -3,8 +3,8 @@ package users
 import (
 	"time"
 
-	walletmodels "github.com/BuxOrg/bux-models"
-	"github.com/BuxOrg/go-buxclient/transports"
+	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
+	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/libsv/go-bk/bip32"
 )
 
@@ -67,9 +67,8 @@ type (
 		GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
-		CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *walletmodels.Metadata) (DraftTransaction, error)
-		RecordTransaction(hex, draftTxId string, metadata *walletmodels.Metadata) (*walletmodels.Transaction, error)
-		UnreserveUtxos(draftTxId string) error
+		CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *models.Metadata) (DraftTransaction, error)
+		RecordTransaction(hex, draftTxId string, metadata *models.Metadata) (*models.Transaction, error)
 	}
 
 	// AdminWalletClient defines methods which are available for an admin with admin key.

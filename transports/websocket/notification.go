@@ -7,7 +7,7 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 
-	walletmodels "github.com/BuxOrg/bux-models"
+	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/centrifugal/centrifuge"
 )
 
@@ -36,7 +36,7 @@ func (s *Socket) Notify(event any) {
 }
 
 // NotifyAboutTransaction will send notification about new transaction.
-func (s *Socket) NotifyAboutTransaction(tx *walletmodels.Transaction) {
+func (s *Socket) NotifyAboutTransaction(tx *models.Transaction) {
 	txEvent := notification.PrepareTransactionEvent(tx)
 	s.Notify(txEvent)
 }
