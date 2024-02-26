@@ -31,7 +31,7 @@ func (c *AdminWalletClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, erro
 	}
 
 	// Register new xpub in SPV Wallet.
-	err = c.client.NewXpub(
+	err = c.client.AdminNewXpub(
 		context.Background(), xpub.String(), &models.Metadata{},
 	)
 
@@ -56,8 +56,7 @@ func (c *AdminWalletClient) RegisterPaymail(alias, xpub string) (string, error) 
 	// Get avatar url from env.
 	avatar := viper.GetString(config.EnvPaymailAvatar)
 
-	// Register new xpub in SPV Wallet.
-	err := c.client.NewPaymail(context.Background(), xpub, address, avatar, alias, &models.Metadata{})
+	_, err := c.client.AdminCreatePaymail(context.Background(), xpub, address, avatar, alias)
 
 	if err != nil {
 		c.log.Error().Msgf("Error while registering new paymail: %v", err.Error())
