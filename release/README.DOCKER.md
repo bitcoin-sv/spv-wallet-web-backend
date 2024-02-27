@@ -9,7 +9,7 @@ To run the `spv-wallet-web-backend` as a Docker image with custom configuration,
 Here's the updated command with environment variables for the Docker container:
 
 ```bash
-docker run -p 8080:8080 -e SPVWALLET_PAYMAIL_DOMAIN=example.com ${DOCKERHUB_OWNER}/${DOCKERHUB_REPO}:latest
+docker run -p 5000:5000 -e SPVWALLET_PAYMAIL_DOMAIN=example.com ${DOCKERHUB_OWNER}/${DOCKERHUB_REPO}:latest
 ```
 
 ### Configuration
@@ -17,7 +17,7 @@ docker run -p 8080:8080 -e SPVWALLET_PAYMAIL_DOMAIN=example.com ${DOCKERHUB_OWNE
 The `spv-wallet-web-backend` can be configured using environment variables. Here is a list of available environment variables and their purpose:
 
 | Environment Variable               | Description                                               | Default Value                                                                                                     |
-| ---------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| ---------------------------------- | --------------------------------------------------------- |-------------------------------------------------------------------------------------------------------------------|
 | `DB_HOST`                          | Database host address.                                    | `localhost`                                                                                                       |
 | `DB_PORT`                          | Database port number.                                     | `5432`                                                                                                            |
 | `DB_USER`                          | Database username.                                        | `postgres`                                                                                                        |
@@ -26,7 +26,7 @@ The `spv-wallet-web-backend` can be configured using environment variables. Here
 | `DB_SSL_MODE`                      | Database SSL mode.                                        | `disable`                                                                                                         |
 | `HTTP_SERVER_READ_TIMEOUT`         | HTTP server read timeout (in seconds).                    | `40`                                                                                                              |
 | `HTTP_SERVER_WRITE_TIMEOUT`        | HTTP server write timeout (in seconds).                   | `40`                                                                                                              |
-| `HTTP_SERVER_PORT`                 | HTTP server port.                                         | `8080`                                                                                                            |
+| `HTTP_SERVER_PORT`                 | HTTP server port.                                         | `5000`                                                                                                            |
 | `HTTP_SERVER_COOKIE_DOMAIN`        | HTTP server cookie domain parameter.                      | `localhost`                                                                                                       |
 | `HTTP_SERVER_COOKIE_SECURE`        | HTTP server cookie secure parameter.                      | `false`                                                                                                           |
 | `HTTP_SERVER_CORS_ALLOWED_DOMAINS` | HTTP server CORS origin allowed domains.                  | `[]`                                                                                                              |

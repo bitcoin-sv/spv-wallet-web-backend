@@ -45,7 +45,7 @@ func (c *Config) WithDb() *Config {
 func setHttpServerDefaults() {
 	viper.SetDefault(EnvHttpServerReadTimeout, 40)
 	viper.SetDefault(EnvHttpServerWriteTimeout, 40)
-	viper.SetDefault(EnvHttpServerPort, 8080)
+	viper.SetDefault(EnvHttpServerPort, 5000)
 	viper.SetDefault(EnvHttpServerCookieDomain, "localhost")
 	viper.SetDefault(EnvHttpServerCookieSecure, false)
 	viper.SetDefault(EnvHttpServerCorsAllowedDomains, []string{})
