@@ -10,10 +10,10 @@ The `spv-wallet-web-backend` is an HTTP server that serves as the referential ba
 
 ### Endpoints documentation
 
-For endpoints documentation you can visit swagger which is exposed on port 8080 by default.
+For endpoints documentation you can visit swagger which is exposed on port 8180 by default.
 
 ```
-http://localhost:8080/swagger/index.html
+http://localhost:8180/swagger/index.html
 ```
 
 ## Contribution

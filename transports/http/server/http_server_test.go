@@ -15,7 +15,7 @@ func TestNewHttpServer(t *testing.T) {
 
 	testLogger := zerolog.Nop()
 
-	server := NewHttpServer(8080, &testLogger)
+	server := NewHttpServer(8180, &testLogger)
 	server.ApplyConfiguration(WithPanicEndpoint)
 
 	// Create a test request
@@ -60,7 +60,7 @@ func TestApplyConfiguration(t *testing.T) {
 	// Arrange
 	testLogger := zerolog.Nop()
 
-	server := NewHttpServer(8080, &testLogger)
+	server := NewHttpServer(8180, &testLogger)
 	require.NotNil(t, server, "Server should be created")
 
 	// Act
@@ -74,7 +74,7 @@ func TestShutdownWithContext(t *testing.T) {
 	// Arrange
 	testLogger := zerolog.Nop()
 
-	server := NewHttpServer(8080, &testLogger)
+	server := NewHttpServer(8180, &testLogger)
 	require.NotNil(t, server, "Server should be created")
 
 	// Act
