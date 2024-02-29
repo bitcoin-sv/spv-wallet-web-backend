@@ -56,7 +56,7 @@ func (c *AdminWalletClient) RegisterPaymail(alias, xpub string) (string, error) 
 	// Get avatar url from env.
 	avatar := viper.GetString(config.EnvPaymailAvatar)
 
-	_, err := c.client.AdminCreatePaymail(context.Background(), xpub, address, avatar, alias)
+	_, err := c.client.AdminCreatePaymail(context.Background(), xpub, address, alias, avatar)
 
 	if err != nil {
 		c.log.Error().Msgf("Error while registering new paymail: %v", err.Error())
