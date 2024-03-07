@@ -2,6 +2,7 @@ package domain
 
 import (
 	db_users "github.com/bitcoin-sv/spv-wallet-web-backend/data/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/config"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
@@ -14,6 +15,7 @@ type Services struct {
 	UsersService        *users.UserService
 	TransactionsService *transactions.TransactionService
 	WalletClientFactory users.WalletClientFactory
+	ConfigService       *config.ConfigService
 }
 
 // NewServices creates services instance.
@@ -31,5 +33,6 @@ func NewServices(usersRepo *db_users.UsersRepository, log *zerolog.Logger) (*Ser
 		UsersService:        uService,
 		TransactionsService: transactions.NewTransactionService(adminWalletClient, walletClientFactory, log),
 		WalletClientFactory: walletClientFactory,
+		ConfigService:       config.NewConfigService(adminWalletClient, log),
 	}, nil
 }

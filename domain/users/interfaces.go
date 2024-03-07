@@ -75,6 +75,7 @@ type (
 	AdminWalletClient interface {
 		RegisterXpub(xpriv *bip32.ExtendedKey) (string, error)
 		RegisterPaymail(alias, xpub string) (string, error)
+		GetSharedConfig() (*models.SharedConfig, error)
 	}
 
 	// WalletClientFactory defines methods to create user and admin clients.
