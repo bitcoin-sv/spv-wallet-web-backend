@@ -8,9 +8,9 @@ import (
         reflect "reflect"
         time "time"
 
-        "github.com/bitcoin-sv/spv-wallet/models"
         transports "github.com/bitcoin-sv/spv-wallet-go-client/transports"
         users "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+        models "github.com/bitcoin-sv/spv-wallet/models"
         gomock "github.com/golang/mock/gomock"
         bip32 "github.com/libsv/go-bk/bip32"
 )
@@ -688,6 +688,21 @@ func NewMockAdminWalletClient(ctrl *gomock.Controller) *MockAdminWalletClient {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockAdminWalletClient) EXPECT() *MockAdminWalletClientMockRecorder {
         return m.recorder
+}
+
+// GetSharedConfig mocks base method.
+func (m *MockAdminWalletClient) GetSharedConfig() (*models.SharedConfig, error) {
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "GetSharedConfig")
+        ret0, _ := ret[0].(*models.SharedConfig)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}
+
+// GetSharedConfig indicates an expected call of GetSharedConfig.
+func (mr *MockAdminWalletClientMockRecorder) GetSharedConfig() *gomock.Call {
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSharedConfig", reflect.TypeOf((*MockAdminWalletClient)(nil).GetSharedConfig))
 }
 
 // RegisterPaymail mocks base method.
