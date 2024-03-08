@@ -70,6 +70,6 @@ func (s *ConfigService) makePublicConfig(shared *models.SharedConfig) *PublicCon
 
 	return &PublicConfig{
 		PaymilDomain:         configuredPaymailDomain,
-		ExperimentalFeatures: shared.ExperimentalFeatures,
+		ExperimentalFeatures: ExperimentalConfig{PikeEnabled: shared.ExperimentalFeatures.PikeEnabled},
 	}
 }
