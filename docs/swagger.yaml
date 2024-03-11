@@ -13,15 +13,12 @@ definitions:
       password:
         type: string
     type: object
-  config.ExperimentalConfig:
-    properties:
-      pike_enabled:
-        type: boolean
-    type: object
   config.PublicConfig:
     properties:
       experimental_features:
-        $ref: '#/definitions/config.ExperimentalConfig'
+        additionalProperties:
+          type: boolean
+        type: object
       paymail_domain:
         type: string
     type: object

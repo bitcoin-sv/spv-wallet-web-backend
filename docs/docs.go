@@ -263,19 +263,14 @@ const docTemplate = `{
                 }
             }
         },
-        "config.ExperimentalConfig": {
-            "type": "object",
-            "properties": {
-                "pike_enabled": {
-                    "type": "boolean"
-                }
-            }
-        },
         "config.PublicConfig": {
             "type": "object",
             "properties": {
                 "experimental_features": {
-                    "$ref": "#/definitions/config.ExperimentalConfig"
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "boolean"
+                    }
                 },
                 "paymail_domain": {
                     "type": "string"
