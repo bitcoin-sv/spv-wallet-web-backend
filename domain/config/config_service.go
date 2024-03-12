@@ -3,6 +3,7 @@ package config
 import (
 	"slices"
 	"sync"
+	"time"
 
 	backendconfig "github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
@@ -10,6 +11,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 )
+
+const cacheTTL = 10 * time.Minute
 
 // ConfigService is a service for fetching and caching SharedConfig from the spv-wallet and providing PublicConfig.
 type ConfigService struct {
@@ -19,6 +22,7 @@ type ConfigService struct {
 	sharedConfig *models.SharedConfig
 	publicConfig *PublicConfig
 	mutex        sync.Mutex
+	lastFetch    time.Time
 }
 
 // NewConfigService creates a new ConfigService.
@@ -35,33 +39,33 @@ func NewConfigService(adminWalletClient users.AdminWalletClient, log *zerolog.Lo
 // If shared config is not cached, it will be fetched from the spv-wallet.
 // SharedConfig should not be exposed to the public - use PublicConfig instead.
 func (s *ConfigService) GetSharedConfig() *models.SharedConfig {
-	if s.sharedConfig != nil {
-		return s.sharedConfig
-	}
-
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
-	model, err := s.adminWalletClient.GetSharedConfig()
-	if err != nil {
-		s.log.Error().Err(err).Msg("Failed to get shared config")
-		return nil
-	}
-	s.sharedConfig = model
+	s.makeConfigs()
 	return s.sharedConfig
 }
 
 // GetPublicConfig returns public config.
 func (s *ConfigService) GetPublicConfig() *PublicConfig {
-	if s.publicConfig != nil {
-		return s.publicConfig
+	s.makeConfigs()
+	return s.publicConfig
+}
+
+func (s *ConfigService) makeConfigs() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	if s.sharedConfig != nil && time.Since(s.lastFetch) < cacheTTL {
+		return
 	}
-	shared := s.GetSharedConfig()
-	if shared == nil {
-		return nil
+	s.lastFetch = time.Now()
+
+	shared, err := s.adminWalletClient.GetSharedConfig()
+	if err != nil {
+		s.log.Error().Err(err).Msg("Failed to get shared config")
+		return
 	}
 
+	s.sharedConfig = shared
 	s.publicConfig = s.makePublicConfig(shared)
-	return s.publicConfig
 }
 
 func (s *ConfigService) makePublicConfig(shared *models.SharedConfig) *PublicConfig {
