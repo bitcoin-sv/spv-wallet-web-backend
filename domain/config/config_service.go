@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// ConfigService is a service for fetching and caching SharedConfig from the spv-wallet and providing PublicConfig.
 type ConfigService struct {
 	adminWalletClient users.AdminWalletClient
 	log               *zerolog.Logger
@@ -20,6 +21,7 @@ type ConfigService struct {
 	mutex        sync.Mutex
 }
 
+// NewConfigService creates a new ConfigService.
 func NewConfigService(adminWalletClient users.AdminWalletClient, log *zerolog.Logger) *ConfigService {
 	return &ConfigService{
 		adminWalletClient: adminWalletClient,

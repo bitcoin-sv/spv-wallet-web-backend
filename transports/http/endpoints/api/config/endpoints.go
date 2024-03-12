@@ -10,6 +10,7 @@ type handler struct {
 	services *domain.Services
 }
 
+// NewHandler creates new endpoint handler.
 func NewHandler(s *domain.Services) router.RootEndpoints {
 	handler := &handler{
 		services: s,
