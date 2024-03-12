@@ -12,16 +12,15 @@ type handler struct {
 
 // NewHandler creates new endpoint handler.
 func NewHandler(s *domain.Services) router.RootEndpoints {
-	handler := &handler{
+	return &handler{
 		services: s,
 	}
+}
+
+// RegisterEndpoints registers endpoints in root context of application.
+func (h *handler) RegisterEndpoints(router *gin.RouterGroup) {
 	prefix := "/api/v1"
-
-	rootEndpoints := router.RootEndpointsFunc(func(router *gin.RouterGroup) {
-		router.GET(prefix+"/config", handler.getPublicConfig)
-	})
-
-	return rootEndpoints
+	router.GET(prefix+"/config", h.getPublicConfig)
 }
 
 // getConfig returns config fields exposed to clients.
