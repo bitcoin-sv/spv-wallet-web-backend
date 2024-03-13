@@ -15,6 +15,25 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/config": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sharedconfig"
+                ],
+                "summary": "Get config returns config fields exposed to clients",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/config.PublicConfig"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/sign-in": {
             "post": {
                 "consumes": [
@@ -240,6 +259,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "config.PublicConfig": {
+            "type": "object",
+            "properties": {
+                "experimental_features": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "boolean"
+                    }
+                },
+                "paymail_domain": {
                     "type": "string"
                 }
             }

@@ -13,6 +13,15 @@ definitions:
       password:
         type: string
     type: object
+  config.PublicConfig:
+    properties:
+      experimental_features:
+        additionalProperties:
+          type: boolean
+        type: object
+      paymail_domain:
+        type: string
+    type: object
   spvwallet.FullTransaction:
     properties:
       blockHash:
@@ -110,6 +119,18 @@ info:
   title: SPV Wallet WEB Backend
   version: "1.0"
 paths:
+  /api/v1/config:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/config.PublicConfig'
+      summary: Get config returns config fields exposed to clients
+      tags:
+      - sharedconfig
   /api/v1/sign-in:
     post:
       consumes:
