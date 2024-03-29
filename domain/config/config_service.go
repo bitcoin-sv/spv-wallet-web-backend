@@ -70,7 +70,7 @@ func (s *ConfigService) makeConfigs() {
 
 func (s *ConfigService) makePublicConfig(shared *models.SharedConfig) *PublicConfig {
 	configuredPaymailDomain := viper.GetString(backendconfig.EnvPaymailDomain)
-	if !slices.Contains(shared.PaymilDomains, configuredPaymailDomain) {
+	if !slices.Contains(shared.PaymailDomains, configuredPaymailDomain) {
 		s.log.Warn().Str("configuredPaymailDomain", configuredPaymailDomain).Msg("Configured paymail domain is not in the list of paymail domains from SPV Wallet")
 	}
 
