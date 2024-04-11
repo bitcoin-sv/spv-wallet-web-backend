@@ -6,8 +6,6 @@ _Go application used as a web backend with storage for custodial wallet's xpriv 
 
 The `spv-wallet-web-backend` is an HTTP server that serves as the referential backend server for a custodial web wallet for Bitcoin SV (BSV). It integrates and utilizes the `spv-wallet` component to handle various BSV-related operations, including the creation of transactions and listing incoming and outgoing transactions.
 
-## Documentation
-
 For in-depth information and guidance, please refer to the [SPV Wallet Documentation](https://bsvblockchain.gitbook.io/docs).
 
 ## How to use it
