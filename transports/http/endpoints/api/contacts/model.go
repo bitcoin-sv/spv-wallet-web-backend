@@ -8,6 +8,11 @@ type UpsertContact struct {
 	Metadata models.Metadata `json:"metadata"`
 }
 
+type SearchContact struct {
+	Conditions map[string]interface{} `json:"conditions,omitempty"`
+	Metadata   models.Metadata        `json:"metadata,omitempty"`
+}
+
 // ConfirmContact represents a request for confirming a contact.
 type ConfirmContact struct {
 	Passcode string          `json:"passcode"`

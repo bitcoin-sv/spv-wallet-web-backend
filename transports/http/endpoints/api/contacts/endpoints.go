@@ -38,7 +38,7 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 	user.PATCH("/accepted/:paymail", h.acceptContact)
 	user.PATCH("/rejected/:paymail", h.rejectContact)
 	user.PATCH("/confirmed", h.confirmContact)
-	user.GET("/all", h.getContacts)
+	user.GET("/search", h.getContacts)
 	user.GET("/totp/:paymail", h.generateTotp)
 }
 
@@ -48,7 +48,8 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 //	@Tags contact
 //	@Produce json
 //	@Success 200 {object} []models.Contact
-//	@Router /api/v1/contacts/all [get]
+//	@Router /api/v1/contacts/search [get]
+//	@Param data body SearchContact true "Conditions for filtering contacts"
 func (h *handler) getContacts(c *gin.Context) {
 	page := c.Query("page")
 	pageSize := c.Query("page_size")
@@ -72,8 +73,16 @@ func (h *handler) getContacts(c *gin.Context) {
 		SortDirection: sort,
 	}
 
+	var req SearchContact
+	err = c.Bind(&req)
+	if err != nil {
+		h.log.Error().Msgf("Invalid payload: %s", err)
+		c.JSON(http.StatusBadRequest, "Invalid request. Please check conditions and metadata")
+		return
+	}
+
 	// Get user transactions.
-	txs, err := h.cService.GetContacts(c.Request.Context(), c.GetString(auth.SessionUserPaymail), &queryParam)
+	txs, err := h.cService.GetContacts(c.Request.Context(), c.GetString(auth.SessionUserPaymail), req.Conditions, &req.Metadata, &queryParam)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while trying to get a list of contacts: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred while trying to get a list of contacts")

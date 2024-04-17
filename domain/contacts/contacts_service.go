@@ -62,13 +62,13 @@ func (s *ContactsService) ConfirmContact(ctx context.Context, accessKey string, 
 	return userWalletClient.ConfirmContact(ctx, contact, passcode, getConfPeriod(), getConfDigits())
 }
 
-func (s *ContactsService) GetContacts(ctx context.Context, accessKey string, queryParams *transports.QueryParams) ([]*models.Contact, error) {
+func (s *ContactsService) GetContacts(ctx context.Context, accessKey string, conditions map[string]interface{}, metadata *models.Metadata, queryParams *transports.QueryParams) ([]*models.Contact, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
 	}
 
-	return userWalletClient.GetContacts(ctx, nil, nil, queryParams)
+	return userWalletClient.GetContacts(ctx, conditions, metadata, queryParams)
 }
 
 func (s *ContactsService) GenerateTotpForContact(ctx context.Context, accessKey string, contact *models.Contact) (string, error) {
