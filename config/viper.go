@@ -16,6 +16,7 @@ func NewViperConfig(appname string) *Config {
 	setLoggingDefaults()
 	setEndpointsDefaults()
 	setWebsocketDefaults()
+	setContactsDefaults()
 	return &Config{}
 }
 
@@ -81,4 +82,9 @@ func setEndpointsDefaults() {
 func setWebsocketDefaults() {
 	viper.SetDefault(EnvWebsocketHistoryMax, 300)
 	viper.SetDefault(EnvWebsocketHistoryTtl, 10)
+}
+
+func setContactsDefaults() {
+	viper.SetDefault(EnvContactsPasscodePeriod, uint(3600)) //1h
+	viper.SetDefault(EnvContactsPasscodeDigits, uint(4))
 }

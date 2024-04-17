@@ -14,6 +14,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/access"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/contacts"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/users"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
@@ -38,6 +39,7 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB, log *zerolog.Logger, ws w
 		accessRootEndpoints,
 		accessApiEndpoints,
 		transactions.NewHandler(s, log, ws),
+		contacts.NewHandler(s, log),
 	}
 
 	return func(engine *gin.Engine) {

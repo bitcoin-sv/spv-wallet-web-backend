@@ -76,6 +76,11 @@ const (
 	EnvEndpointsExchangeRate = "endpoints.exchangeRate"
 )
 
+const (
+	EnvContactsPasscodePeriod = "contacts.passcode.period"
+	EnvContactsPasscodeDigits = "contacts.passcode.digits"
+)
+
 // Config returns strongly typed config values.
 type Config struct {
 	Db *Db
