@@ -2,13 +2,11 @@ package contacts
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/contacts"
 	"github.com/bitcoin-sv/spv-wallet/models"
 
-	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
 	"github.com/rs/zerolog"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
@@ -51,30 +49,8 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 //	@Router /api/v1/contacts/search [get]
 //	@Param data body SearchContact true "Conditions for filtering contacts"
 func (h *handler) getContacts(c *gin.Context) {
-	page := c.Query("page")
-	pageSize := c.Query("page_size")
-	orderBy := c.Query("order")
-	sort := c.Query("sort")
-
-	pageNumber, err := strconv.Atoi(page)
-	if err != nil {
-		pageNumber = 1
-	}
-
-	pageSizeNumber, err := strconv.Atoi(pageSize)
-	if err != nil {
-		pageSizeNumber = 10
-	}
-
-	queryParam := transports.QueryParams{
-		Page:          pageNumber,
-		PageSize:      pageSizeNumber,
-		OrderByField:  orderBy,
-		SortDirection: sort,
-	}
-
 	var req SearchContact
-	err = c.Bind(&req)
+	err := c.Bind(&req)
 	if err != nil {
 		h.log.Error().Msgf("Invalid payload: %s", err)
 		c.JSON(http.StatusBadRequest, "Invalid request. Please check conditions and metadata")
@@ -82,7 +58,7 @@ func (h *handler) getContacts(c *gin.Context) {
 	}
 
 	// Get user transactions.
-	txs, err := h.cService.GetContacts(c.Request.Context(), c.GetString(auth.SessionUserPaymail), req.Conditions, &req.Metadata, &queryParam)
+	txs, err := h.cService.GetContacts(c.Request.Context(), c.GetString(auth.SessionAccessKey), req.Conditions, &req.Metadata, nil)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while trying to get a list of contacts: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred while trying to get a list of contacts")
@@ -111,7 +87,7 @@ func (h *handler) upsertContact(c *gin.Context) {
 		return
 	}
 
-	_, err = h.cService.UpsertContact(c.Request.Context(), c.GetString(auth.SessionUserPaymail), paymail, req.FullName, &req.Metadata)
+	_, err = h.cService.UpsertContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail, req.FullName, &req.Metadata)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while upserting the contact: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while upserting the contact.")
@@ -131,7 +107,7 @@ func (h *handler) upsertContact(c *gin.Context) {
 func (h *handler) acceptContact(c *gin.Context) {
 	paymail := c.Param("paymail")
 
-	err := h.cService.AcceptContact(c.Request.Context(), c.GetString(auth.SessionUserPaymail), paymail)
+	err := h.cService.AcceptContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while accepting the contact: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while accepting the contact.")
@@ -151,7 +127,7 @@ func (h *handler) acceptContact(c *gin.Context) {
 func (h *handler) rejectContact(c *gin.Context) {
 	paymail := c.Param("paymail")
 
-	err := h.cService.RejectContact(c.Request.Context(), c.GetString(auth.SessionUserPaymail), paymail)
+	err := h.cService.RejectContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while rejecting the contact: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while rejecting the contact.")
@@ -183,7 +159,7 @@ func (h *handler) confirmContact(c *gin.Context) {
 		return
 	}
 
-	err = h.cService.ConfirmContact(c.Request.Context(), c.GetString(auth.SessionUserPaymail), req.Contact, req.Passcode)
+	err = h.cService.ConfirmContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), req.Contact, req.Passcode)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while confirming the contact: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while confirming the contact.")
@@ -210,7 +186,7 @@ func (h *handler) generateTotp(c *gin.Context) {
 		return
 	}
 
-	passcode, err := h.cService.GenerateTotpForContact(c.Request.Context(), c.GetString(auth.SessionUserPaymail), &contact)
+	passcode, err := h.cService.GenerateTotpForContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), &contact)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while generating TOTP for the contact: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while generating TOTP for the contact.")
