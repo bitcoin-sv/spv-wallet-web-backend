@@ -71,8 +71,8 @@ func (s *ContactsService) GetContacts(ctx context.Context, accessKey string, con
 	return userWalletClient.GetContacts(ctx, conditions, metadata, queryParams)
 }
 
-func (s *ContactsService) GenerateTotpForContact(ctx context.Context, accessKey string, contact *models.Contact) (string, error) {
-	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
+func (s *ContactsService) GenerateTotpForContact(ctx context.Context, xPriv string, contact *models.Contact) (string, error) {
+	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv) //xPriv instead of accessKey because it is necessary to calculate the shared secret
 	if err != nil {
 		return "", err
 	}

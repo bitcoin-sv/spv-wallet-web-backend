@@ -37,7 +37,7 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 	user.PATCH("/rejected/:paymail", h.rejectContact)
 	user.PATCH("/confirmed", h.confirmContact)
 	user.GET("/search", h.getContacts)
-	user.GET("/totp/:paymail", h.generateTotp)
+	user.POST("/totp", h.generateTotp)
 }
 
 // Get all user contacts.
@@ -154,7 +154,7 @@ func (h *handler) confirmContact(c *gin.Context) {
 		return
 	}
 	if req.Contact == nil {
-		h.log.Error().Msgf("Invalid payload. Contact is not provided.", err)
+		h.log.Error().Msgf("Invalid payload. Contact is not provided: %s", err)
 		c.JSON(http.StatusBadRequest, "Invalid request. Contact is not provided")
 		return
 	}
@@ -175,7 +175,7 @@ func (h *handler) confirmContact(c *gin.Context) {
 //	@Tags contact
 //	@Produce json
 //	@Success 200
-//	@Router /api/v1/contact/totp [put]
+//	@Router /api/v1/contact/totp [post]
 //	@Param data body models.Contact true "Contact details"
 func (h *handler) generateTotp(c *gin.Context) {
 	var contact models.Contact
@@ -186,7 +186,9 @@ func (h *handler) generateTotp(c *gin.Context) {
 		return
 	}
 
-	passcode, err := h.cService.GenerateTotpForContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), &contact)
+	xPriv := "" //TODO get xPriv from session
+
+	passcode, err := h.cService.GenerateTotpForContact(c.Request.Context(), xPriv, &contact)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while generating TOTP for the contact: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while generating TOTP for the contact.")
