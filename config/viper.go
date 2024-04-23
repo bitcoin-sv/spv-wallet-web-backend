@@ -50,6 +50,7 @@ func setHttpServerDefaults() {
 	viper.SetDefault(EnvHttpServerCookieDomain, "localhost")
 	viper.SetDefault(EnvHttpServerCookieSecure, false)
 	viper.SetDefault(EnvHttpServerCorsAllowedDomains, []string{})
+	viper.SetDefault(EnvHttpServerSessionSecret, "secret")
 }
 
 // setSpvWalletDefaults sets default values for spv-wallet connection.

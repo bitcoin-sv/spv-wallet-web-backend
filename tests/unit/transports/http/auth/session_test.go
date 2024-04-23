@@ -49,6 +49,7 @@ func TestUpdateSession(t *testing.T) {
 			Id:      gofakeit.IntRange(0, 1000),
 			Paymail: gofakeit.HexUint256(),
 		},
+		Xpriv: "xprivtest",
 	}
 
 	// Act
@@ -61,6 +62,7 @@ func TestUpdateSession(t *testing.T) {
 	assert.Equal(t, user.AccessKey.Key, session.Get(auth.SessionAccessKey))
 	assert.Equal(t, user.User.Id, session.Get(auth.SessionUserId))
 	assert.Equal(t, user.User.Paymail, session.Get(auth.SessionUserPaymail))
+	assert.Equal(t, user.Xpriv, session.Get(auth.SessionXPriv))
 }
 
 func setupTest() (ctx *gin.Context) {

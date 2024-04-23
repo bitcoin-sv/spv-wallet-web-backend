@@ -53,8 +53,8 @@ func (s *ContactsService) RejectContact(ctx context.Context, accessKey, paymail 
 	return userWalletClient.RejectContact(ctx, paymail)
 }
 
-func (s *ContactsService) ConfirmContact(ctx context.Context, accessKey string, contact *models.Contact, passcode string) error {
-	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
+func (s *ContactsService) ConfirmContact(ctx context.Context, xPriv string, contact *models.Contact, passcode string) error {
+	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv)
 	if err != nil {
 		return err
 	}

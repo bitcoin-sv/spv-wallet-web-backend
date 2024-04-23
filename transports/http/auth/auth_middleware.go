@@ -39,7 +39,7 @@ func NewAuthMiddleware(s *domain.Services) *AuthMiddleware {
 func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 	session := sessions.Default(c)
 
-	accessKeyId, accessKey, userId, paymail, err := h.authorizeSession(session)
+	accessKeyId, accessKey, userId, paymail, xPriv, err := h.authorizeSession(session)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 		return
@@ -49,24 +49,26 @@ func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
 	c.Set(SessionAccessKey, accessKey)
 	c.Set(SessionUserId, userId)
 	c.Set(SessionUserPaymail, paymail)
+	c.Set(SessionXPriv, xPriv)
 }
 
-func (h *AuthMiddleware) authorizeSession(s sessions.Session) (accessKeyId, accessKey, userId, paymail interface{}, err error) {
+func (h *AuthMiddleware) authorizeSession(s sessions.Session) (accessKeyId, accessKey, userId, paymail, xPriv interface{}, err error) {
 	accessKeyId = s.Get(SessionAccessKeyId)
 	accessKey = s.Get(SessionAccessKey)
 	userId = s.Get(SessionUserId)
 	paymail = s.Get(SessionUserPaymail)
+	xPriv = s.Get(SessionXPriv)
 
 	if isNilOrEmpty(accessKeyId) ||
 		isNilOrEmpty(accessKey) ||
 		userId == nil ||
 		paymail == nil {
-		return nil, nil, nil, nil, ErrorUnauthorized
+		return nil, nil, nil, nil, nil, ErrorUnauthorized
 	}
 
 	err = h.checkAccessKey(accessKey.(string), accessKeyId.(string))
 	if err != nil {
-		return nil, nil, nil, nil, fmt.Errorf("%w: %s", ErrorUnauthorized, err) // we could use this with go 1.20: fmt.Errorf("%w: %w", ErrorUnauthorized, err)
+		return nil, nil, nil, nil, nil, fmt.Errorf("%w: %s", ErrorUnauthorized, err) // we could use this with go 1.20: fmt.Errorf("%w: %w", ErrorUnauthorized, err)
 	}
 
 	return

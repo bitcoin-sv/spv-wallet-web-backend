@@ -19,11 +19,13 @@ const (
 	SessionAccessKey   = "accessKey"
 	SessionUserId      = "userId"
 	SessionUserPaymail = "paymail"
+	SessionXPriv       = "xPriv"
 )
 
 // NewSessionMiddleware create Session middleware that is retrieving auth token from cookie.
 func NewSessionMiddleware(db *sql.DB, engine *gin.Engine) router.ApiMiddlewareFunc {
-	store, err := postgres.NewStore(db, []byte("secret"))
+	secret := viper.GetString(config.EnvHttpServerSessionSecret)
+	store, err := postgres.NewStore(db, []byte(secret))
 	if err != nil {
 		panic(err)
 	}

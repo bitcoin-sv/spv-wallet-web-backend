@@ -159,7 +159,7 @@ func (h *handler) confirmContact(c *gin.Context) {
 		return
 	}
 
-	err = h.cService.ConfirmContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), req.Contact, req.Passcode)
+	err = h.cService.ConfirmContact(c.Request.Context(), c.GetString(auth.SessionXPriv), req.Contact, req.Passcode)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while confirming the contact: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while confirming the contact.")
@@ -186,9 +186,7 @@ func (h *handler) generateTotp(c *gin.Context) {
 		return
 	}
 
-	xPriv := "" //TODO get xPriv from session
-
-	passcode, err := h.cService.GenerateTotpForContact(c.Request.Context(), xPriv, &contact)
+	passcode, err := h.cService.GenerateTotpForContact(c.Request.Context(), c.GetString(auth.SessionXPriv), &contact)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while generating TOTP for the contact: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while generating TOTP for the contact.")
