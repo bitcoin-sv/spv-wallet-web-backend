@@ -53,13 +53,13 @@ func (s *ContactsService) RejectContact(ctx context.Context, accessKey, paymail 
 	return userWalletClient.RejectContact(ctx, paymail)
 }
 
-func (s *ContactsService) ConfirmContact(ctx context.Context, xPriv string, contact *models.Contact, passcode string) error {
+func (s *ContactsService) ConfirmContact(ctx context.Context, xPriv string, contact *models.Contact, passcode, requesterPaymail string) error {
 	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv)
 	if err != nil {
 		return err
 	}
 
-	return userWalletClient.ConfirmContact(ctx, contact, passcode, getConfPeriod(), getConfDigits())
+	return userWalletClient.ConfirmContact(ctx, contact, passcode, requesterPaymail, getConfPeriod(), getConfDigits())
 }
 
 func (s *ContactsService) GetContacts(ctx context.Context, accessKey string, conditions map[string]interface{}, metadata *models.Metadata, queryParams *transports.QueryParams) ([]*models.Contact, error) {

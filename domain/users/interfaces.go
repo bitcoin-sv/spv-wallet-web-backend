@@ -74,7 +74,7 @@ type (
 		UpsertContact(ctx context.Context, paymail, fullName string, metadata *models.Metadata) (*models.Contact, transports.ResponseError)
 		AcceptContact(ctx context.Context, paymail string) transports.ResponseError
 		RejectContact(ctx context.Context, paymail string) transports.ResponseError
-		ConfirmContact(ctx context.Context, contact *models.Contact, passcode string, period, digits uint) transports.ResponseError
+		ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) transports.ResponseError
 		GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *transports.QueryParams) ([]*models.Contact, transports.ResponseError)
 		GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error)
 	}

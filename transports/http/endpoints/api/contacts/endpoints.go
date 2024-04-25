@@ -159,7 +159,9 @@ func (h *handler) confirmContact(c *gin.Context) {
 		return
 	}
 
-	err = h.cService.ConfirmContact(c.Request.Context(), c.GetString(auth.SessionXPriv), req.Contact, req.Passcode)
+	requesterPaymail := c.GetString(auth.SessionUserPaymail)
+
+	err = h.cService.ConfirmContact(c.Request.Context(), c.GetString(auth.SessionXPriv), req.Contact, req.Passcode, requesterPaymail)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while confirming the contact: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while confirming the contact.")

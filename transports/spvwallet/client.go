@@ -249,8 +249,8 @@ func (c *Client) RejectContact(ctx context.Context, paymail string) transports.R
 }
 
 // ConfirmContact confirms contact.
-func (c *Client) ConfirmContact(ctx context.Context, contact *models.Contact, passcode string, period, digits uint) transports.ResponseError {
-	return c.client.ConfirmContact(ctx, contact, passcode, period, digits)
+func (c *Client) ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) transports.ResponseError {
+	return c.client.ConfirmContact(ctx, contact, passcode, requesterPaymail, period, digits)
 }
 
 // GetContacts returns all contacts.
