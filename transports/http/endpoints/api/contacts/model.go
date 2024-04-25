@@ -19,7 +19,7 @@ type ConfirmContact struct {
 	Contact  *models.Contact `json:"contact,omitempty"`
 }
 
-// TotpResponse represents a response with generated passcode
+// TotpResponse represents a response with generated passcode.
 type TotpResponse struct {
 	Passcode string `json:"passcode"`
 }

@@ -33,7 +33,7 @@ const (
 	// EnvHttpServerCorsAllowedDomains http server cors origin allowed domains.
 	EnvHttpServerCorsAllowedDomains = "http.server.cors.allowedDomains"
 	// EnvHttpServerSessionSecret gin session store secret to encrypt session data in database.
-	EnvHttpServerSessionSecret = "http.server.session.secret"
+	EnvHttpServerSessionSecret = "http.server.session.secret" // nolint: gosec
 )
 
 // Define basic spv-wallet config keys.
