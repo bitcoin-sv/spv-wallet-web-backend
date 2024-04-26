@@ -68,7 +68,7 @@ func (h *AuthMiddleware) authorizeSession(s sessions.Session) (accessKeyId, acce
 
 	err = h.checkAccessKey(accessKey.(string), accessKeyId.(string))
 	if err != nil {
-		return nil, nil, nil, nil, nil, fmt.Errorf("%w: %s", ErrorUnauthorized, err) // we could use this with go 1.20: fmt.Errorf("%w: %w", ErrorUnauthorized, err)
+		return nil, nil, nil, nil, nil, fmt.Errorf("%w: %w", ErrorUnauthorized, err)
 	}
 
 	return

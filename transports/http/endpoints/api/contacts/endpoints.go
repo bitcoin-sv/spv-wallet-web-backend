@@ -90,7 +90,7 @@ func (h *handler) upsertContact(c *gin.Context) {
 	_, err = h.cService.UpsertContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail, req.FullName, &req.Metadata)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while upserting the contact: %s", err)
-		c.JSON(http.StatusBadRequest, "An error occurred while upserting the contact.")
+		c.JSON(http.StatusInternalServerError, "An error occurred while upserting the contact.")
 		return
 	}
 
@@ -130,7 +130,7 @@ func (h *handler) rejectContact(c *gin.Context) {
 	err := h.cService.RejectContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while rejecting the contact: %s", err)
-		c.JSON(http.StatusBadRequest, "An error occurred while rejecting the contact.")
+		c.JSON(http.StatusInternalServerError, "An error occurred while rejecting the contact.")
 		return
 	}
 
@@ -164,7 +164,7 @@ func (h *handler) confirmContact(c *gin.Context) {
 	err = h.cService.ConfirmContact(c.Request.Context(), c.GetString(auth.SessionXPriv), req.Contact, req.Passcode, requesterPaymail)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while confirming the contact: %s", err)
-		c.JSON(http.StatusBadRequest, "An error occurred while confirming the contact.")
+		c.JSON(http.StatusInternalServerError, "An error occurred while confirming the contact.")
 		return
 	}
 
@@ -191,7 +191,7 @@ func (h *handler) generateTotp(c *gin.Context) {
 	passcode, err := h.cService.GenerateTotpForContact(c.Request.Context(), c.GetString(auth.SessionXPriv), &contact)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while generating TOTP for the contact: %s", err)
-		c.JSON(http.StatusBadRequest, "An error occurred while generating TOTP for the contact.")
+		c.JSON(http.StatusInternalServerError, "An error occurred while generating TOTP for the contact.")
 		return
 	}
 
