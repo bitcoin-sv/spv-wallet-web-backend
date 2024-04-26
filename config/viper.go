@@ -87,5 +87,5 @@ func setWebsocketDefaults() {
 
 func setContactsDefaults() {
 	viper.SetDefault(EnvContactsPasscodePeriod, uint(3600)) //1h
-	viper.SetDefault(EnvContactsPasscodeDigits, uint(4))
+	viper.SetDefault(EnvContactsPasscodeDigits, uint(2))
 }
