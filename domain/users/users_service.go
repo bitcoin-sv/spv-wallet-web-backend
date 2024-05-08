@@ -13,15 +13,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rs/zerolog"
-
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/encryption"
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
 	"github.com/libsv/go-bk/chaincfg"
+	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
-
-	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/encryption"
 )
 
 // CredentialsError Generic error type / wrapper for Credentials errors.
@@ -169,7 +167,7 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 		CreatedAt: time.Now(),
 	}
 
-	if err := s.InsertUser(user); err != nil {
+	if err = s.InsertUser(user); err != nil {
 		e := &UserError{err.Error()}
 		s.log.Error().
 			Str("newUserEmail", email).
@@ -448,7 +446,7 @@ func calculateBalance(satoshis uint64) (*Balance, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error during getting exchange rate: %w", err)
 	}
-	defer res.Body.Close() // nolint: all
+	defer res.Body.Close() //nolint: all
 
 	// Parse response body.
 	var exchangeRate ExchangeRate

@@ -4,14 +4,12 @@ import (
 	"math"
 	"time"
 
-	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
-
-	"github.com/rs/zerolog"
-
 	"github.com/avast/retry-go/v4"
 	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/rs/zerolog"
 )
 
 // TransactionService represents service whoch contains methods linked with transactions.

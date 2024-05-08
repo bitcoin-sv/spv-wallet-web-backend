@@ -1,25 +1,21 @@
 package transactions_test
 
 import (
-	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
-
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
-
 	"errors"
 	"testing"
 
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/tests/data"
 	mock "github.com/bitcoin-sv/spv-wallet-web-backend/tests/mocks"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/tests/utils"
-
-	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
-
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang/mock/gomock"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateTransaction(t *testing.T) {

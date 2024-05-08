@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/rs/zerolog"
-
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
-	"github.com/bitcoin-sv/spv-wallet/models"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/rs/zerolog"
 )
 
 // Client implements UserWalletClient interface which wraps the spv-wallet-go-client and provides methods for user.

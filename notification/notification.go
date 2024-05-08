@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
-
 	"github.com/bitcoin-sv/spv-wallet/models"
 )
 

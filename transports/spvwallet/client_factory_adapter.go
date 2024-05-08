@@ -1,12 +1,10 @@
 package spvwallet
 
 import (
+	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
-
 	"github.com/rs/zerolog"
-
-	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/spf13/viper"
 )
 

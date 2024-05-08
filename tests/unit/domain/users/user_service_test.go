@@ -5,14 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/rs/zerolog"
-
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	mock "github.com/bitcoin-sv/spv-wallet-web-backend/tests/mocks"
+	"github.com/golang/mock/gomock"
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateNewUser_ReturnsUser(t *testing.T) {

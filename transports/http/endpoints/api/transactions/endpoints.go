@@ -4,19 +4,16 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
-
-	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
-	"github.com/rs/zerolog"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
-
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 )
 
 type handler struct {

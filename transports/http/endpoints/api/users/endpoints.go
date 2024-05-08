@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/rs/zerolog"
-
-	"github.com/gin-gonic/gin"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
+	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 )
 
 type handler struct {
