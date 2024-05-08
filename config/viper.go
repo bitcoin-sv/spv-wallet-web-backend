@@ -16,6 +16,7 @@ func NewViperConfig(appname string) *Config {
 	setLoggingDefaults()
 	setEndpointsDefaults()
 	setWebsocketDefaults()
+	setContactsDefaults()
 	return &Config{}
 }
 
@@ -49,6 +50,7 @@ func setHttpServerDefaults() {
 	viper.SetDefault(EnvHttpServerCookieDomain, "localhost")
 	viper.SetDefault(EnvHttpServerCookieSecure, false)
 	viper.SetDefault(EnvHttpServerCorsAllowedDomains, []string{})
+	viper.SetDefault(EnvHttpServerSessionSecret, "secret")
 }
 
 // setSpvWalletDefaults sets default values for spv-wallet connection.
@@ -81,4 +83,9 @@ func setEndpointsDefaults() {
 func setWebsocketDefaults() {
 	viper.SetDefault(EnvWebsocketHistoryMax, 300)
 	viper.SetDefault(EnvWebsocketHistoryTtl, 10)
+}
+
+func setContactsDefaults() {
+	viper.SetDefault(EnvContactsPasscodePeriod, uint(3600)) //1h
+	viper.SetDefault(EnvContactsPasscodeDigits, uint(2))
 }

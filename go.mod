@@ -4,8 +4,8 @@ go 1.21.5
 
 require (
 	github.com/avast/retry-go/v4 v4.5.1
-	github.com/bitcoin-sv/spv-wallet-go-client v0.9.0
-	github.com/bitcoin-sv/spv-wallet/models v0.24.0
+	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.2
+	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.2
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/centrifugal/centrifuge v0.31.0
 	github.com/gin-contrib/sessions v0.0.5
@@ -28,6 +28,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bitcoinschema/go-bitcoin/v2 v2.0.5 // indirect
 	github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173 // indirect
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/bytedance/sonic v1.11.2 // indirect
 	github.com/centrifugal/protocol v0.12.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
@@ -61,6 +62,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
+	github.com/pquerna/otp v1.4.0 // indirect
 	github.com/prometheus/client_golang v1.19.0 // indirect
 	github.com/prometheus/client_model v0.6.0 // indirect
 	github.com/prometheus/common v0.50.0 // indirect

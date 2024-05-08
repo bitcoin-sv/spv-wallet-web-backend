@@ -32,6 +32,8 @@ const (
 	EnvHttpServerCookieSecure = "http.server.cookie.secure"
 	// EnvHttpServerCorsAllowedDomains http server cors origin allowed domains.
 	EnvHttpServerCorsAllowedDomains = "http.server.cors.allowedDomains"
+	// EnvHttpServerSessionSecret gin session store secret to encrypt session data in database.
+	EnvHttpServerSessionSecret = "http.server.session.secret" // nolint: gosec
 )
 
 // Define basic spv-wallet config keys.
@@ -74,6 +76,11 @@ const (
 const (
 	// EnvEndpointsExchangeRate define the exchange rate endpoint.
 	EnvEndpointsExchangeRate = "endpoints.exchangeRate"
+)
+
+const (
+	EnvContactsPasscodePeriod = "contacts.passcode.period"
+	EnvContactsPasscodeDigits = "contacts.passcode.digits"
 )
 
 // Config returns strongly typed config values.

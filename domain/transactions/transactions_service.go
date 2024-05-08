@@ -23,7 +23,7 @@ type TransactionService struct {
 
 // NewTransactionService creates new transaction service.
 func NewTransactionService(adminWalletClient users.AdminWalletClient, walletClientFactory users.WalletClientFactory, log *zerolog.Logger) *TransactionService {
-	transactionServiceLogger := log.With().Str("service", "user-service").Logger()
+	transactionServiceLogger := log.With().Str("service", "transaction-service").Logger()
 	return &TransactionService{
 		adminWalletClient:   adminWalletClient,
 		walletClientFactory: walletClientFactory,

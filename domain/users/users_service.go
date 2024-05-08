@@ -251,6 +251,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 			Key: accessKey.GetAccessKey(),
 		},
 		Balance: *balance,
+		Xpriv:   decryptedXpriv,
 	}
 
 	return signInUser, nil

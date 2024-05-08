@@ -233,6 +233,36 @@ func (c *Client) GetTransactionsCount() (int64, error) {
 	return count, nil
 }
 
+// UpsertContact creates or updates contact.
+func (c *Client) UpsertContact(ctx context.Context, paymail, fullName string, metadata *models.Metadata) (*models.Contact, transports.ResponseError) {
+	return c.client.UpsertContact(ctx, paymail, fullName, metadata)
+}
+
+// AcceptContact accepts contact.
+func (c *Client) AcceptContact(ctx context.Context, paymail string) transports.ResponseError {
+	return c.client.AcceptContact(ctx, paymail)
+}
+
+// RejectContact rejects contact.
+func (c *Client) RejectContact(ctx context.Context, paymail string) transports.ResponseError {
+	return c.client.RejectContact(ctx, paymail)
+}
+
+// ConfirmContact confirms contact.
+func (c *Client) ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) transports.ResponseError {
+	return c.client.ConfirmContact(ctx, contact, passcode, requesterPaymail, period, digits)
+}
+
+// GetContacts returns all contacts.
+func (c *Client) GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *transports.QueryParams) ([]*models.Contact, transports.ResponseError) {
+	return c.client.GetContacts(ctx, conditions, metadata, queryParams)
+}
+
+// GenerateTotpForContact generates TOTP for contact.
+func (c *Client) GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error) {
+	return c.client.GenerateTotpForContact(contact, period, digits)
+}
+
 func getAbsoluteValue(value int64) uint64 {
 	return uint64(math.Abs(float64(value)))
 }
