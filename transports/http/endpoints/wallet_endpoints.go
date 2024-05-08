@@ -5,12 +5,6 @@ import (
 	"errors"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/status"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/swagger"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
-
-	"github.com/rs/zerolog"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/access"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/config"
@@ -18,9 +12,12 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api/users"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/status"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/swagger"
 	httpserver "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/server"
-
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 )
 
 // SetupWalletRoutes main point where we're registering endpoints registrars (handlers that will register endpoints in gin engine)

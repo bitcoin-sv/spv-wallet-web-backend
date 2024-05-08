@@ -5,14 +5,11 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/contacts"
-	"github.com/bitcoin-sv/spv-wallet/models"
-
-	"github.com/rs/zerolog"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
-
+	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 )
 
 type handler struct {

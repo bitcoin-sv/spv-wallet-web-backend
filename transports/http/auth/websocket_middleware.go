@@ -3,11 +3,12 @@ package auth
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/centrifugal/centrifuge"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strconv"
 )
 
 type contextKey int

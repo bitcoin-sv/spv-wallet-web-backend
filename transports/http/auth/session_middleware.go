@@ -6,7 +6,6 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
-
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/postgres"
 	"github.com/gin-gonic/gin"

@@ -6,12 +6,10 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
-
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
-
-	"github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
 

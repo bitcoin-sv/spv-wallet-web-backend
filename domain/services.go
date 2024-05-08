@@ -7,7 +7,6 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
-
 	"github.com/rs/zerolog"
 )
 

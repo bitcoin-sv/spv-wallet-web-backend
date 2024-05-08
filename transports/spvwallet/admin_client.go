@@ -4,14 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/rs/zerolog"
-
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/libsv/go-bk/bip32"
+	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
-
-	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 )
 
 // AdminWalletClient is a wrapper for Admin SPV Wallet Client.

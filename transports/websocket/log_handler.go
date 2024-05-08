@@ -17,7 +17,7 @@ func newLogHandler(l *zerolog.Logger) *logHandler {
 }
 
 func (l *logHandler) Level() (level centrifuge.LogLevel) {
-	// nolint:exhaustive // we don't need to handle all cases
+	//nolint:exhaustive // we don't need to handle all cases
 	switch l.logger.GetLevel() {
 	case zerolog.TraceLevel:
 		level = centrifuge.LogLevelTrace

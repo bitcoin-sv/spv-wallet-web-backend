@@ -1,6 +1,7 @@
 name: Go
 permissions:
   contents: write
+  pull-requests: read
 
 on:
   push:
@@ -11,19 +12,35 @@ on:
     branches: [ master,main ]
 
 jobs:
-  golangci:
-    name: lint
+  error-lint:
+    name: error-lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+          cache: false
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v4
         with:
-          # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
           version: latest
+          args: --config=./.golangci-lint.yml
+  style-lint:
+    name: style-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: golangci-style-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          args: --config=./.golangci-style.yml
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -45,7 +62,7 @@ jobs:
 
   build-darwin-artifacts:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [ golangci,test ]
+    needs: [ error-lint,style-lint,test ]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4

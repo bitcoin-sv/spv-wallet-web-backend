@@ -15,7 +15,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints"
 	httpserver "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/server"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
-
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
 
@@ -39,7 +39,7 @@ func main() {
 	}
 
 	db := databases.SetUpDatabase(log)
-	defer db.Close() // nolint: all
+	defer db.Close() //nolint: all
 
 	repo := db_users.NewUsersRepository(db)
 
@@ -64,12 +64,7 @@ func main() {
 	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db, log, ws))
 	server.ApplyConfiguration(ws.SetupEntrypoint)
 
-	go func() {
-		if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Error().Msgf("cannot start server because of an error: %v", err)
-			os.Exit(1)
-		}
-	}()
+	go startServer(server)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
@@ -81,5 +76,12 @@ func main() {
 	}
 	if err = ws.Shutdown(); err != nil {
 		log.Error().Msgf("failed to stop websocket server: %v", err)
+	}
+}
+
+func startServer(server *httpserver.HttpServer) {
+	if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		log.Error().Msgf("cannot start server because of an error: %v", err)
+		os.Exit(1)
 	}
 }

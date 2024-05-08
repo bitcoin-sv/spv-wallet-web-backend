@@ -3,12 +3,10 @@ package websocket
 import (
 	"encoding/json"
 
-	"github.com/rs/zerolog"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
-
 	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/centrifugal/centrifuge"
+	"github.com/rs/zerolog"
 )
 
 // Socket represents websocket server entrypoint used to publish messages via websocket communication.
