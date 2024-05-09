@@ -3,23 +3,18 @@ package users
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"net/http"
 	"net/mail"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/encryption"
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
 	"github.com/libsv/go-bk/chaincfg"
 	"github.com/rs/zerolog"
-	"github.com/spf13/viper"
 )
 
 // CredentialsError Generic error type / wrapper for Credentials errors.
@@ -184,7 +179,7 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 }
 
 // SignInUser signs in user.
-func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, error) {
+func (s *UserService) SignInUser(email, password string, exchangeRate float64) (*AuthenticatedUser, error) {
 	// Check if user exists.
 	user, err := s.repo.GetUserByEmail(context.Background(), email)
 	if err != nil {
@@ -234,7 +229,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, err
 	}
 
-	balance, err := calculateBalance(xpub.GetCurrentBalance())
+	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
@@ -287,7 +282,7 @@ func (s *UserService) GetUserById(userId int) (*User, error) {
 }
 
 // GetUserBalance returns user balance using access key.
-func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
+func (s *UserService) GetUserBalance(accessKey string, exchangeRate float64) (*Balance, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		s.log.Error().
@@ -304,7 +299,7 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 	}
 
 	// Calculate balance.
-	balance, err := calculateBalance(xpub.GetCurrentBalance())
+	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
 	if err != nil {
 		s.log.Error().
 			Str("xpubID", xpub.GetId()).
@@ -433,36 +428,9 @@ func validatePassword(password string) error {
 	return nil
 }
 
-func calculateBalance(satoshis uint64) (*Balance, error) {
-	// Create request.
-	exchangeRateUrl := viper.GetString(config.EnvEndpointsExchangeRate)
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, exchangeRateUrl, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error during creating exchange rate request: %w", err)
-	}
-
-	// Send request.
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error during getting exchange rate: %w", err)
-	}
-	defer res.Body.Close() //nolint: all
-
-	// Parse response body.
-	var exchangeRate ExchangeRate
-	bodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, fmt.Errorf("error during reading response body: %w", err)
-	}
-
-	err = json.Unmarshal(bodyBytes, &exchangeRate)
-	if err != nil {
-		return nil, fmt.Errorf("error during unmarshalling response body: %w", err)
-	}
-
-	// Calculate balance.
+func calculateBalance(satoshis uint64, exchangeRate float64) (*Balance, error) {
 	balanceBSV := float64(satoshis) / 100000000
-	balanceUSD := balanceBSV * exchangeRate.Rate
+	balanceUSD := balanceBSV * exchangeRate
 
 	balance := &Balance{
 		Bsv:      balanceBSV,

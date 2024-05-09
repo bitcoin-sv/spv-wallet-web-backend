@@ -4,6 +4,7 @@ import (
 	db_users "github.com/bitcoin-sv/spv-wallet-web-backend/data/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/config"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/contacts"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/rates"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
@@ -17,6 +18,7 @@ type Services struct {
 	ContactsService     *contacts.ContactsService
 	WalletClientFactory users.WalletClientFactory
 	ConfigService       *config.ConfigService
+	RatesService        *rates.RatesService
 }
 
 // NewServices creates services instance.
@@ -36,5 +38,6 @@ func NewServices(usersRepo *db_users.UsersRepository, log *zerolog.Logger) (*Ser
 		ContactsService:     contacts.NewContactsService(adminWalletClient, walletClientFactory, log),
 		WalletClientFactory: walletClientFactory,
 		ConfigService:       config.NewConfigService(adminWalletClient, log),
+		RatesService:        rates.NewRatesService(log),
 	}, nil
 }

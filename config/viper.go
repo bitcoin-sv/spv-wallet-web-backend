@@ -2,6 +2,7 @@ package config
 
 import (
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -17,6 +18,7 @@ func NewViperConfig(appname string) *Config {
 	setEndpointsDefaults()
 	setWebsocketDefaults()
 	setContactsDefaults()
+	setCacheDefaults()
 	return &Config{}
 }
 
@@ -88,4 +90,9 @@ func setWebsocketDefaults() {
 func setContactsDefaults() {
 	viper.SetDefault(EnvContactsPasscodePeriod, uint(3600)) //1h
 	viper.SetDefault(EnvContactsPasscodeDigits, uint(2))
+}
+
+// setCacheDefaults sets default values for cache.
+func setCacheDefaults() {
+	viper.SetDefault(EnvCacheSettingsTtl, 60*time.Second)
 }

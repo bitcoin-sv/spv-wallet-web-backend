@@ -13,15 +13,15 @@ import (
 )
 
 type handler struct {
-	service users.UserService
-	log     *zerolog.Logger
+	services *domain.Services
+	log      *zerolog.Logger
 }
 
 // NewHandler creates new endpoint handler.
 func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, router.ApiEndpoints) {
 	h := &handler{
-		service: *s.UsersService,
-		log:     log,
+		services: s,
+		log:      log,
 	}
 
 	prefix := "/api/v1"
@@ -59,7 +59,14 @@ func (h *handler) signIn(c *gin.Context) {
 		return
 	}
 
-	signInUser, err := h.service.SignInUser(reqUser.Email, reqUser.Password)
+	exchangeRate, err := h.services.RatesService.GetExchangeRate()
+	if err != nil {
+		h.log.Error().Msgf("Exchange rate not found: %s", err)
+		c.JSON(http.StatusBadRequest, "An error occurred while getting exchange rate")
+		return
+	}
+
+	signInUser, err := h.services.UsersService.SignInUser(reqUser.Email, reqUser.Password, exchangeRate.Rate)
 	if err != nil {
 		if errors.Is(err, users.ErrInvalidCredentials) {
 			c.JSON(http.StatusBadRequest, "Sorry, your username or password is incorrect. Please try again.")
@@ -93,7 +100,7 @@ func (h *handler) signIn(c *gin.Context) {
 //	@Success 200
 //	@Router /api/v1/sign-out [post]
 func (h *handler) signOut(c *gin.Context) {
-	err := h.service.SignOutUser(c.GetString(auth.SessionAccessKeyId), c.GetString(auth.SessionAccessKey))
+	err := h.services.UsersService.SignOutUser(c.GetString(auth.SessionAccessKeyId), c.GetString(auth.SessionAccessKey))
 	if err != nil {
 		h.log.Error().Msgf("Sign-out error: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred during the logout process.")
