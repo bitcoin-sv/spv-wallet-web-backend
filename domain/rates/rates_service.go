@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
-	"github.com/rs/zerolog"
-	"github.com/spf13/viper"
 	"io"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/rs/zerolog"
+	"github.com/spf13/viper"
 )
 
 // RatesService is a service for fetching and caching BSV exchange rates.
