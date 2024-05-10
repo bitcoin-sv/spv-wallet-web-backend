@@ -5,12 +5,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/rates"
 	"net/mail"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/rates"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/encryption"
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
