@@ -32,7 +32,7 @@ func NewRatesService(log *zerolog.Logger) *RatesService {
 		exchangeRate: nil,
 	}
 
-	err := s.makeExchangeRate()
+	err := s.loadExchangeRate()
 	if err != nil {
 		log.Error().Msg(err.Error())
 	}
@@ -42,7 +42,7 @@ func NewRatesService(log *zerolog.Logger) *RatesService {
 
 // GetExchangeRate returns the current exchange rate.
 func (s *RatesService) GetExchangeRate() (*ExchangeRate, error) {
-	err := s.makeExchangeRate()
+	err := s.loadExchangeRate()
 	if err != nil {
 		return nil, err
 	}
@@ -50,39 +50,54 @@ func (s *RatesService) GetExchangeRate() (*ExchangeRate, error) {
 	return s.exchangeRate, nil
 }
 
-func (s *RatesService) makeExchangeRate() error {
+func (s *RatesService) loadExchangeRate() error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	if s.exchangeRate != nil && time.Since(s.lastFetch) < viper.GetDuration(config.EnvCacheSettingsTtl) {
+	if s.useCachedValue() {
 		return nil
 	}
 
-	exchangeRateUrl := viper.GetString(config.EnvEndpointsExchangeRate)
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, exchangeRateUrl, nil)
+	exchangeRate, err := s.fetchExchangeRate()
 	if err != nil {
-		return fmt.Errorf("error during creating exchange rate request: %w", err)
-	}
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("error during getting exchange rate: %w", err)
-	}
-	defer res.Body.Close() //nolint: all
-
-	var exchangeRate *ExchangeRate
-	bodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		return fmt.Errorf("error during reading response body: %w", err)
-	}
-
-	err = json.Unmarshal(bodyBytes, &exchangeRate)
-	if err != nil {
-		return fmt.Errorf("error during unmarshalling response body: %w", err)
+		return err
 	}
 
 	s.lastFetch = time.Now()
 	s.exchangeRate = exchangeRate
 
 	return nil
+}
+
+func (s *RatesService) fetchExchangeRate() (*ExchangeRate, error) {
+	exchangeRateUrl := viper.GetString(config.EnvEndpointsExchangeRate)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, exchangeRateUrl, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error during creating exchange rate request: %w", err)
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error during getting exchange rate: %w", err)
+	}
+	defer res.Body.Close() //nolint: all
+
+	var exchangeRate *ExchangeRate
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error during reading response body: %w", err)
+	}
+
+	err = json.Unmarshal(bodyBytes, &exchangeRate)
+	if err != nil {
+		return nil, fmt.Errorf("error during unmarshalling response body: %w", err)
+	}
+	return exchangeRate, nil
+}
+
+func (s *RatesService) useCachedValue() bool {
+	if s.exchangeRate != nil && time.Since(s.lastFetch) < viper.GetDuration(config.EnvCacheSettingsTtl) {
+		return true
+	}
+	return false
 }

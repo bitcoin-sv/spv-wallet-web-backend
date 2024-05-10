@@ -29,15 +29,15 @@ func NewServices(usersRepo *db_users.UsersRepository, log *zerolog.Logger) (*Ser
 		return nil, err
 	}
 
-	// Create User services.
-	uService := users.NewUserService(usersRepo, adminWalletClient, walletClientFactory, log)
+	rService := rates.NewRatesService(log)
+	uService := users.NewUserService(usersRepo, adminWalletClient, walletClientFactory, rService, log)
 
 	return &Services{
+		RatesService:        rService,
 		UsersService:        uService,
+		WalletClientFactory: walletClientFactory,
 		TransactionsService: transactions.NewTransactionService(adminWalletClient, walletClientFactory, log),
 		ContactsService:     contacts.NewContactsService(adminWalletClient, walletClientFactory, log),
-		WalletClientFactory: walletClientFactory,
 		ConfigService:       config.NewConfigService(adminWalletClient, log),
-		RatesService:        rates.NewRatesService(log),
 	}, nil
 }

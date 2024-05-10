@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/rates"
 	"net/mail"
 	"strconv"
 	"strings"
@@ -62,18 +63,20 @@ var ErrUserAlreadyExists = &UserError{"user already exists"}
 // UserService represents User service and provide access to repository.
 type UserService struct {
 	repo                UsersRepository
+	ratesService        *rates.RatesService
 	adminWalletClient   AdminWalletClient
 	walletClientFactory WalletClientFactory
 	log                 *zerolog.Logger
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo UsersRepository, adminWalletClient AdminWalletClient, walletClientFactory WalletClientFactory, l *zerolog.Logger) *UserService {
+func NewUserService(repo UsersRepository, adminWalletClient AdminWalletClient, walletClientFactory WalletClientFactory, rService *rates.RatesService, l *zerolog.Logger) *UserService {
 	userServiceLogger := l.With().Str("service", "user-service").Logger()
 	s := &UserService{
 		repo:                repo,
 		adminWalletClient:   adminWalletClient,
 		walletClientFactory: walletClientFactory,
+		ratesService:        rService,
 		log:                 &userServiceLogger,
 	}
 
@@ -179,7 +182,7 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 }
 
 // SignInUser signs in user.
-func (s *UserService) SignInUser(email, password string, exchangeRate float64) (*AuthenticatedUser, error) {
+func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, error) {
 	// Check if user exists.
 	user, err := s.repo.GetUserByEmail(context.Background(), email)
 	if err != nil {
@@ -229,7 +232,15 @@ func (s *UserService) SignInUser(email, password string, exchangeRate float64) (
 		return nil, err
 	}
 
-	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
+	exchangeRate, err := s.ratesService.GetExchangeRate()
+	if err != nil {
+		s.log.Error().
+			Str("userEmail", email).
+			Msgf("Exchange rate not found: %v", err.Error())
+		return nil, err
+	}
+
+	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate.Rate)
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
@@ -282,7 +293,7 @@ func (s *UserService) GetUserById(userId int) (*User, error) {
 }
 
 // GetUserBalance returns user balance using access key.
-func (s *UserService) GetUserBalance(accessKey string, exchangeRate float64) (*Balance, error) {
+func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		s.log.Error().
@@ -298,8 +309,15 @@ func (s *UserService) GetUserBalance(accessKey string, exchangeRate float64) (*B
 		return nil, err
 	}
 
+	exchangeRate, err := s.ratesService.GetExchangeRate()
+	if err != nil {
+		s.log.Error().
+			Msgf("Exchange rate not found: %v", err.Error())
+		return nil, err
+	}
+
 	// Calculate balance.
-	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
+	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate.Rate)
 	if err != nil {
 		s.log.Error().
 			Str("xpubID", xpub.GetId()).

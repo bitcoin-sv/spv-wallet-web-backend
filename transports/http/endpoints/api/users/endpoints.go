@@ -13,15 +13,15 @@ import (
 )
 
 type handler struct {
-	services *domain.Services
-	log      *zerolog.Logger
+	service *users.UserService
+	log     *zerolog.Logger
 }
 
 // NewHandler creates new endpoint handler.
 func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, router.ApiEndpoints) {
 	h := &handler{
-		services: s,
-		log:      log,
+		service: s.UsersService,
+		log:     log,
 	}
 
 	prefix := "/api/v1"
@@ -64,7 +64,7 @@ func (h *handler) register(c *gin.Context) {
 		return
 	}
 
-	newUser, err := h.services.UsersService.CreateNewUser(reqUser.Email, reqUser.Password)
+	newUser, err := h.service.CreateNewUser(reqUser.Email, reqUser.Password)
 
 	// Check if user with this email already exists or there is another error
 	if err != nil {
@@ -99,21 +99,14 @@ func (h *handler) register(c *gin.Context) {
 //	@Success 200 {object} UserResponse
 //	@Router /user [get]
 func (h *handler) getUser(c *gin.Context) {
-	user, err := h.services.UsersService.GetUserById(c.GetInt(auth.SessionUserId))
+	user, err := h.service.GetUserById(c.GetInt(auth.SessionUserId))
 	if err != nil {
 		h.log.Error().Msgf("User not found: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while getting user details")
 		return
 	}
 
-	exchangeRate, err := h.services.RatesService.GetExchangeRate()
-	if err != nil {
-		h.log.Error().Msgf("Exchange rate not found: %s", err)
-		c.JSON(http.StatusBadRequest, "An error occurred while getting exchange rate")
-		return
-	}
-
-	currentBalance, err := h.services.UsersService.GetUserBalance(c.GetString(auth.SessionAccessKey), exchangeRate.Rate)
+	currentBalance, err := h.service.GetUserBalance(c.GetString(auth.SessionAccessKey))
 	if err != nil {
 		h.log.Error().Msgf("Balance not found: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while getting user details")
