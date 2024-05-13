@@ -16,7 +16,7 @@ import (
 
 // RatesService is a service for fetching and caching BSV exchange rates.
 type RatesService struct {
-	exchangeRate *ExchangeRate
+	exchangeRate *float64
 
 	mutex     sync.Mutex
 	lastFetch time.Time
@@ -41,7 +41,7 @@ func NewRatesService(log *zerolog.Logger) *RatesService {
 }
 
 // GetExchangeRate returns the current exchange rate.
-func (s *RatesService) GetExchangeRate() (*ExchangeRate, error) {
+func (s *RatesService) GetExchangeRate() (*float64, error) {
 	err := s.loadExchangeRate()
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func (s *RatesService) loadExchangeRate() error {
 	return nil
 }
 
-func (s *RatesService) fetchExchangeRate() (*ExchangeRate, error) {
+func (s *RatesService) fetchExchangeRate() (*float64, error) {
 	exchangeRateUrl := viper.GetString(config.EnvEndpointsExchangeRate)
 	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, exchangeRateUrl, nil)
 	if err != nil {
@@ -92,7 +92,7 @@ func (s *RatesService) fetchExchangeRate() (*ExchangeRate, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error during unmarshalling response body: %w", err)
 	}
-	return exchangeRate, nil
+	return &exchangeRate.Rate, nil
 }
 
 func (s *RatesService) useCachedValue() bool {

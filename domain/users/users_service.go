@@ -240,7 +240,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, err
 	}
 
-	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate.Rate)
+	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
@@ -317,7 +317,7 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 	}
 
 	// Calculate balance.
-	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate.Rate)
+	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
 	if err != nil {
 		s.log.Error().
 			Str("xpubID", xpub.GetId()).
@@ -446,9 +446,9 @@ func validatePassword(password string) error {
 	return nil
 }
 
-func calculateBalance(satoshis uint64, exchangeRate float64) (*Balance, error) {
+func calculateBalance(satoshis uint64, exchangeRate *float64) (*Balance, error) {
 	balanceBSV := float64(satoshis) / 100000000
-	balanceUSD := balanceBSV * exchangeRate
+	balanceUSD := balanceBSV * *exchangeRate
 
 	balance := &Balance{
 		Bsv:      balanceBSV,
