@@ -3,23 +3,19 @@ package users
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"net/http"
 	"net/mail"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/rates"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/encryption"
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
 	"github.com/libsv/go-bk/chaincfg"
 	"github.com/rs/zerolog"
-	"github.com/spf13/viper"
 )
 
 // CredentialsError Generic error type / wrapper for Credentials errors.
@@ -67,18 +63,20 @@ var ErrUserAlreadyExists = &UserError{"user already exists"}
 // UserService represents User service and provide access to repository.
 type UserService struct {
 	repo                UsersRepository
+	ratesService        *rates.RatesService
 	adminWalletClient   AdminWalletClient
 	walletClientFactory WalletClientFactory
 	log                 *zerolog.Logger
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo UsersRepository, adminWalletClient AdminWalletClient, walletClientFactory WalletClientFactory, l *zerolog.Logger) *UserService {
+func NewUserService(repo UsersRepository, adminWalletClient AdminWalletClient, walletClientFactory WalletClientFactory, rService *rates.RatesService, l *zerolog.Logger) *UserService {
 	userServiceLogger := l.With().Str("service", "user-service").Logger()
 	s := &UserService{
 		repo:                repo,
 		adminWalletClient:   adminWalletClient,
 		walletClientFactory: walletClientFactory,
+		ratesService:        rService,
 		log:                 &userServiceLogger,
 	}
 
@@ -234,7 +232,15 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, err
 	}
 
-	balance, err := calculateBalance(xpub.GetCurrentBalance())
+	exchangeRate, err := s.ratesService.GetExchangeRate()
+	if err != nil {
+		s.log.Error().
+			Str("userEmail", email).
+			Msgf("Exchange rate not found: %v", err.Error())
+		return nil, err
+	}
+
+	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
@@ -303,8 +309,15 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 		return nil, err
 	}
 
+	exchangeRate, err := s.ratesService.GetExchangeRate()
+	if err != nil {
+		s.log.Error().
+			Msgf("Exchange rate not found: %v", err.Error())
+		return nil, err
+	}
+
 	// Calculate balance.
-	balance, err := calculateBalance(xpub.GetCurrentBalance())
+	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
 	if err != nil {
 		s.log.Error().
 			Str("xpubID", xpub.GetId()).
@@ -433,36 +446,9 @@ func validatePassword(password string) error {
 	return nil
 }
 
-func calculateBalance(satoshis uint64) (*Balance, error) {
-	// Create request.
-	exchangeRateUrl := viper.GetString(config.EnvEndpointsExchangeRate)
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, exchangeRateUrl, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error during creating exchange rate request: %w", err)
-	}
-
-	// Send request.
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error during getting exchange rate: %w", err)
-	}
-	defer res.Body.Close() //nolint: all
-
-	// Parse response body.
-	var exchangeRate ExchangeRate
-	bodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, fmt.Errorf("error during reading response body: %w", err)
-	}
-
-	err = json.Unmarshal(bodyBytes, &exchangeRate)
-	if err != nil {
-		return nil, fmt.Errorf("error during unmarshalling response body: %w", err)
-	}
-
-	// Calculate balance.
+func calculateBalance(satoshis uint64, exchangeRate *float64) (*Balance, error) {
 	balanceBSV := float64(satoshis) / 100000000
-	balanceUSD := balanceBSV * exchangeRate.Rate
+	balanceUSD := balanceBSV * *exchangeRate
 
 	balance := &Balance{
 		Bsv:      balanceBSV,

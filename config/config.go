@@ -83,6 +83,11 @@ const (
 	EnvContactsPasscodeDigits = "contacts.passcode.digits"
 )
 
+const (
+	// EnvCacheSettingsTtl define the cache settings ttl used for exchange rates storage.
+	EnvCacheSettingsTtl = "cache.settings.ttl"
+)
+
 // Config returns strongly typed config values.
 type Config struct {
 	Db *Db

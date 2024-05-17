@@ -13,14 +13,14 @@ import (
 )
 
 type handler struct {
-	service users.UserService
+	service *users.UserService
 	log     *zerolog.Logger
 }
 
 // NewHandler creates new endpoint handler.
 func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, router.ApiEndpoints) {
 	h := &handler{
-		service: *s.UsersService,
+		service: s.UsersService,
 		log:     log,
 	}
 
