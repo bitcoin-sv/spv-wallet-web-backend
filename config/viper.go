@@ -66,7 +66,7 @@ func setSpvWalletDefaults() {
 
 // setHashDefaults sets default values for hash.
 func setHashDefaults() {
-	viper.SetDefault(EnvHashSalt, "bux")
+	viper.SetDefault(EnvHashSalt, "spv-wallet")
 }
 
 func setLoggingDefaults() {
