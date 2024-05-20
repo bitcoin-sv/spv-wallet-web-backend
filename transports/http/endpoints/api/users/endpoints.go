@@ -4,24 +4,23 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
+	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 )
 
 type handler struct {
-	service users.UserService
+	service *users.UserService
 	log     *zerolog.Logger
 }
 
 // NewHandler creates new endpoint handler.
 func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, router.ApiEndpoints) {
 	h := &handler{
-		service: *s.UsersService,
+		service: s.UsersService,
 		log:     log,
 	}
 

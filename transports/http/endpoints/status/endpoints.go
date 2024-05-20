@@ -1,9 +1,8 @@
 package status
 
 import (
-	"github.com/gin-gonic/gin"
-
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
+	"github.com/gin-gonic/gin"
 )
 
 // NewHandler creates new endpoint handler.

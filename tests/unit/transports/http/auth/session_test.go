@@ -6,12 +6,10 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
-
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
-
-	"github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -49,6 +47,7 @@ func TestUpdateSession(t *testing.T) {
 			Id:      gofakeit.IntRange(0, 1000),
 			Paymail: gofakeit.HexUint256(),
 		},
+		Xpriv: "xprivtest",
 	}
 
 	// Act
@@ -61,6 +60,7 @@ func TestUpdateSession(t *testing.T) {
 	assert.Equal(t, user.AccessKey.Key, session.Get(auth.SessionAccessKey))
 	assert.Equal(t, user.User.Id, session.Get(auth.SessionUserId))
 	assert.Equal(t, user.User.Paymail, session.Get(auth.SessionUserPaymail))
+	assert.Equal(t, user.Xpriv, session.Get(auth.SessionXPriv))
 }
 
 func setupTest() (ctx *gin.Context) {

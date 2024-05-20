@@ -6,11 +6,10 @@ import (
 
 	"github.com/avast/retry-go/v4"
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
-	"github.com/bitcoin-sv/spv-wallet/models"
-	"github.com/rs/zerolog"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
+	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/rs/zerolog"
 )
 
 // TransactionService represents service whoch contains methods linked with transactions.
@@ -22,7 +21,7 @@ type TransactionService struct {
 
 // NewTransactionService creates new transaction service.
 func NewTransactionService(adminWalletClient users.AdminWalletClient, walletClientFactory users.WalletClientFactory, log *zerolog.Logger) *TransactionService {
-	transactionServiceLogger := log.With().Str("service", "user-service").Logger()
+	transactionServiceLogger := log.With().Str("service", "transaction-service").Logger()
 	return &TransactionService{
 		adminWalletClient:   adminWalletClient,
 		walletClientFactory: walletClientFactory,

@@ -8,14 +8,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/rs/zerolog"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
-
 	"github.com/centrifugal/centrifuge"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 )
 
 // Server websocket server controller.

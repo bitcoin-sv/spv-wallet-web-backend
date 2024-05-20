@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
-
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 	"go.elastic.co/ecszerolog"

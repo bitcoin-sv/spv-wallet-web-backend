@@ -1,17 +1,15 @@
 package databases
 
 import (
-	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
-
-	"github.com/rs/zerolog"
-
 	"database/sql"
 	"fmt"
 
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file" // nolint: golint
+	_ "github.com/golang-migrate/migrate/v4/source/file" //nolint: golint
 	_ "github.com/lib/pq"
+	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 )
 

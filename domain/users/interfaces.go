@@ -1,6 +1,7 @@
 package users
 
 import (
+	"context"
 	"time"
 
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
@@ -69,6 +70,13 @@ type (
 		GetTransactionsCount() (int64, error)
 		CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata *models.Metadata) (DraftTransaction, error)
 		RecordTransaction(hex, draftTxId string, metadata *models.Metadata) (*models.Transaction, error)
+		// Contacts methods
+		UpsertContact(ctx context.Context, paymail, fullName string, metadata *models.Metadata) (*models.Contact, walletclient.ResponseError)
+		AcceptContact(ctx context.Context, paymail string) walletclient.ResponseError
+		RejectContact(ctx context.Context, paymail string) walletclient.ResponseError
+		ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) walletclient.ResponseError
+		GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) ([]*models.Contact, walletclient.ResponseError)
+		GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error)
 	}
 
 	// AdminWalletClient defines methods which are available for an admin with admin key.

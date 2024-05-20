@@ -5,6 +5,7 @@
 package mock
 
 import (
+        "context"
 	reflect "reflect"
 	time "time"
 
@@ -518,6 +519,34 @@ func (m *MockUserWalletClient) EXPECT() *MockUserWalletClientMockRecorder {
         return m.recorder
 }
 
+// AcceptContact mocks base method.
+func (m *MockUserWalletClient) AcceptContact(ctx context.Context, paymail string) walletclient.ResponseError {
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "AcceptContact", ctx, paymail)
+        ret0, _ := ret[0].(walletclient.ResponseError)
+        return ret0
+}
+
+// AcceptContact indicates an expected call of AcceptContact.
+func (mr *MockUserWalletClientMockRecorder) AcceptContact(ctx, paymail interface{}) *gomock.Call {
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AcceptContact", reflect.TypeOf((*MockUserWalletClient)(nil).AcceptContact), ctx, paymail)
+}
+
+// ConfirmContact mocks base method.
+func (m *MockUserWalletClient) ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) walletclient.ResponseError {
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "ConfirmContact", ctx, contact, passcode, requesterPaymail, period, digits)
+        ret0, _ := ret[0].(walletclient.ResponseError)
+        return ret0
+}
+
+// ConfirmContact indicates an expected call of ConfirmContact.
+func (mr *MockUserWalletClientMockRecorder) ConfirmContact(ctx, contact, passcode, requesterPaymail, period, digits interface{}) *gomock.Call {
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmContact", reflect.TypeOf((*MockUserWalletClient)(nil).ConfirmContact), ctx, contact, passcode, requesterPaymail, period, digits)
+}
+
 // CreateAccessKey mocks base method.
 func (m *MockUserWalletClient) CreateAccessKey() (users.AccKey, error) {
         m.ctrl.T.Helper()
@@ -548,6 +577,21 @@ func (mr *MockUserWalletClientMockRecorder) CreateAndFinalizeTransaction(recipie
         return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAndFinalizeTransaction", reflect.TypeOf((*MockUserWalletClient)(nil).CreateAndFinalizeTransaction), recipients, metadata)
 }
 
+// GenerateTotpForContact mocks base method.
+func (m *MockUserWalletClient) GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error) {
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "GenerateTotpForContact", contact, period, digits)
+        ret0, _ := ret[0].(string)
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
+}
+
+// GenerateTotpForContact indicates an expected call of GenerateTotpForContact.
+func (mr *MockUserWalletClientMockRecorder) GenerateTotpForContact(contact, period, digits interface{}) *gomock.Call {
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateTotpForContact", reflect.TypeOf((*MockUserWalletClient)(nil).GenerateTotpForContact), contact, period, digits)       
+}
+
 // GetAccessKey mocks base method.
 func (m *MockUserWalletClient) GetAccessKey(accessKeyId string) (users.AccKey, error) {
         m.ctrl.T.Helper()
@@ -561,6 +605,21 @@ func (m *MockUserWalletClient) GetAccessKey(accessKeyId string) (users.AccKey, e
 func (mr *MockUserWalletClientMockRecorder) GetAccessKey(accessKeyId interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
         return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccessKey", reflect.TypeOf((*MockUserWalletClient)(nil).GetAccessKey), accessKeyId)
+}
+
+// GetContacts mocks base method.
+func (m *MockUserWalletClient) GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) ([]*models.Contact, walletclient.ResponseError) {
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "GetContacts", ctx, conditions, metadata, queryParams)
+        ret0, _ := ret[0].([]*models.Contact)
+        ret1, _ := ret[1].(walletclient.ResponseError)
+        return ret0, ret1
+}
+
+// GetContacts indicates an expected call of GetContacts.
+func (mr *MockUserWalletClientMockRecorder) GetContacts(ctx, conditions, metadata, queryParams interface{}) *gomock.Call {
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetContacts", reflect.TypeOf((*MockUserWalletClient)(nil).GetContacts), ctx, conditions, metadata, queryParams)
 }
 
 // GetTransaction mocks base method.
@@ -638,6 +697,20 @@ func (mr *MockUserWalletClientMockRecorder) RecordTransaction(hex, draftTxId, me
         return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecordTransaction", reflect.TypeOf((*MockUserWalletClient)(nil).RecordTransaction), hex, draftTxId, metadata)
 }
 
+// RejectContact mocks base method.
+func (m *MockUserWalletClient) RejectContact(ctx context.Context, paymail string) walletclient.ResponseError {
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "RejectContact", ctx, paymail)
+        ret0, _ := ret[0].(walletclient.ResponseError)
+        return ret0
+}
+
+// RejectContact indicates an expected call of RejectContact.
+func (mr *MockUserWalletClientMockRecorder) RejectContact(ctx, paymail interface{}) *gomock.Call {
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RejectContact", reflect.TypeOf((*MockUserWalletClient)(nil).RejectContact), ctx, paymail)
+}
+
 // RevokeAccessKey mocks base method.
 func (m *MockUserWalletClient) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
         m.ctrl.T.Helper()
@@ -666,6 +739,21 @@ func (m *MockUserWalletClient) SendToRecipients(recipients []*walletclient.Recip
 func (mr *MockUserWalletClientMockRecorder) SendToRecipients(recipients, senderPaymail interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
         return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendToRecipients", reflect.TypeOf((*MockUserWalletClient)(nil).SendToRecipients), recipients, senderPaymail)
+}
+
+// UpsertContact mocks base method.
+func (m *MockUserWalletClient) UpsertContact(ctx context.Context, paymail, fullName string, metadata *models.Metadata) (*models.Contact, walletclient.ResponseError) {
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "UpsertContact", ctx, paymail, fullName, metadata)
+        ret0, _ := ret[0].(*models.Contact)
+        ret1, _ := ret[1].(walletclient.ResponseError)
+        return ret0, ret1
+}
+
+// UpsertContact indicates an expected call of UpsertContact.
+func (mr *MockUserWalletClientMockRecorder) UpsertContact(ctx, paymail, fullName, metadata interface{}) *gomock.Call {
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertContact", reflect.TypeOf((*MockUserWalletClient)(nil).UpsertContact), ctx, paymail, fullName, metadata)
 }
 
 // MockAdminWalletClient is a mock of AdminWalletClient interface.

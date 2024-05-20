@@ -2,7 +2,6 @@ package data
 
 import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
-
 	"github.com/brianvoe/gofakeit/v6"
 )
 

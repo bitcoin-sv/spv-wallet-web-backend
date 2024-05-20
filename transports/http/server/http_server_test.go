@@ -2,12 +2,12 @@ package httpserver
 
 import (
 	"context"
-	"github.com/rs/zerolog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 )
 

@@ -2,6 +2,7 @@ package config
 
 import (
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -16,6 +17,8 @@ func NewViperConfig(appname string) *Config {
 	setLoggingDefaults()
 	setEndpointsDefaults()
 	setWebsocketDefaults()
+	setContactsDefaults()
+	setCacheDefaults()
 	return &Config{}
 }
 
@@ -49,6 +52,7 @@ func setHttpServerDefaults() {
 	viper.SetDefault(EnvHttpServerCookieDomain, "localhost")
 	viper.SetDefault(EnvHttpServerCookieSecure, false)
 	viper.SetDefault(EnvHttpServerCorsAllowedDomains, []string{})
+	viper.SetDefault(EnvHttpServerSessionSecret, "secret")
 }
 
 // setSpvWalletDefaults sets default values for spv-wallet connection.
@@ -62,7 +66,7 @@ func setSpvWalletDefaults() {
 
 // setHashDefaults sets default values for hash.
 func setHashDefaults() {
-	viper.SetDefault(EnvHashSalt, "bux")
+	viper.SetDefault(EnvHashSalt, "spv-wallet")
 }
 
 func setLoggingDefaults() {
@@ -81,4 +85,14 @@ func setEndpointsDefaults() {
 func setWebsocketDefaults() {
 	viper.SetDefault(EnvWebsocketHistoryMax, 300)
 	viper.SetDefault(EnvWebsocketHistoryTtl, 10)
+}
+
+func setContactsDefaults() {
+	viper.SetDefault(EnvContactsPasscodePeriod, uint(3600)) //1h
+	viper.SetDefault(EnvContactsPasscodeDigits, uint(2))
+}
+
+// setCacheDefaults sets default values for cache.
+func setCacheDefaults() {
+	viper.SetDefault(EnvCacheSettingsTtl, 60*time.Second)
 }

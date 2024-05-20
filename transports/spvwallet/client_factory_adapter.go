@@ -2,11 +2,10 @@ package spvwallet
 
 import (
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
-	"github.com/rs/zerolog"
-	"github.com/spf13/viper"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/rs/zerolog"
+	"github.com/spf13/viper"
 )
 
 type walletClientFactory struct {

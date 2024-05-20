@@ -5,14 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/rs/zerolog"
-
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	mock "github.com/bitcoin-sv/spv-wallet-web-backend/tests/mocks"
+	"github.com/golang/mock/gomock"
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateNewUser_ReturnsUser(t *testing.T) {
@@ -58,7 +56,7 @@ func TestCreateNewUser_ReturnsUser(t *testing.T) {
 				RegisterPaymail(gomock.Any(), gomock.Any()).
 				Return(tc.expectedUser.User.Paymail, nil)
 
-			sut := users.NewUserService(repoMq, mockAdminWalletClient, nil, &testLogger)
+			sut := users.NewUserService(repoMq, mockAdminWalletClient, nil, nil, &testLogger)
 
 			// Act
 			result, err := sut.CreateNewUser(tc.userEmail, tc.userPswd)
@@ -114,7 +112,7 @@ func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
 				Return(nil, nil).
 				AnyTimes()
 
-			sut := users.NewUserService(repoMq, mockAdminWalletClient, nil, &testLogger)
+			sut := users.NewUserService(repoMq, mockAdminWalletClient, nil, nil, &testLogger)
 
 			// Act
 			result, err := sut.CreateNewUser(tc.userEmail, tc.userPswd)

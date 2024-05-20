@@ -6,7 +6,6 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
-
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/postgres"
 	"github.com/gin-gonic/gin"
@@ -19,11 +18,13 @@ const (
 	SessionAccessKey   = "accessKey"
 	SessionUserId      = "userId"
 	SessionUserPaymail = "paymail"
+	SessionXPriv       = "xPriv"
 )
 
 // NewSessionMiddleware create Session middleware that is retrieving auth token from cookie.
 func NewSessionMiddleware(db *sql.DB, engine *gin.Engine) router.ApiMiddlewareFunc {
-	store, err := postgres.NewStore(db, []byte("secret"))
+	secret := viper.GetString(config.EnvHttpServerSessionSecret)
+	store, err := postgres.NewStore(db, []byte(secret))
 	if err != nil {
 		panic(err)
 	}
