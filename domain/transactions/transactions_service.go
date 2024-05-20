@@ -4,14 +4,13 @@ import (
 	"math"
 	"time"
 
-	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
-
+	"github.com/avast/retry-go/v4"
+	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/rs/zerolog"
 
-	"github.com/avast/retry-go/v4"
-	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
-	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 )
 
 // TransactionService represents service whoch contains methods linked with transactions.
@@ -38,7 +37,7 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		return err
 	}
 
-	var recipients = []*transports.Recipients{
+	var recipients = []*walletclient.Recipients{
 		{
 			Satoshis: satoshis,
 			To:       recipient,
@@ -84,7 +83,7 @@ func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (
 }
 
 // GetTransactions returns transactions by access key.
-func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam transports.QueryParams) (*PaginatedTransactions, error) {
+func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam walletclient.QueryParams) (*PaginatedTransactions, error) {
 	// Try to generate user-client with decrypted xpriv.
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {

@@ -1,13 +1,12 @@
 package spvwallet
 
 import (
+	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	"github.com/rs/zerolog"
+	"github.com/spf13/viper"
+
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
-
-	"github.com/rs/zerolog"
-
-	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
-	"github.com/spf13/viper"
 )
 
 type walletClientFactory struct {
@@ -25,18 +24,9 @@ func NewWalletClientFactory(log *zerolog.Logger) users.WalletClientFactory {
 // CreateAdminClient returns AdminWalletClient as spv-wallet-go-client instance with admin key.
 func (bf *walletClientFactory) CreateAdminClient() (users.AdminWalletClient, error) {
 	xpriv := viper.GetString(config.EnvAdminXpriv)
-	serverUrl, signRequest := getServerData()
+	serverUrl, _ := getServerData()
 
-	adminWalletClient, err := walletclient.New(
-		walletclient.WithXPriv(xpriv),
-		walletclient.WithAdminKey(xpriv),
-		walletclient.WithHTTP(serverUrl),
-		walletclient.WithSignRequest(signRequest),
-	)
-
-	if err != nil {
-		return nil, err
-	}
+	adminWalletClient := walletclient.NewWithAdminKey(serverUrl, xpriv)
 
 	return &AdminWalletClient{
 		client: adminWalletClient,
@@ -46,17 +36,9 @@ func (bf *walletClientFactory) CreateAdminClient() (users.AdminWalletClient, err
 
 // CreateWithXpriv returns UserWalletClient as spv-wallet-go-client instance with given xpriv.
 func (bf *walletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletClient, error) {
-	serverUrl, signRequest := getServerData()
+	serverUrl, _ := getServerData()
 
-	userWalletClient, err := walletclient.New(
-		walletclient.WithXPriv(xpriv),
-		walletclient.WithHTTP(serverUrl),
-		walletclient.WithSignRequest(signRequest),
-	)
-
-	if err != nil {
-		return nil, err
-	}
+	userWalletClient := walletclient.NewWithXPriv(serverUrl, xpriv)
 
 	return &Client{
 		client: userWalletClient,
@@ -67,17 +49,9 @@ func (bf *walletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletCl
 // CreateWithXpriv returns UserWalletClient as spv-wallet-go-client instance with given access key.
 func (bf *walletClientFactory) CreateWithAccessKey(accessKey string) (users.UserWalletClient, error) {
 	// Get env variables.
-	serverUrl, signRequest := getServerData()
+	serverUrl, _ := getServerData()
 
-	userWalletClient, err := walletclient.New(
-		walletclient.WithAccessKey(accessKey),
-		walletclient.WithHTTP(serverUrl),
-		walletclient.WithSignRequest(signRequest),
-	)
-
-	if err != nil {
-		return nil, err
-	}
+	userWalletClient := walletclient.NewWithAccessKey(serverUrl, accessKey)
 
 	return &Client{
 		client: userWalletClient,

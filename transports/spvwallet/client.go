@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/rs/zerolog"
-
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
-	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
 	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/rs/zerolog"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 )
@@ -89,7 +87,7 @@ func (c *Client) GetXPub() (users.PubKey, error) {
 }
 
 // SendToRecipients sends satoshis to recipients.
-func (c *Client) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
+func (c *Client) SendToRecipients(recipients []*walletclient.Recipients, senderPaymail string) (users.Transaction, error) {
 	// Create matadata with sender and receiver paymails.
 	metadata := &models.Metadata{
 		"receiver": recipients[0].To,
@@ -114,7 +112,7 @@ func (c *Client) SendToRecipients(recipients []*transports.Recipients, senderPay
 }
 
 // CreateAndFinalizeTransaction creates draft transaction and finalizes it.
-func (c *Client) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *models.Metadata) (users.DraftTransaction, error) {
+func (c *Client) CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata *models.Metadata) (users.DraftTransaction, error) {
 	// Create draft transaction.
 	draftTx, err := c.client.DraftToRecipients(context.Background(), recipients, metadata)
 	if err != nil {
@@ -148,7 +146,7 @@ func (c *Client) RecordTransaction(hex, draftTxId string, metadata *models.Metad
 }
 
 // GetTransactions returns all transactions.
-func (c *Client) GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]users.Transaction, error) {
+func (c *Client) GetTransactions(queryParam walletclient.QueryParams, userPaymail string) ([]users.Transaction, error) {
 	conditions := make(map[string]interface{})
 
 	if queryParam.OrderByField == "" {

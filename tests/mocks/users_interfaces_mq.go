@@ -5,14 +5,15 @@
 package mock
 
 import (
-        reflect "reflect"
-        time "time"
+	reflect "reflect"
+	time "time"
 
-        transports "github.com/bitcoin-sv/spv-wallet-go-client/transports"
-        users "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
-        models "github.com/bitcoin-sv/spv-wallet/models"
-        gomock "github.com/golang/mock/gomock"
-        bip32 "github.com/libsv/go-bk/bip32"
+	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	models "github.com/bitcoin-sv/spv-wallet/models"
+	gomock "github.com/golang/mock/gomock"
+	bip32 "github.com/libsv/go-bk/bip32"
+
+	users "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 )
 
 // MockAccKey is a mock of AccKey interface.
@@ -533,7 +534,7 @@ func (mr *MockUserWalletClientMockRecorder) CreateAccessKey() *gomock.Call {
 }
 
 // CreateAndFinalizeTransaction mocks base method.
-func (m *MockUserWalletClient) CreateAndFinalizeTransaction(recipients []*transports.Recipients, metadata *models.Metadata) (users.DraftTransaction, error) {
+func (m *MockUserWalletClient) CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata *models.Metadata) (users.DraftTransaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateAndFinalizeTransaction", recipients, metadata)
         ret0, _ := ret[0].(users.DraftTransaction)
@@ -578,7 +579,7 @@ func (mr *MockUserWalletClientMockRecorder) GetTransaction(transactionId, userPa
 }
 
 // GetTransactions mocks base method.
-func (m *MockUserWalletClient) GetTransactions(queryParam transports.QueryParams, userPaymail string) ([]users.Transaction, error) {
+func (m *MockUserWalletClient) GetTransactions(queryParam walletclient.QueryParams, userPaymail string) ([]users.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetTransactions", queryParam, userPaymail)
         ret0, _ := ret[0].([]users.Transaction)
@@ -653,7 +654,7 @@ func (mr *MockUserWalletClientMockRecorder) RevokeAccessKey(accessKeyId interfac
 }
 
 // SendToRecipients mocks base method.
-func (m *MockUserWalletClient) SendToRecipients(recipients []*transports.Recipients, senderPaymail string) (users.Transaction, error) {
+func (m *MockUserWalletClient) SendToRecipients(recipients []*walletclient.Recipients, senderPaymail string) (users.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "SendToRecipients", recipients, senderPaymail)
         ret0, _ := ret[0].(users.Transaction)
