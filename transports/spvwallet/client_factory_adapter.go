@@ -2,10 +2,11 @@ package spvwallet
 
 import (
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
+
+	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 )
 
 type walletClientFactory struct {
@@ -22,10 +23,10 @@ func NewWalletClientFactory(log *zerolog.Logger) users.WalletClientFactory {
 
 // CreateAdminClient returns AdminWalletClient as spv-wallet-go-client instance with admin key.
 func (bf *walletClientFactory) CreateAdminClient() (users.AdminWalletClient, error) {
-	xpriv := viper.GetString(config.EnvAdminXpriv)
-	serverUrl, _ := getServerData()
+	adminKey := viper.GetString(config.EnvAdminXpriv)
+	serverUrl := getServerData()
 
-	adminWalletClient := walletclient.NewWithAdminKey(serverUrl, xpriv)
+	adminWalletClient := walletclient.NewWithAdminKey(serverUrl, adminKey)
 
 	return &AdminWalletClient{
 		client: adminWalletClient,
@@ -35,7 +36,7 @@ func (bf *walletClientFactory) CreateAdminClient() (users.AdminWalletClient, err
 
 // CreateWithXpriv returns UserWalletClient as spv-wallet-go-client instance with given xpriv.
 func (bf *walletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletClient, error) {
-	serverUrl, _ := getServerData()
+	serverUrl := getServerData()
 
 	userWalletClient := walletclient.NewWithXPriv(serverUrl, xpriv)
 
@@ -48,7 +49,7 @@ func (bf *walletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletCl
 // CreateWithXpriv returns UserWalletClient as spv-wallet-go-client instance with given access key.
 func (bf *walletClientFactory) CreateWithAccessKey(accessKey string) (users.UserWalletClient, error) {
 	// Get env variables.
-	serverUrl, _ := getServerData()
+	serverUrl := getServerData()
 
 	userWalletClient := walletclient.NewWithAccessKey(serverUrl, accessKey)
 
@@ -58,10 +59,7 @@ func (bf *walletClientFactory) CreateWithAccessKey(accessKey string) (users.User
 	}, nil
 }
 
-func getServerData() (serverUrl string, signRequest bool) {
+func getServerData() string {
 	// Get env variables.
-	serverUrl = viper.GetString(config.EnvServerUrl)
-	signRequest = viper.GetBool(config.EnvSignRequest)
-
-	return serverUrl, signRequest
+	return viper.GetString(config.EnvServerUrl)
 }
