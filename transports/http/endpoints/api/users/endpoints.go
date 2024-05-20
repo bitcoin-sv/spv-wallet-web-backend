@@ -25,14 +25,16 @@ func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, 
 		log:     log,
 	}
 
+	prefix := "/api/v1"
+
 	// Register root endpoints.
 	rootEndpoints := router.RootEndpointsFunc(func(router *gin.RouterGroup) {
-		router.GET("/user", h.getUser)
+		router.POST(prefix+"/user", h.register)
 	})
 
 	// Register api endpoints which are athorized by session token.
 	apiEndpoints := router.ApiEndpointsFunc(func(router *gin.RouterGroup) {
-		router.POST("/user", h.register)
+		router.GET("/user", h.getUser)
 	})
 
 	return rootEndpoints, apiEndpoints
