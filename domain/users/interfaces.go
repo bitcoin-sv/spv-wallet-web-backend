@@ -75,7 +75,7 @@ type (
 		AcceptContact(ctx context.Context, paymail string) walletclient.ResponseError
 		RejectContact(ctx context.Context, paymail string) walletclient.ResponseError
 		ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) walletclient.ResponseError
-		GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) ([]*models.Contact, walletclient.ResponseError)
+		GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError)
 		GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error)
 	}
 

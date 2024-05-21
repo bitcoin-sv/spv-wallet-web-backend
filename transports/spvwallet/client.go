@@ -251,7 +251,7 @@ func (c *Client) ConfirmContact(ctx context.Context, contact *models.Contact, pa
 }
 
 // GetContacts returns all contacts.
-func (c *Client) GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) ([]*models.Contact, walletclient.ResponseError) {
+func (c *Client) GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError) {
 	return c.client.GetContacts(ctx, conditions, metadata, queryParams)
 }
 
