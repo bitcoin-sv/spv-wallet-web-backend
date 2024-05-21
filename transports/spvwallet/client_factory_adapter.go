@@ -22,19 +22,10 @@ func NewWalletClientFactory(log *zerolog.Logger) users.WalletClientFactory {
 
 // CreateAdminClient returns AdminWalletClient as spv-wallet-go-client instance with admin key.
 func (bf *walletClientFactory) CreateAdminClient() (users.AdminWalletClient, error) {
-	xpriv := viper.GetString(config.EnvAdminXpriv)
-	serverUrl, signRequest := getServerData()
+	adminKey := viper.GetString(config.EnvAdminXpriv)
+	serverUrl := getServerData()
 
-	adminWalletClient, err := walletclient.New(
-		walletclient.WithXPriv(xpriv),
-		walletclient.WithAdminKey(xpriv),
-		walletclient.WithHTTP(serverUrl),
-		walletclient.WithSignRequest(signRequest),
-	)
-
-	if err != nil {
-		return nil, err
-	}
+	adminWalletClient := walletclient.NewWithAdminKey(serverUrl, adminKey)
 
 	return &AdminWalletClient{
 		client: adminWalletClient,
@@ -44,17 +35,9 @@ func (bf *walletClientFactory) CreateAdminClient() (users.AdminWalletClient, err
 
 // CreateWithXpriv returns UserWalletClient as spv-wallet-go-client instance with given xpriv.
 func (bf *walletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletClient, error) {
-	serverUrl, signRequest := getServerData()
+	serverUrl := getServerData()
 
-	userWalletClient, err := walletclient.New(
-		walletclient.WithXPriv(xpriv),
-		walletclient.WithHTTP(serverUrl),
-		walletclient.WithSignRequest(signRequest),
-	)
-
-	if err != nil {
-		return nil, err
-	}
+	userWalletClient := walletclient.NewWithXPriv(serverUrl, xpriv)
 
 	return &Client{
 		client: userWalletClient,
@@ -65,17 +48,9 @@ func (bf *walletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletCl
 // CreateWithXpriv returns UserWalletClient as spv-wallet-go-client instance with given access key.
 func (bf *walletClientFactory) CreateWithAccessKey(accessKey string) (users.UserWalletClient, error) {
 	// Get env variables.
-	serverUrl, signRequest := getServerData()
+	serverUrl := getServerData()
 
-	userWalletClient, err := walletclient.New(
-		walletclient.WithAccessKey(accessKey),
-		walletclient.WithHTTP(serverUrl),
-		walletclient.WithSignRequest(signRequest),
-	)
-
-	if err != nil {
-		return nil, err
-	}
+	userWalletClient := walletclient.NewWithAccessKey(serverUrl, accessKey)
 
 	return &Client{
 		client: userWalletClient,
@@ -83,10 +58,7 @@ func (bf *walletClientFactory) CreateWithAccessKey(accessKey string) (users.User
 	}, nil
 }
 
-func getServerData() (serverUrl string, signRequest bool) {
+func getServerData() string {
 	// Get env variables.
-	serverUrl = viper.GetString(config.EnvServerUrl)
-	signRequest = viper.GetBool(config.EnvSignRequest)
-
-	return serverUrl, signRequest
+	return viper.GetString(config.EnvServerUrl)
 }

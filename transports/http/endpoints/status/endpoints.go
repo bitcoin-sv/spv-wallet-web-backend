@@ -21,5 +21,5 @@ func NewHandler() router.RootEndpoints {
 //	@Success 200
 //	@Router /status [get]
 func getStatus(c *gin.Context) {
-	c.Status(200)
+	c.JSON(200, gin.H{"status": "ok"})
 }

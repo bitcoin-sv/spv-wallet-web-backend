@@ -3,7 +3,7 @@ package contacts
 import (
 	"context"
 
-	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
+	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet/models"
@@ -62,7 +62,7 @@ func (s *ContactsService) ConfirmContact(ctx context.Context, xPriv string, cont
 	return userWalletClient.ConfirmContact(ctx, contact, passcode, requesterPaymail, getConfPeriod(), getConfDigits())
 }
 
-func (s *ContactsService) GetContacts(ctx context.Context, accessKey string, conditions map[string]interface{}, metadata *models.Metadata, queryParams *transports.QueryParams) ([]*models.Contact, error) {
+func (s *ContactsService) GetContacts(ctx context.Context, accessKey string, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) ([]*models.Contact, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err

@@ -42,8 +42,6 @@ const (
 	EnvAdminXpriv = "spvwallet.admin.xpriv"
 	// EnvServerUrl define the url of the spv-wallet (non-custodial wallet) service.
 	EnvServerUrl = "spvwallet.server.url"
-	// EnvSignRequest define whether to sign all requests.
-	EnvSignRequest = "spvwallet.sign.request"
 	// EnvPaymailDomain define the paymail domain.
 	EnvPaymailDomain = "spvwallet.paymail.domain"
 	// EnvPaymailAvatar define the paymail avatar url.

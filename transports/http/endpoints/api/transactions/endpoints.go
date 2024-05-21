@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/bitcoin-sv/spv-wallet-go-client/transports"
+	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
@@ -66,7 +66,7 @@ func (h *handler) getTransactions(c *gin.Context) {
 		pageSizeNumber = 10
 	}
 
-	queryParam := transports.QueryParams{
+	queryParam := walletclient.QueryParams{
 		Page:          pageNumber,
 		PageSize:      pageSizeNumber,
 		OrderByField:  orderBy,
