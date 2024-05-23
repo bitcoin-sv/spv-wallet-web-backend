@@ -1,7 +1,6 @@
 package transactions
 
 import (
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 	"net/http"
 	"strconv"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
