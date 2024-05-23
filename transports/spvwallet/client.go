@@ -145,7 +145,7 @@ func (c *Client) RecordTransaction(hex, draftTxId string, metadata *models.Metad
 }
 
 // GetTransactions returns all transactions.
-func (c *Client) GetTransactions(queryParam walletclient.QueryParams, userPaymail string) ([]users.Transaction, error) {
+func (c *Client) GetTransactions(queryParam *walletclient.QueryParams, userPaymail string) ([]users.Transaction, error) {
 	conditions := make(map[string]interface{})
 
 	if queryParam.OrderByField == "" {
@@ -156,7 +156,7 @@ func (c *Client) GetTransactions(queryParam walletclient.QueryParams, userPaymai
 		queryParam.SortDirection = "desc"
 	}
 
-	transactions, err := c.client.GetTransactions(context.Background(), conditions, &models.Metadata{}, &queryParam)
+	transactions, err := c.client.GetTransactions(context.Background(), conditions, &models.Metadata{}, queryParam)
 	if err != nil {
 		c.log.Error().
 			Str("userPaymail", userPaymail).

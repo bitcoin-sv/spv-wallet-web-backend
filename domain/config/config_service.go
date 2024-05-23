@@ -75,7 +75,7 @@ func (s *ConfigService) makePublicConfig(shared *models.SharedConfig) *PublicCon
 	}
 
 	return &PublicConfig{
-		PaymilDomain:         configuredPaymailDomain,
+		PaymailDomain:        configuredPaymailDomain,
 		ExperimentalFeatures: shared.ExperimentalFeatures,
 	}
 }

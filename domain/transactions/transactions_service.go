@@ -82,7 +82,7 @@ func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (
 }
 
 // GetTransactions returns transactions by access key.
-func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam walletclient.QueryParams) (*PaginatedTransactions, error) {
+func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam *walletclient.QueryParams) (*PaginatedTransactions, error) {
 	// Try to generate user-client with decrypted xpriv.
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {

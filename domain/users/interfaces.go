@@ -65,7 +65,7 @@ type (
 		GetXPub() (PubKey, error)
 		// Transaction methods
 		SendToRecipients(recipients []*walletclient.Recipients, senderPaymail string) (Transaction, error)
-		GetTransactions(queryParam walletclient.QueryParams, userPaymail string) ([]Transaction, error)
+		GetTransactions(queryParam *walletclient.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
 		CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata *models.Metadata) (DraftTransaction, error)

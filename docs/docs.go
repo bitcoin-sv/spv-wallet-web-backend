@@ -28,7 +28,150 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/config.PublicConfig"
+                            "$ref": "#/definitions/transports_http_endpoints_api_config.PublicConfig"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/contact/accepted/{paymail}": {
+            "patch": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contact"
+                ],
+                "summary": "Accept a contact",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/v1/contact/confirmed": {
+            "patch": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contact"
+                ],
+                "summary": "Confirm a contact",
+                "parameters": [
+                    {
+                        "description": "Confirm contact data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transports_http_endpoints_api_contacts.ConfirmContact"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/v1/contact/rejected/{paymail}": {
+            "patch": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contact"
+                ],
+                "summary": "Reject a contact",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/v1/contact/totp": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contact"
+                ],
+                "summary": "Generate TOTP for contact.",
+                "parameters": [
+                    {
+                        "description": "Contact details",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Contact"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/v1/contact/{paymail}": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contact"
+                ],
+                "summary": "Create or update a contact.",
+                "parameters": [
+                    {
+                        "description": "Upsert contact data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transports_http_endpoints_api_contacts.UpsertContact"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/v1/contacts/search": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contact"
+                ],
+                "summary": "Get all contacts.",
+                "parameters": [
+                    {
+                        "description": "Conditions for filtering contacts",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transports_http_endpoints_api_contacts.SearchContact"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SearchContactsResponse"
                         }
                     }
                 }
@@ -53,7 +196,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/access.SignInUser"
+                            "$ref": "#/definitions/transports_http_endpoints_api_access.SignInUser"
                         }
                     }
                 ],
@@ -61,7 +204,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/access.SignInResponse"
+                            "$ref": "#/definitions/transports_http_endpoints_api_access.SignInResponse"
                         }
                     }
                 }
@@ -87,26 +230,6 @@ const docTemplate = `{
             }
         },
         "/api/v1/transaction": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "transaction"
-                ],
-                "summary": "Get all transactions.",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/spvwallet.Transaction"
-                            }
-                        }
-                    }
-                }
-            },
             "post": {
                 "produces": [
                     "application/json"
@@ -122,7 +245,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/transactions.CreateTransaction"
+                            "$ref": "#/definitions/transports_http_endpoints_api_transactions.CreateTransaction"
                         }
                     }
                 ],
@@ -130,7 +253,26 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/spvwallet.FullTransaction"
+                            "$ref": "#/definitions/transports_http_endpoints_api_transactions.FullTransaction"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/transaction/search": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transaction"
+                ],
+                "summary": "Get all transactions.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_bitcoin-sv_spv-wallet-web-backend_domain_transactions.PaginatedTransactions"
                         }
                     }
                 }
@@ -158,7 +300,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/spvwallet.FullTransaction"
+                            "$ref": "#/definitions/transports_http_endpoints_api_transactions.FullTransaction"
                         }
                     }
                 }
@@ -184,7 +326,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.RegisterUser"
+                            "$ref": "#/definitions/transports_http_endpoints_api_users.RegisterUser"
                         }
                     }
                 ],
@@ -192,7 +334,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.RegisterResponse"
+                            "$ref": "#/definitions/transports_http_endpoints_api_users.RegisterResponse"
                         }
                     }
                 }
@@ -233,7 +375,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.UserResponse"
+                            "$ref": "#/definitions/transports_http_endpoints_api_users.UserResponse"
                         }
                     }
                 }
@@ -241,18 +383,175 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "access.SignInResponse": {
+        "github_com_bitcoin-sv_spv-wallet-web-backend_domain_transactions.PaginatedTransactions": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "pages": {
+                    "type": "integer"
+                },
+                "transactions": {
+                    "type": "array",
+                    "items": {}
+                }
+            }
+        },
+        "github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance": {
+            "type": "object",
+            "properties": {
+                "bsv": {
+                    "type": "number"
+                },
+                "satoshis": {
+                    "type": "integer"
+                },
+                "usd": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.Contact": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "CreatedAt is a time when outer model was created.",
+                    "type": "string",
+                    "example": "2024-02-26T11:00:28.069911Z"
+                },
+                "deleted_at": {
+                    "description": "DeletedAt is a time when outer model was deleted.",
+                    "type": "string",
+                    "example": "2024-02-26T11:02:28.069911Z"
+                },
+                "fullName": {
+                    "description": "FullName is name which could be shown instead of whole paymail address.",
+                    "type": "string",
+                    "example": "Test User"
+                },
+                "id": {
+                    "description": "ID is a unique identifier of contact.",
+                    "type": "string",
+                    "example": "68af358bde7d8641621c7dd3de1a276c9a62cfa9e2d0740494519f1ba61e2f4a"
+                },
+                "metadata": {
+                    "description": "Metadata is a metadata map of outer model.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key": "value",
+                        "key2": "value2"
+                    }
+                },
+                "paymail": {
+                    "description": "Paymail is a paymail address related to contact.",
+                    "type": "string",
+                    "example": "test@spv-wallet.com"
+                },
+                "pubKey": {
+                    "description": "PubKey is a public key related to contact (receiver).",
+                    "type": "string",
+                    "example": "xpub661MyMwAqRbcGpZVrSHU..."
+                },
+                "status": {
+                    "description": "Status is a contact's current status.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.ContactStatus"
+                        }
+                    ],
+                    "example": "unconfirmed"
+                },
+                "updated_at": {
+                    "description": "UpdatedAt is a time when outer model was updated.",
+                    "type": "string",
+                    "example": "2024-02-26T11:01:28.069911Z"
+                }
+            }
+        },
+        "models.ContactStatus": {
+            "type": "string",
+            "enum": [
+                "unconfirmed",
+                "awaiting",
+                "confirmed",
+                "rejected"
+            ],
+            "x-enum-varnames": [
+                "ContactNotConfirmed",
+                "ContactAwaitAccept",
+                "ContactConfirmed",
+                "ContactRejected"
+            ]
+        },
+        "models.Metadata": {
+            "type": "object",
+            "additionalProperties": true
+        },
+        "models.Page": {
+            "type": "object",
+            "properties": {
+                "number": {
+                    "description": "Page number",
+                    "type": "integer"
+                },
+                "orderByField": {
+                    "description": "Field by which to order the results",
+                    "type": "string"
+                },
+                "size": {
+                    "description": "Size of the page",
+                    "type": "integer"
+                },
+                "sortDirection": {
+                    "description": "Direction in which to order the results ASC/DSC",
+                    "type": "string"
+                },
+                "totalElements": {
+                    "description": "Total count of elements",
+                    "type": "integer"
+                },
+                "totalPages": {
+                    "description": "Total number of possible pages",
+                    "type": "integer"
+                }
+            }
+        },
+        "models.SearchContactsResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "List of records for the response",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Contact"
+                    }
+                },
+                "page": {
+                    "description": "Pagination details",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "transports_http_endpoints_api_access.SignInResponse": {
             "type": "object",
             "properties": {
                 "balance": {
-                    "$ref": "#/definitions/users.Balance"
+                    "$ref": "#/definitions/github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance"
                 },
                 "paymail": {
                     "type": "string"
                 }
             }
         },
-        "access.SignInUser": {
+        "transports_http_endpoints_api_access.SignInUser": {
             "type": "object",
             "properties": {
                 "email": {
@@ -263,21 +562,72 @@ const docTemplate = `{
                 }
             }
         },
-        "config.PublicConfig": {
+        "transports_http_endpoints_api_config.PublicConfig": {
             "type": "object",
             "properties": {
-                "experimental_features": {
+                "experimentalFeatures": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "boolean"
                     }
                 },
-                "paymail_domain": {
+                "paymailDomain": {
                     "type": "string"
                 }
             }
         },
-        "spvwallet.FullTransaction": {
+        "transports_http_endpoints_api_contacts.ConfirmContact": {
+            "type": "object",
+            "properties": {
+                "contact": {
+                    "$ref": "#/definitions/models.Contact"
+                },
+                "passcode": {
+                    "type": "string"
+                }
+            }
+        },
+        "transports_http_endpoints_api_contacts.SearchContact": {
+            "type": "object",
+            "properties": {
+                "conditions": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "metadata": {
+                    "$ref": "#/definitions/models.Metadata"
+                },
+                "params": {
+                    "$ref": "#/definitions/walletclient.QueryParams"
+                }
+            }
+        },
+        "transports_http_endpoints_api_contacts.UpsertContact": {
+            "type": "object",
+            "properties": {
+                "fullName": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "$ref": "#/definitions/models.Metadata"
+                }
+            }
+        },
+        "transports_http_endpoints_api_transactions.CreateTransaction": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "recipient": {
+                    "type": "string"
+                },
+                "satoshis": {
+                    "type": "integer"
+                }
+            }
+        },
+        "transports_http_endpoints_api_transactions.FullTransaction": {
             "type": "object",
             "properties": {
                 "blockHash": {
@@ -318,64 +668,7 @@ const docTemplate = `{
                 }
             }
         },
-        "spvwallet.Transaction": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "direction": {
-                    "type": "string"
-                },
-                "fee": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "receiver": {
-                    "type": "string"
-                },
-                "sender": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "totalValue": {
-                    "type": "integer"
-                }
-            }
-        },
-        "transactions.CreateTransaction": {
-            "type": "object",
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "recipient": {
-                    "type": "string"
-                },
-                "satoshis": {
-                    "type": "integer"
-                }
-            }
-        },
-        "users.Balance": {
-            "type": "object",
-            "properties": {
-                "bsv": {
-                    "type": "number"
-                },
-                "satoshis": {
-                    "type": "integer"
-                },
-                "usd": {
-                    "type": "number"
-                }
-            }
-        },
-        "users.RegisterResponse": {
+        "transports_http_endpoints_api_users.RegisterResponse": {
             "type": "object",
             "properties": {
                 "mnemonic": {
@@ -386,7 +679,7 @@ const docTemplate = `{
                 }
             }
         },
-        "users.RegisterUser": {
+        "transports_http_endpoints_api_users.RegisterUser": {
             "type": "object",
             "properties": {
                 "email": {
@@ -400,11 +693,11 @@ const docTemplate = `{
                 }
             }
         },
-        "users.UserResponse": {
+        "transports_http_endpoints_api_users.UserResponse": {
             "type": "object",
             "properties": {
                 "balance": {
-                    "$ref": "#/definitions/users.Balance"
+                    "$ref": "#/definitions/github_com_bitcoin-sv_spv-wallet-web-backend_domain_users.Balance"
                 },
                 "email": {
                     "type": "string"
@@ -414,6 +707,23 @@ const docTemplate = `{
                 },
                 "userId": {
                     "type": "integer"
+                }
+            }
+        },
+        "walletclient.QueryParams": {
+            "type": "object",
+            "properties": {
+                "order_by_field": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "sort_direction": {
+                    "type": "string"
                 }
             }
         }
