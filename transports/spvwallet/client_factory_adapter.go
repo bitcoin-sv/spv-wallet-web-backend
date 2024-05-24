@@ -45,7 +45,7 @@ func (bf *walletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletCl
 	}, nil
 }
 
-// CreateWithXpriv returns UserWalletClient as spv-wallet-go-client instance with given access key.
+// CreateWithAccessKey returns UserWalletClient as spv-wallet-go-client instance with given access key.
 func (bf *walletClientFactory) CreateWithAccessKey(accessKey string) (users.UserWalletClient, error) {
 	// Get env variables.
 	serverUrl := getServerData()

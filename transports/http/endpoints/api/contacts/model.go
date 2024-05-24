@@ -1,6 +1,9 @@
 package contacts
 
-import "github.com/bitcoin-sv/spv-wallet/models"
+import (
+	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	"github.com/bitcoin-sv/spv-wallet/models"
+)
 
 // UpsertContact represents a request for creating or updating new contact.
 type UpsertContact struct {
@@ -9,8 +12,9 @@ type UpsertContact struct {
 }
 
 type SearchContact struct {
-	Conditions map[string]interface{} `json:"conditions,omitempty"`
-	Metadata   models.Metadata        `json:"metadata,omitempty"`
+	Conditions  map[string]interface{}    `json:"conditions,omitempty"`
+	Metadata    models.Metadata           `json:"metadata,omitempty"`
+	QueryParams *walletclient.QueryParams `json:"params,omitempty"`
 }
 
 // ConfirmContact represents a request for confirming a contact.

@@ -33,7 +33,7 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 	user.PATCH("/accepted/:paymail", h.acceptContact)
 	user.PATCH("/rejected/:paymail", h.rejectContact)
 	user.PATCH("/confirmed", h.confirmContact)
-	user.GET("/search", h.getContacts)
+	user.POST("/search", h.getContacts)
 	user.POST("/totp", h.generateTotp)
 }
 
@@ -42,8 +42,8 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 //	@Summary Get all contacts.
 //	@Tags contact
 //	@Produce json
-//	@Success 200 {object} []models.Contact
-//	@Router /api/v1/contacts/search [get]
+//	@Success 200 {object} models.SearchContactsResponse
+//	@Router /api/v1/contacts/search [POST]
 //	@Param data body SearchContact true "Conditions for filtering contacts"
 func (h *handler) getContacts(c *gin.Context) {
 	var req SearchContact
@@ -54,15 +54,15 @@ func (h *handler) getContacts(c *gin.Context) {
 		return
 	}
 
-	// Get user transactions.
-	txs, err := h.cService.GetContacts(c.Request.Context(), c.GetString(auth.SessionAccessKey), req.Conditions, &req.Metadata, nil)
+	// Get user contacts.
+	paginatedContacts, err := h.cService.GetContacts(c.Request.Context(), c.GetString(auth.SessionAccessKey), req.Conditions, &req.Metadata, req.QueryParams)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while trying to get a list of contacts: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred while trying to get a list of contacts")
 		return
 	}
 
-	c.JSON(http.StatusOK, txs)
+	c.JSON(http.StatusOK, paginatedContacts)
 }
 
 // Upsert contact.

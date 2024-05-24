@@ -4,8 +4,8 @@ go 1.21.5
 
 require (
 	github.com/avast/retry-go/v4 v4.5.1
-	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.2.0.20240517103917-ab378a15bfea
-	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.4
+	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.3
+	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.6
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/centrifugal/centrifuge v0.31.0
 	github.com/gin-contrib/sessions v0.0.5
@@ -28,7 +28,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bitcoinschema/go-bitcoin/v2 v2.0.5 // indirect
 	github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173 // indirect
-	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
+	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/bytedance/sonic v1.11.2 // indirect
 	github.com/centrifugal/protocol v0.12.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
@@ -80,7 +80,7 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.7.0 // indirect
-	golang.org/x/crypto v0.21.0 // indirect
+	golang.org/x/crypto v0.23.0 // indirect
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225 // indirect
 	golang.org/x/net v0.22.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
@@ -102,8 +102,8 @@ require (
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
+	golang.org/x/text v0.15.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

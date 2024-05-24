@@ -11,6 +11,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -22,6 +23,9 @@ type handler struct {
 	log      *zerolog.Logger
 	ws       websocket.Server
 }
+
+// FullTransaction is used for swagger generation
+type FullTransaction = spvwallet.FullTransaction
 
 // NewHandler creates new endpoint handler.
 func NewHandler(s *domain.Services, log *zerolog.Logger, ws websocket.Server) router.ApiEndpoints {
@@ -37,8 +41,8 @@ func NewHandler(s *domain.Services, log *zerolog.Logger, ws websocket.Server) ro
 func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 	user := router.Group("/transaction")
 	{
-		user.GET("", h.getTransactions)
 		user.POST("", h.createTransaction)
+		user.POST("/search", h.getTransactions)
 		user.GET("/:id", h.getTransaction)
 	}
 }
@@ -48,33 +52,26 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 //	@Summary Get all transactions.
 //	@Tags transaction
 //	@Produce json
-//	@Success 200 {object} []spvwallet.Transaction
-//	@Router /api/v1/transaction [get]
+//	@Success 200 {object} transactions.PaginatedTransactions
+//	@Router /api/v1/transaction/search [post]
 func (h *handler) getTransactions(c *gin.Context) {
-	page := c.Query("page")
-	pageSize := c.Query("page_size")
-	orderBy := c.Query("order")
-	sort := c.Query("sort")
-
-	pageNumber, err := strconv.Atoi(page)
+	var req SearchTransaction
+	err := c.Bind(&req)
 	if err != nil {
-		pageNumber = 1
+		h.log.Error().Msgf("Invalid payload: %s", err)
+		c.JSON(http.StatusBadRequest, "Invalid request. Please check conditions and metadata")
+		return
 	}
 
-	pageSizeNumber, err := strconv.Atoi(pageSize)
-	if err != nil {
-		pageSizeNumber = 10
-	}
-
-	queryParam := walletclient.QueryParams{
-		Page:          pageNumber,
-		PageSize:      pageSizeNumber,
-		OrderByField:  orderBy,
-		SortDirection: sort,
+	if req.QueryParams == nil {
+		req.QueryParams = &walletclient.QueryParams{
+			Page:     1,
+			PageSize: 10,
+		}
 	}
 
 	// Get user transactions.
-	txs, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey), c.GetString(auth.SessionUserPaymail), queryParam)
+	txs, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey), c.GetString(auth.SessionUserPaymail), req.QueryParams)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while trying to get a list of transactions: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred while trying to get a list of transactions")
@@ -89,7 +86,7 @@ func (h *handler) getTransactions(c *gin.Context) {
 //	@Summary Get transaction by id.
 //	@Tags transaction
 //	@Produce json
-//	@Success 200 {object} spvwallet.FullTransaction
+//	@Success 200 {object} FullTransaction
 //	@Router /api/v1/transaction/{id} [get]
 //	@Param id path string true "Transaction id"
 func (h *handler) getTransaction(c *gin.Context) {
@@ -111,7 +108,7 @@ func (h *handler) getTransaction(c *gin.Context) {
 //	@Summary Create transaction.
 //	@Tags transaction
 //	@Produce json
-//	@Success 200 {object} spvwallet.FullTransaction
+//	@Success 200 {object} FullTransaction
 //	@Router /api/v1/transaction [post]
 //	@Param data body CreateTransaction true "Create transaction data"
 func (h *handler) createTransaction(c *gin.Context) {

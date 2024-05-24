@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/config"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/gin-gonic/gin"
 )
@@ -9,6 +10,9 @@ import (
 type handler struct {
 	services *domain.Services
 }
+
+// PublicConfig is used for swagger generation
+type PublicConfig = config.PublicConfig
 
 // NewHandler creates new endpoint handler.
 func NewHandler(s *domain.Services) router.RootEndpoints {

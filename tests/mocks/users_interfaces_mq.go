@@ -608,10 +608,10 @@ func (mr *MockUserWalletClientMockRecorder) GetAccessKey(accessKeyId interface{}
 }
 
 // GetContacts mocks base method.
-func (m *MockUserWalletClient) GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) ([]*models.Contact, walletclient.ResponseError) {
+func (m *MockUserWalletClient) GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetContacts", ctx, conditions, metadata, queryParams)
-        ret0, _ := ret[0].([]*models.Contact)
+        ret0, _ := ret[0].(*models.SearchContactsResponse)
         ret1, _ := ret[1].(walletclient.ResponseError)
         return ret0, ret1
 }
@@ -638,7 +638,7 @@ func (mr *MockUserWalletClientMockRecorder) GetTransaction(transactionId, userPa
 }
 
 // GetTransactions mocks base method.
-func (m *MockUserWalletClient) GetTransactions(queryParam walletclient.QueryParams, userPaymail string) ([]users.Transaction, error) {
+func (m *MockUserWalletClient) GetTransactions(queryParam *walletclient.QueryParams, userPaymail string) ([]users.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetTransactions", queryParam, userPaymail)
         ret0, _ := ret[0].([]users.Transaction)

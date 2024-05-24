@@ -65,7 +65,7 @@ type (
 		GetXPub() (PubKey, error)
 		// Transaction methods
 		SendToRecipients(recipients []*walletclient.Recipients, senderPaymail string) (Transaction, error)
-		GetTransactions(queryParam walletclient.QueryParams, userPaymail string) ([]Transaction, error)
+		GetTransactions(queryParam *walletclient.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
 		CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata *models.Metadata) (DraftTransaction, error)
@@ -75,7 +75,7 @@ type (
 		AcceptContact(ctx context.Context, paymail string) walletclient.ResponseError
 		RejectContact(ctx context.Context, paymail string) walletclient.ResponseError
 		ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) walletclient.ResponseError
-		GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) ([]*models.Contact, walletclient.ResponseError)
+		GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError)
 		GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error)
 	}
 
