@@ -65,7 +65,7 @@ func (c *AdminWalletClient) RegisterPaymail(alias, xpub string) (string, error) 
 
 // GetSharedConfig returns shared config from SPV Wallet.
 func (c *AdminWalletClient) GetSharedConfig() (*models.SharedConfig, error) {
-	sharedConfig, err := c.client.AdminGetSharedConfig(context.Background())
+	sharedConfig, err := c.client.GetSharedConfig(context.Background())
 	if err != nil {
 		c.log.Error().Msgf("Error while getting shared config: %v", err.Error())
 		return nil, err
