@@ -260,16 +260,6 @@ func (c *Client) GenerateTotpForContact(contact *models.Contact, period, digits 
 	return c.client.GenerateTotpForContact(contact, period, digits)
 }
 
-// GetSharedConfig returns shared config from SPV Wallet.
-func (c *Client) GetSharedConfig() (*models.SharedConfig, error) {
-	sharedConfig, err := c.client.GetSharedConfig(context.Background())
-	if err != nil {
-		c.log.Error().Msgf("Error while getting shared config: %v", err.Error())
-		return nil, err
-	}
-	return sharedConfig, nil
-}
-
 func getAbsoluteValue(value int64) uint64 {
 	return uint64(math.Abs(float64(value)))
 }
