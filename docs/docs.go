@@ -383,6 +383,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "filter.QueryParams": {
+            "type": "object",
+            "properties": {
+                "order_by_field": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "sort_direction": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_bitcoin-sv_spv-wallet-web-backend_domain_transactions.PaginatedTransactions": {
             "type": "object",
             "properties": {
@@ -565,13 +582,13 @@ const docTemplate = `{
         "transports_http_endpoints_api_config.PublicConfig": {
             "type": "object",
             "properties": {
-                "experimentalFeatures": {
+                "experimental_features": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "boolean"
                     }
                 },
-                "paymailDomain": {
+                "paymail_domain": {
                     "type": "string"
                 }
             }
@@ -598,7 +615,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/models.Metadata"
                 },
                 "params": {
-                    "$ref": "#/definitions/walletclient.QueryParams"
+                    "$ref": "#/definitions/filter.QueryParams"
                 }
             }
         },
@@ -609,7 +626,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "metadata": {
-                    "$ref": "#/definitions/models.Metadata"
+                    "type": "object",
+                    "additionalProperties": {}
                 }
             }
         },
@@ -707,23 +725,6 @@ const docTemplate = `{
                 },
                 "userId": {
                     "type": "integer"
-                }
-            }
-        },
-        "walletclient.QueryParams": {
-            "type": "object",
-            "properties": {
-                "order_by_field": {
-                    "type": "string"
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "page_size": {
-                    "type": "integer"
-                },
-                "sort_direction": {
-                    "type": "string"
                 }
             }
         }

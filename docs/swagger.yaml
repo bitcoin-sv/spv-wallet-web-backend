@@ -1,4 +1,15 @@
 definitions:
+  filter.QueryParams:
+    properties:
+      order_by_field:
+        type: string
+      page:
+        type: integer
+      page_size:
+        type: integer
+      sort_direction:
+        type: string
+    type: object
   github_com_bitcoin-sv_spv-wallet-web-backend_domain_transactions.PaginatedTransactions:
     properties:
       count:
@@ -127,11 +138,11 @@ definitions:
     type: object
   transports_http_endpoints_api_config.PublicConfig:
     properties:
-      experimentalFeatures:
+      experimental_features:
         additionalProperties:
           type: boolean
         type: object
-      paymailDomain:
+      paymail_domain:
         type: string
     type: object
   transports_http_endpoints_api_contacts.ConfirmContact:
@@ -149,14 +160,15 @@ definitions:
       metadata:
         $ref: '#/definitions/models.Metadata'
       params:
-        $ref: '#/definitions/walletclient.QueryParams'
+        $ref: '#/definitions/filter.QueryParams'
     type: object
   transports_http_endpoints_api_contacts.UpsertContact:
     properties:
       fullName:
         type: string
       metadata:
-        $ref: '#/definitions/models.Metadata'
+        additionalProperties: {}
+        type: object
     type: object
   transports_http_endpoints_api_transactions.CreateTransaction:
     properties:
@@ -220,17 +232,6 @@ definitions:
         type: string
       userId:
         type: integer
-    type: object
-  walletclient.QueryParams:
-    properties:
-      order_by_field:
-        type: string
-      page:
-        type: integer
-      page_size:
-        type: integer
-      sort_direction:
-        type: string
     type: object
 info:
   contact: {}
