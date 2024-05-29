@@ -8,6 +8,7 @@ import (
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/bitcoin-sv/spv-wallet/models/filter"
 	"github.com/rs/zerolog"
 )
 
@@ -19,7 +20,7 @@ type Client struct {
 
 // CreateAccessKey creates new access key for user.
 func (c *Client) CreateAccessKey() (users.AccKey, error) {
-	accessKey, err := c.client.CreateAccessKey(context.Background(), &models.Metadata{})
+	accessKey, err := c.client.CreateAccessKey(context.Background(), nil)
 	if err != nil {
 		c.log.Error().Msgf("Error while creating new accessKey: %v", err.Error())
 		return nil, err
@@ -88,7 +89,7 @@ func (c *Client) GetXPub() (users.PubKey, error) {
 // SendToRecipients sends satoshis to recipients.
 func (c *Client) SendToRecipients(recipients []*walletclient.Recipients, senderPaymail string) (users.Transaction, error) {
 	// Create matadata with sender and receiver paymails.
-	metadata := &models.Metadata{
+	metadata := map[string]any{
 		"receiver": recipients[0].To,
 		"sender":   senderPaymail,
 	}
@@ -111,7 +112,7 @@ func (c *Client) SendToRecipients(recipients []*walletclient.Recipients, senderP
 }
 
 // CreateAndFinalizeTransaction creates draft transaction and finalizes it.
-func (c *Client) CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata *models.Metadata) (users.DraftTransaction, error) {
+func (c *Client) CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata map[string]any) (users.DraftTransaction, error) {
 	// Create draft transaction.
 	draftTx, err := c.client.DraftToRecipients(context.Background(), recipients, metadata)
 	if err != nil {
@@ -135,7 +136,7 @@ func (c *Client) CreateAndFinalizeTransaction(recipients []*walletclient.Recipie
 }
 
 // RecordTransaction records transaction in SPV Wallet.
-func (c *Client) RecordTransaction(hex, draftTxId string, metadata *models.Metadata) (*models.Transaction, error) {
+func (c *Client) RecordTransaction(hex, draftTxId string, metadata map[string]any) (*models.Transaction, error) {
 	tx, err := c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata)
 	if err != nil {
 		c.log.Error().Str("draftTxID", draftTxId).Msgf("Error while recording tx: %v", err.Error())
@@ -145,9 +146,7 @@ func (c *Client) RecordTransaction(hex, draftTxId string, metadata *models.Metad
 }
 
 // GetTransactions returns all transactions.
-func (c *Client) GetTransactions(queryParam *walletclient.QueryParams, userPaymail string) ([]users.Transaction, error) {
-	conditions := make(map[string]interface{})
-
+func (c *Client) GetTransactions(queryParam *filter.QueryParams, userPaymail string) ([]users.Transaction, error) {
 	if queryParam.OrderByField == "" {
 		queryParam.OrderByField = "created_at"
 	}
@@ -156,7 +155,7 @@ func (c *Client) GetTransactions(queryParam *walletclient.QueryParams, userPayma
 		queryParam.SortDirection = "desc"
 	}
 
-	transactions, err := c.client.GetTransactions(context.Background(), conditions, &models.Metadata{}, queryParam)
+	transactions, err := c.client.GetTransactions(context.Background(), nil, nil, queryParam)
 	if err != nil {
 		c.log.Error().
 			Str("userPaymail", userPaymail).
@@ -220,9 +219,7 @@ func (c *Client) GetTransaction(transactionId, userPaymail string) (users.FullTr
 
 // GetTransactionsCount returns number of transactions.
 func (c *Client) GetTransactionsCount() (int64, error) {
-	conditions := make(map[string]interface{})
-
-	count, err := c.client.GetTransactionsCount(context.Background(), conditions, &models.Metadata{})
+	count, err := c.client.GetTransactionsCount(context.Background(), nil, nil)
 	if err != nil {
 		c.log.Error().Msgf("Error while getting transactions count: %v", err.Error())
 		return 0, err
@@ -231,7 +228,7 @@ func (c *Client) GetTransactionsCount() (int64, error) {
 }
 
 // UpsertContact creates or updates contact.
-func (c *Client) UpsertContact(ctx context.Context, paymail, fullName string, metadata *models.Metadata) (*models.Contact, walletclient.ResponseError) {
+func (c *Client) UpsertContact(ctx context.Context, paymail, fullName string, metadata map[string]any) (*models.Contact, walletclient.ResponseError) {
 	return c.client.UpsertContact(ctx, paymail, fullName, metadata)
 }
 
@@ -251,7 +248,7 @@ func (c *Client) ConfirmContact(ctx context.Context, contact *models.Contact, pa
 }
 
 // GetContacts returns all contacts.
-func (c *Client) GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError) {
+func (c *Client) GetContacts(ctx context.Context, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError) {
 	return c.client.GetContacts(ctx, conditions, metadata, queryParams)
 }
 

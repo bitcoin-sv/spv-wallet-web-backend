@@ -4,8 +4,8 @@ go 1.21.5
 
 require (
 	github.com/avast/retry-go/v4 v4.5.1
-	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.5
-	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.6
+	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.5.0.20240529121306-e8f4cec68ee3
+	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.8.0.20240529120818-fa309499c246
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/centrifugal/centrifuge v0.31.0
 	github.com/gin-contrib/sessions v0.0.5
@@ -107,3 +107,7 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/bitcoin-sv/spv-wallet-go-client => E:\Data\Source\4chain\go-buxclient
+
+replace github.com/bitcoin-sv/spv-wallet/models => E:\Data\Source\4chain\spv-wallet\models

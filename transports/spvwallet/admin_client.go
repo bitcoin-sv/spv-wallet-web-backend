@@ -29,9 +29,7 @@ func (c *AdminWalletClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, erro
 	}
 
 	// Register new xpub in SPV Wallet.
-	err = c.client.AdminNewXpub(
-		context.Background(), xpub.String(), &models.Metadata{},
-	)
+	err = c.client.AdminNewXpub(context.Background(), xpub.String(), nil)
 
 	if err != nil {
 		c.log.Error().

@@ -9,6 +9,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/bitcoin-sv/spv-wallet/models/filter"
 	"github.com/rs/zerolog"
 )
 
@@ -43,7 +44,7 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		},
 	}
 
-	metadata := &models.Metadata{
+	metadata := map[string]any{
 		"receiver": recipient,
 		"sender":   userPaymail,
 	}
@@ -82,7 +83,7 @@ func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (
 }
 
 // GetTransactions returns transactions by access key.
-func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam *walletclient.QueryParams) (*PaginatedTransactions, error) {
+func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam *filter.QueryParams) (*PaginatedTransactions, error) {
 	// Try to generate user-client with decrypted xpriv.
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
@@ -111,7 +112,7 @@ func (s *TransactionService) GetTransactions(accessKey, userPaymail string, quer
 	return pTransactions, nil
 }
 
-func tryRecordTransaction(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, metadata *models.Metadata, log *zerolog.Logger) (*models.Transaction, error) {
+func tryRecordTransaction(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, metadata map[string]any, log *zerolog.Logger) (*models.Transaction, error) {
 	retries := uint(3)
 	tx, recordErr := tryRecord(userWalletClient, draftTx, metadata, log, retries)
 
@@ -128,7 +129,7 @@ func tryRecordTransaction(userWalletClient users.UserWalletClient, draftTx users
 	return tx, nil
 }
 
-func tryRecord(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, metadata *models.Metadata, log *zerolog.Logger, retries uint) (*models.Transaction, error) {
+func tryRecord(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, metadata map[string]any, log *zerolog.Logger, retries uint) (*models.Transaction, error) {
 	log.Debug().
 		Str("draftTxId", draftTx.GetDraftTransactionId()).
 		Msg("record transaction")

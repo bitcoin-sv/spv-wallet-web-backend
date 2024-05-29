@@ -6,6 +6,7 @@ import (
 
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/bitcoin-sv/spv-wallet/models/filter"
 	"github.com/libsv/go-bk/bip32"
 )
 
@@ -65,17 +66,17 @@ type (
 		GetXPub() (PubKey, error)
 		// Transaction methods
 		SendToRecipients(recipients []*walletclient.Recipients, senderPaymail string) (Transaction, error)
-		GetTransactions(queryParam *walletclient.QueryParams, userPaymail string) ([]Transaction, error)
+		GetTransactions(queryParam *filter.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
-		CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata *models.Metadata) (DraftTransaction, error)
-		RecordTransaction(hex, draftTxId string, metadata *models.Metadata) (*models.Transaction, error)
+		CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata map[string]any) (DraftTransaction, error)
+		RecordTransaction(hex, draftTxId string, metadata map[string]any) (*models.Transaction, error)
 		// Contacts methods
-		UpsertContact(ctx context.Context, paymail, fullName string, metadata *models.Metadata) (*models.Contact, walletclient.ResponseError)
+		UpsertContact(ctx context.Context, paymail, fullName string, metadata map[string]any) (*models.Contact, walletclient.ResponseError)
 		AcceptContact(ctx context.Context, paymail string) walletclient.ResponseError
 		RejectContact(ctx context.Context, paymail string) walletclient.ResponseError
 		ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) walletclient.ResponseError
-		GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError)
+		GetContacts(ctx context.Context, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError)
 		GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error)
 	}
 

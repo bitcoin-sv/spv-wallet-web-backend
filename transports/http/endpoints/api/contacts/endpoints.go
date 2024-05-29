@@ -8,6 +8,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/bitcoin-sv/spv-wallet/models/filter"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 )
@@ -46,7 +47,7 @@ func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
 //	@Router /api/v1/contacts/search [POST]
 //	@Param data body SearchContact true "Conditions for filtering contacts"
 func (h *handler) getContacts(c *gin.Context) {
-	var req SearchContact
+	var req filter.SearchContacts
 	err := c.Bind(&req)
 	if err != nil {
 		h.log.Error().Msgf("Invalid payload: %s", err)
@@ -55,7 +56,7 @@ func (h *handler) getContacts(c *gin.Context) {
 	}
 
 	// Get user contacts.
-	paginatedContacts, err := h.cService.GetContacts(c.Request.Context(), c.GetString(auth.SessionAccessKey), req.Conditions, &req.Metadata, req.QueryParams)
+	paginatedContacts, err := h.cService.GetContacts(c.Request.Context(), c.GetString(auth.SessionAccessKey), req.Conditions, req.Metadata, req.QueryParams)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while trying to get a list of contacts: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred while trying to get a list of contacts")
@@ -84,7 +85,7 @@ func (h *handler) upsertContact(c *gin.Context) {
 		return
 	}
 
-	_, err = h.cService.UpsertContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail, req.FullName, &req.Metadata)
+	_, err = h.cService.UpsertContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail, req.FullName, req.Metadata)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while upserting the contact: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred while upserting the contact.")
