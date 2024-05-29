@@ -107,7 +107,3 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/bitcoin-sv/spv-wallet-go-client => E:\Data\Source\4chain\go-buxclient
-
-replace github.com/bitcoin-sv/spv-wallet/models => E:\Data\Source\4chain\spv-wallet\models
