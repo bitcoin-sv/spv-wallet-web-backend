@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
@@ -13,6 +12,7 @@ import (
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
+	"github.com/bitcoin-sv/spv-wallet/models/filter"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 )
@@ -64,7 +64,7 @@ func (h *handler) getTransactions(c *gin.Context) {
 	}
 
 	if req.QueryParams == nil {
-		req.QueryParams = &walletclient.QueryParams{
+		req.QueryParams = &filter.QueryParams{
 			Page:     1,
 			PageSize: 10,
 		}

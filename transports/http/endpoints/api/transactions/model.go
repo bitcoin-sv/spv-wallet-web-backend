@@ -1,8 +1,8 @@
 package transactions
 
 import (
-	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/bitcoin-sv/spv-wallet/models/filter"
 )
 
 // CreateTransaction represents request for creating new transaction.
@@ -13,7 +13,7 @@ type CreateTransaction struct {
 }
 
 type SearchTransaction struct {
-	Conditions  map[string]interface{}    `json:"conditions,omitempty"`
-	Metadata    models.Metadata           `json:"metadata,omitempty"`
-	QueryParams *walletclient.QueryParams `json:"params,omitempty"`
+	Conditions  map[string]interface{} `json:"conditions,omitempty"`
+	Metadata    models.Metadata        `json:"metadata,omitempty"`
+	QueryParams *filter.QueryParams    `json:"params,omitempty"`
 }

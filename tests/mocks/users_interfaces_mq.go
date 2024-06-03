@@ -5,16 +5,16 @@
 package mock
 
 import (
-        "context"
-	reflect "reflect"
-	time "time"
+        context "context"
+        reflect "reflect"
+        time "time"
 
-	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
-	models "github.com/bitcoin-sv/spv-wallet/models"
-	gomock "github.com/golang/mock/gomock"
-	bip32 "github.com/libsv/go-bk/bip32"
-
-	users "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+        walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+        users "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+        models "github.com/bitcoin-sv/spv-wallet/models"
+        filter "github.com/bitcoin-sv/spv-wallet/models/filter"
+        gomock "github.com/golang/mock/gomock"
+        bip32 "github.com/libsv/go-bk/bip32"
 )
 
 // MockAccKey is a mock of AccKey interface.
@@ -563,7 +563,7 @@ func (mr *MockUserWalletClientMockRecorder) CreateAccessKey() *gomock.Call {
 }
 
 // CreateAndFinalizeTransaction mocks base method.
-func (m *MockUserWalletClient) CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata *models.Metadata) (users.DraftTransaction, error) {
+func (m *MockUserWalletClient) CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata map[string]any) (users.DraftTransaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateAndFinalizeTransaction", recipients, metadata)
         ret0, _ := ret[0].(users.DraftTransaction)
@@ -608,7 +608,7 @@ func (mr *MockUserWalletClientMockRecorder) GetAccessKey(accessKeyId interface{}
 }
 
 // GetContacts mocks base method.
-func (m *MockUserWalletClient) GetContacts(ctx context.Context, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError) {
+func (m *MockUserWalletClient) GetContacts(ctx context.Context, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetContacts", ctx, conditions, metadata, queryParams)
         ret0, _ := ret[0].(*models.SearchContactsResponse)
@@ -638,7 +638,7 @@ func (mr *MockUserWalletClientMockRecorder) GetTransaction(transactionId, userPa
 }
 
 // GetTransactions mocks base method.
-func (m *MockUserWalletClient) GetTransactions(queryParam *walletclient.QueryParams, userPaymail string) ([]users.Transaction, error) {
+func (m *MockUserWalletClient) GetTransactions(queryParam *filter.QueryParams, userPaymail string) ([]users.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetTransactions", queryParam, userPaymail)
         ret0, _ := ret[0].([]users.Transaction)
@@ -683,7 +683,7 @@ func (mr *MockUserWalletClientMockRecorder) GetXPub() *gomock.Call {
 }
 
 // RecordTransaction mocks base method.
-func (m *MockUserWalletClient) RecordTransaction(hex, draftTxId string, metadata *models.Metadata) (*models.Transaction, error) {
+func (m *MockUserWalletClient) RecordTransaction(hex, draftTxId string, metadata map[string]any) (*models.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "RecordTransaction", hex, draftTxId, metadata)
         ret0, _ := ret[0].(*models.Transaction)
@@ -742,7 +742,7 @@ func (mr *MockUserWalletClientMockRecorder) SendToRecipients(recipients, senderP
 }
 
 // UpsertContact mocks base method.
-func (m *MockUserWalletClient) UpsertContact(ctx context.Context, paymail, fullName string, metadata *models.Metadata) (*models.Contact, walletclient.ResponseError) {
+func (m *MockUserWalletClient) UpsertContact(ctx context.Context, paymail, fullName string, metadata map[string]any) (*models.Contact, walletclient.ResponseError) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "UpsertContact", ctx, paymail, fullName, metadata)
         ret0, _ := ret[0].(*models.Contact)

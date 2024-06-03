@@ -3,10 +3,10 @@ package contacts
 import (
 	"context"
 
-	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/bitcoin-sv/spv-wallet/models/filter"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 )
@@ -26,7 +26,7 @@ func NewContactsService(adminWalletClient users.AdminWalletClient, walletClientF
 	}
 }
 
-func (s *ContactsService) UpsertContact(ctx context.Context, accessKey, paymail, fullName string, metadata *models.Metadata) (*models.Contact, error) {
+func (s *ContactsService) UpsertContact(ctx context.Context, accessKey, paymail, fullName string, metadata map[string]any) (*models.Contact, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (s *ContactsService) ConfirmContact(ctx context.Context, xPriv string, cont
 	return userWalletClient.ConfirmContact(ctx, contact, passcode, requesterPaymail, getConfPeriod(), getConfDigits())
 }
 
-func (s *ContactsService) GetContacts(ctx context.Context, accessKey string, conditions map[string]interface{}, metadata *models.Metadata, queryParams *walletclient.QueryParams) (*models.SearchContactsResponse, error) {
+func (s *ContactsService) GetContacts(ctx context.Context, accessKey string, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
