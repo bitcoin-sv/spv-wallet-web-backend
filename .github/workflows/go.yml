@@ -22,7 +22,7 @@ jobs:
           go-version-file: go.mod
           cache: false
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v4
+        uses: golangci/golangci-lint-action@v6
         with:
           version: latest
           args: --config=./.golangci-lint.yml
@@ -36,7 +36,7 @@ jobs:
           go-version-file: go.mod
           cache: false
       - name: golangci-style-lint
-        uses: golangci/golangci-lint-action@v4
+        uses: golangci/golangci-lint-action@v6
         with:
           version: latest
           args: --config=./.golangci-style.yml
