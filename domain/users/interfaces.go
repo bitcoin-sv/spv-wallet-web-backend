@@ -72,7 +72,7 @@ type (
 		CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata map[string]any) (DraftTransaction, error)
 		RecordTransaction(hex, draftTxId string, metadata map[string]any) (*models.Transaction, error)
 		// Contacts methods
-		UpsertContact(ctx context.Context, paymail, fullName string, metadata map[string]any) (*models.Contact, walletclient.ResponseError)
+		UpsertContact(ctx context.Context, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, walletclient.ResponseError)
 		AcceptContact(ctx context.Context, paymail string) walletclient.ResponseError
 		RejectContact(ctx context.Context, paymail string) walletclient.ResponseError
 		ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) walletclient.ResponseError

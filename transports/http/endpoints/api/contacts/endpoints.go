@@ -85,7 +85,7 @@ func (h *handler) upsertContact(c *gin.Context) {
 		return
 	}
 
-	_, err = h.cService.UpsertContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail, req.FullName, req.Metadata)
+	_, err = h.cService.UpsertContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail, req.FullName, c.GetString(auth.SessionUserPaymail), req.Metadata)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while upserting the contact: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred while upserting the contact.")
