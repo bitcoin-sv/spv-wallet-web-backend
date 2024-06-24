@@ -742,18 +742,18 @@ func (mr *MockUserWalletClientMockRecorder) SendToRecipients(recipients, senderP
 }
 
 // UpsertContact mocks base method.
-func (m *MockUserWalletClient) UpsertContact(ctx context.Context, paymail, fullName string, metadata map[string]any) (*models.Contact, walletclient.ResponseError) {
+func (m *MockUserWalletClient) UpsertContact(ctx context.Context, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, walletclient.ResponseError) {
         m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "UpsertContact", ctx, paymail, fullName, metadata)
+        ret := m.ctrl.Call(m, "UpsertContact", ctx, paymail, fullName, requesterPaymail, metadata)
         ret0, _ := ret[0].(*models.Contact)
         ret1, _ := ret[1].(walletclient.ResponseError)
         return ret0, ret1
 }
 
 // UpsertContact indicates an expected call of UpsertContact.
-func (mr *MockUserWalletClientMockRecorder) UpsertContact(ctx, paymail, fullName, metadata interface{}) *gomock.Call {
+func (mr *MockUserWalletClientMockRecorder) UpsertContact(ctx, paymail, fullName, requesterPaymail, metadata interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertContact", reflect.TypeOf((*MockUserWalletClient)(nil).UpsertContact), ctx, paymail, fullName, metadata)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertContact", reflect.TypeOf((*MockUserWalletClient)(nil).UpsertContact), ctx, paymail, fullName, requesterPaymail, metadata)
 }
 
 // MockAdminWalletClient is a mock of AdminWalletClient interface.
