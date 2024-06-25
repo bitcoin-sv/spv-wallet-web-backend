@@ -26,13 +26,13 @@ func NewContactsService(adminWalletClient users.AdminWalletClient, walletClientF
 	}
 }
 
-func (s *ContactsService) UpsertContact(ctx context.Context, accessKey, paymail, fullName string, metadata map[string]any) (*models.Contact, error) {
+func (s *ContactsService) UpsertContact(ctx context.Context, accessKey, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
 	}
 
-	return userWalletClient.UpsertContact(ctx, paymail, fullName, metadata)
+	return userWalletClient.UpsertContact(ctx, paymail, fullName, requesterPaymail, metadata)
 }
 
 func (s *ContactsService) AcceptContact(ctx context.Context, accessKey, paymail string) error {

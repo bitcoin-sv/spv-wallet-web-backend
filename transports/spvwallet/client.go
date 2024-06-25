@@ -228,8 +228,8 @@ func (c *Client) GetTransactionsCount() (int64, error) {
 }
 
 // UpsertContact creates or updates contact.
-func (c *Client) UpsertContact(ctx context.Context, paymail, fullName string, metadata map[string]any) (*models.Contact, walletclient.ResponseError) {
-	return c.client.UpsertContact(ctx, paymail, fullName, metadata)
+func (c *Client) UpsertContact(ctx context.Context, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, walletclient.ResponseError) {
+	return c.client.UpsertContact(ctx, paymail, fullName, requesterPaymail, metadata)
 }
 
 // AcceptContact accepts contact.
