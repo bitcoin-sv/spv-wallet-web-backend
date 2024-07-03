@@ -118,20 +118,20 @@ func tryRecordTransaction(userWalletClient users.UserWalletClient, draftTx users
 
 	if recordErr != nil {
 		log.Error().
-			Str("draftTxId", draftTx.GetDraftTransactionId()).
+			Str("draftTxID", draftTx.GetDraftTransactionId()).
 			Msgf("record transaction failed: %s", recordErr.Error())
 		return nil, recordErr
 	}
 
 	log.Debug().
-		Str("draftTxId", draftTx.GetDraftTransactionId()).
+		Str("draftTxID", draftTx.GetDraftTransactionId()).
 		Msg("transaction successfully recorded")
 	return tx, nil
 }
 
 func tryRecord(userWalletClient users.UserWalletClient, draftTx users.DraftTransaction, metadata map[string]any, log *zerolog.Logger, retries uint) (*models.Transaction, error) {
 	log.Debug().
-		Str("draftTxId", draftTx.GetDraftTransactionId()).
+		Str("draftTxID", draftTx.GetDraftTransactionId()).
 		Msg("record transaction")
 
 	tx := &models.Transaction{}
@@ -145,7 +145,7 @@ func tryRecord(userWalletClient users.UserWalletClient, draftTx users.DraftTrans
 		retry.Delay(1*time.Second),
 		retry.OnRetry(func(n uint, err error) {
 			log.Warn().
-				Str("draftTxId", draftTx.GetDraftTransactionId()).
+				Str("draftTxID", draftTx.GetDraftTransactionId()).
 				Msgf("%d retry RecordTransaction after error: %v", n, err.Error())
 		}),
 	)
