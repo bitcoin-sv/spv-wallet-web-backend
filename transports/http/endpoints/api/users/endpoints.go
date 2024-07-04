@@ -18,7 +18,7 @@ type handler struct {
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, router.ApiEndpoints) {
+func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, router.APIEndpoints) {
 	h := &handler{
 		service: s.UsersService,
 		log:     log,
@@ -32,7 +32,7 @@ func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, 
 	})
 
 	// Register api endpoints which are athorized by session token.
-	apiEndpoints := router.ApiEndpointsFunc(func(router *gin.RouterGroup) {
+	apiEndpoints := router.APIEndpointsFunc(func(router *gin.RouterGroup) {
 		router.GET("/user", h.getUser)
 	})
 
@@ -68,6 +68,7 @@ func (h *handler) register(c *gin.Context) {
 
 	// Check if user with this email already exists or there is another error
 	if err != nil {
+		//nolint:errorlint // it's working as expected
 		switch err.(type) {
 		case *users.UserError:
 			c.JSON(http.StatusBadRequest, fmt.Sprintf("Error creating user: %v", err))
@@ -99,7 +100,7 @@ func (h *handler) register(c *gin.Context) {
 //	@Success 200 {object} UserResponse
 //	@Router /user [get]
 func (h *handler) getUser(c *gin.Context) {
-	user, err := h.service.GetUserById(c.GetInt(auth.SessionUserId))
+	user, err := h.service.GetUserByID(c.GetInt(auth.SessionUserID))
 	if err != nil {
 		h.log.Error().Msgf("User not found: %s", err)
 		c.JSON(http.StatusBadRequest, "An error occurred while getting user details")
@@ -114,7 +115,7 @@ func (h *handler) getUser(c *gin.Context) {
 	}
 
 	response := UserResponse{
-		UserId:  user.Id,
+		UserID:  user.ID,
 		Paymail: user.Paymail,
 		Email:   user.Email,
 		Balance: *currentBalance,

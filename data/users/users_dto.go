@@ -8,7 +8,7 @@ import (
 
 // UserDto is a struct that represent user database record.
 type UserDto struct {
-	Id        int       `db:"id"`
+	ID        int       `db:"id"`
 	Email     string    `db:"email"`
 	Xpriv     string    `db:"xpriv"`
 	Paymail   string    `db:"paymail"`
@@ -18,7 +18,7 @@ type UserDto struct {
 // toUser converts UserDto to User.
 func (user *UserDto) toUser() *users.User {
 	return &users.User{
-		Id:        user.Id,
+		ID:        user.ID,
 		Email:     user.Email,
 		Xpriv:     user.Xpriv,
 		Paymail:   user.Paymail,

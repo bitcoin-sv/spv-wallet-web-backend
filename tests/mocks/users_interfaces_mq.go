@@ -55,9 +55,9 @@ func (mr *MockAccKeyMockRecorder) GetAccessKey() *gomock.Call {
 }
 
 // GetAccessKeyId mocks base method.
-func (m *MockAccKey) GetAccessKeyId() string {
+func (m *MockAccKey) GetAccessKeyID() string {
         m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "GetAccessKeyId")
+        ret := m.ctrl.Call(m, "GetAccessKeyID")
         ret0, _ := ret[0].(string)
         return ret0
 }
@@ -65,7 +65,7 @@ func (m *MockAccKey) GetAccessKeyId() string {
 // GetAccessKeyId indicates an expected call of GetAccessKeyId.
 func (mr *MockAccKeyMockRecorder) GetAccessKeyId() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccessKeyId", reflect.TypeOf((*MockAccKey)(nil).GetAccessKeyId))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccessKeyID", reflect.TypeOf((*MockAccKey)(nil).GetAccessKeyID))
 }
 
 // MockPubKey is a mock of PubKey interface.
@@ -106,9 +106,9 @@ func (mr *MockPubKeyMockRecorder) GetCurrentBalance() *gomock.Call {
 }
 
 // GetId mocks base method.
-func (m *MockPubKey) GetId() string {
+func (m *MockPubKey) GetID() string {
         m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "GetId")
+        ret := m.ctrl.Call(m, "GetID")
         ret0, _ := ret[0].(string)
         return ret0
 }
@@ -116,7 +116,7 @@ func (m *MockPubKey) GetId() string {
 // GetId indicates an expected call of GetId.
 func (mr *MockPubKeyMockRecorder) GetId() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetId", reflect.TypeOf((*MockPubKey)(nil).GetId))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetID", reflect.TypeOf((*MockPubKey)(nil).GetID))
 }
 
 // MockTransaction is a mock of Transaction interface.
@@ -185,9 +185,9 @@ func (mr *MockTransactionMockRecorder) GetTransactionFee() *gomock.Call {
 }
 
 // GetTransactionId mocks base method.
-func (m *MockTransaction) GetTransactionId() string {
+func (m *MockTransaction) GetTransactionID() string {
         m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "GetTransactionId")
+        ret := m.ctrl.Call(m, "GetTransactionID")
         ret0, _ := ret[0].(string)
         return ret0
 }
@@ -195,7 +195,7 @@ func (m *MockTransaction) GetTransactionId() string {
 // GetTransactionId indicates an expected call of GetTransactionId.
 func (mr *MockTransactionMockRecorder) GetTransactionId() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionId", reflect.TypeOf((*MockTransaction)(nil).GetTransactionId))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionID", reflect.TypeOf((*MockTransaction)(nil).GetTransactionID))
 }
 
 // GetTransactionReceiver mocks base method.
@@ -348,9 +348,9 @@ func (mr *MockFullTransactionMockRecorder) GetTransactionFee() *gomock.Call {
 }
 
 // GetTransactionId mocks base method.
-func (m *MockFullTransaction) GetTransactionId() string {
+func (m *MockFullTransaction) GetTransactionID() string {
         m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "GetTransactionId")
+        ret := m.ctrl.Call(m, "GetTransactionID")
         ret0, _ := ret[0].(string)
         return ret0
 }
@@ -358,7 +358,7 @@ func (m *MockFullTransaction) GetTransactionId() string {
 // GetTransactionId indicates an expected call of GetTransactionId.
 func (mr *MockFullTransactionMockRecorder) GetTransactionId() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionId", reflect.TypeOf((*MockFullTransaction)(nil).GetTransactionId))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionID", reflect.TypeOf((*MockFullTransaction)(nil).GetTransactionID))
 }
 
 // GetTransactionNumberOfInputs mocks base method.
@@ -483,9 +483,9 @@ func (mr *MockDraftTransactionMockRecorder) GetDraftTransactionHex() *gomock.Cal
 }
 
 // GetDraftTransactionId mocks base method.
-func (m *MockDraftTransaction) GetDraftTransactionId() string {
+func (m *MockDraftTransaction) GetDraftTransactionID() string {
         m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "GetDraftTransactionId")
+        ret := m.ctrl.Call(m, "GetDraftTransactionID")
         ret0, _ := ret[0].(string)
         return ret0
 }
@@ -493,7 +493,7 @@ func (m *MockDraftTransaction) GetDraftTransactionId() string {
 // GetDraftTransactionId indicates an expected call of GetDraftTransactionId.
 func (mr *MockDraftTransactionMockRecorder) GetDraftTransactionId() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDraftTransactionId", reflect.TypeOf((*MockDraftTransaction)(nil).GetDraftTransactionId))
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDraftTransactionID", reflect.TypeOf((*MockDraftTransaction)(nil).GetDraftTransactionID))
 }
 
 // MockUserWalletClient is a mock of UserWalletClient interface.

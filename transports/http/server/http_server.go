@@ -18,27 +18,27 @@ import (
 // GinEngineOpt represents functions to configure server engine.
 type GinEngineOpt func(*gin.Engine)
 
-// HttpServer represents server http.
-type HttpServer struct {
+// HTTPServer represents server http.
+type HTTPServer struct {
 	httpServer *http.Server
 	handler    *gin.Engine
 	log        *zerolog.Logger
 }
 
-// NewHttpServer creates and returns HttpServer instance.
-func NewHttpServer(port int, log *zerolog.Logger) *HttpServer {
+// NewHTTPServer creates and returns HTTPServer instance.
+func NewHTTPServer(port int, log *zerolog.Logger) *HTTPServer {
 	httpLogger := log.With().Str("service", "http-server").Logger()
 
 	engine := gin.New()
 	engine.Use(gin.LoggerWithWriter(debugWriter(&httpLogger)), gin.Recovery())
-	engine.Use(cors.CorsMiddleware())
+	engine.Use(cors.Middleware())
 
-	return &HttpServer{
+	return &HTTPServer{
 		httpServer: &http.Server{
 			Addr:         ":" + fmt.Sprint(port),
 			Handler:      engine,
-			ReadTimeout:  time.Duration(viper.GetInt(config.EnvHttpServerReadTimeout)) * time.Second,
-			WriteTimeout: time.Duration(viper.GetInt(config.EnvHttpServerWriteTimeout)) * time.Second,
+			ReadTimeout:  time.Duration(viper.GetInt(config.EnvHTTPServerReadTimeout)) * time.Second,
+			WriteTimeout: time.Duration(viper.GetInt(config.EnvHTTPServerWriteTimeout)) * time.Second,
 		},
 		handler: engine,
 		log:     &httpLogger,
@@ -54,30 +54,30 @@ func debugWriter(logger *zerolog.Logger) io.Writer {
 }
 
 // ApplyConfiguration it's entrypoint to configure a gin engine used by a server.
-func (s *HttpServer) ApplyConfiguration(opts ...GinEngineOpt) {
+func (s *HTTPServer) ApplyConfiguration(opts ...GinEngineOpt) {
 	for _, opt := range opts {
 		opt(s.handler)
 	}
 }
 
 // Start is used to start http server.
-func (s *HttpServer) Start() error {
+func (s *HTTPServer) Start() error {
 	s.log.Info().Msgf("Starting server on address %s", s.httpServer.Addr)
 	return s.httpServer.ListenAndServe()
 }
 
 // ShutdownWithContext is used to stop http server using provided context.
-func (s *HttpServer) ShutdownWithContext(ctx context.Context) error {
+func (s *HTTPServer) ShutdownWithContext(ctx context.Context) error {
 	s.log.Info().Msg("HTTP Server Shutdown")
 	return s.httpServer.Shutdown(ctx)
 }
 
 // Shutdown is used to stop http server.
-func (s *HttpServer) Shutdown() error {
+func (s *HTTPServer) Shutdown() error {
 	return s.ShutdownWithContext(context.Background())
 }
 
 // Logger return http server logger.
-func (s *HttpServer) Logger() *zerolog.Logger {
+func (s *HTTPServer) Logger() *zerolog.Logger {
 	return s.log
 }

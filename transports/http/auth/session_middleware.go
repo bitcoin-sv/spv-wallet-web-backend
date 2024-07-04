@@ -14,28 +14,28 @@ import (
 
 // Session variables.
 const (
-	SessionAccessKeyId = "accessKeyId"
+	SessionAccessKeyID = "accessKeyId"
 	SessionAccessKey   = "accessKey"
-	SessionUserId      = "userId"
+	SessionUserID      = "userId"
 	SessionUserPaymail = "paymail"
 	SessionXPriv       = "xPriv"
 )
 
 // NewSessionMiddleware create Session middleware that is retrieving auth token from cookie.
-func NewSessionMiddleware(db *sql.DB, engine *gin.Engine) router.ApiMiddlewareFunc {
-	secret := viper.GetString(config.EnvHttpServerSessionSecret)
+func NewSessionMiddleware(db *sql.DB, engine *gin.Engine) router.APIMiddlewareFunc {
+	secret := viper.GetString(config.EnvHTTPServerSessionSecret)
 	store, err := postgres.NewStore(db, []byte(secret))
 	if err != nil {
 		panic(err)
 	}
 
 	// If we're running on localhost, we need to set domain to empty string.
-	domain := viper.GetString(config.EnvHttpServerCookieDomain)
+	domain := viper.GetString(config.EnvHTTPServerCookieDomain)
 	if domain == "localhost" {
 		domain = ""
 	}
 
-	secure := viper.GetBool(config.EnvHttpServerCookieSecure)
+	secure := viper.GetBool(config.EnvHTTPServerCookieSecure)
 
 	options := sessions.Options{
 		MaxAge:   1800,
@@ -49,5 +49,5 @@ func NewSessionMiddleware(db *sql.DB, engine *gin.Engine) router.ApiMiddlewareFu
 	store.Options(options)
 	engine.Use(sessions.Sessions("Authorization", store))
 
-	return router.ApiMiddlewareFunc(sessions.Sessions("Authorization", store))
+	return router.APIMiddlewareFunc(sessions.Sessions("Authorization", store))
 }

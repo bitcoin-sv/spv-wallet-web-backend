@@ -11,6 +11,7 @@ type UpsertContact struct {
 	Metadata map[string]any `json:"metadata"`
 }
 
+// SearchContact represents a request for searching contacts.
 type SearchContact struct {
 	Conditions  map[string]interface{} `json:"conditions,omitempty"`
 	Metadata    models.Metadata        `json:"metadata,omitempty"`

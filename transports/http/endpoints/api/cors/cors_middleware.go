@@ -8,12 +8,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-// CorsMiddleware is a middleware that handles CORS.
-func CorsMiddleware() gin.HandlerFunc {
+// Middleware is a middleware that handles CORS.
+func Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
 
-		for _, allowedOrigin := range viper.GetStringSlice(config.EnvHttpServerCorsAllowedDomains) {
+		for _, allowedOrigin := range viper.GetStringSlice(config.EnvHTTPServerCorsAllowedDomains) {
 			if allowedOrigin == origin {
 				c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 				c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")

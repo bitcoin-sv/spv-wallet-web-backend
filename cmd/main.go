@@ -19,9 +19,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const appname = "spv-wallet-web-backend"
-
-// nolint: godot
 // @title           SPV Wallet WEB Backend
 // @version			1.0
 // @description     This is an API for the spv-wallet-web-frontend.
@@ -29,7 +26,7 @@ func main() {
 	defaultLogger := logging.GetDefaultLogger()
 
 	// Load config.
-	config.NewViperConfig(appname).
+	config.NewViperConfig().
 		WithDb()
 
 	log, err := logging.CreateLogger()
@@ -60,7 +57,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	server := httpserver.NewHttpServer(viper.GetInt(config.EnvHttpServerPort), log)
+	server := httpserver.NewHTTPServer(viper.GetInt(config.EnvHTTPServerPort), log)
 	server.ApplyConfiguration(endpoints.SetupWalletRoutes(s, db, log, ws))
 	server.ApplyConfiguration(ws.SetupEntrypoint)
 
@@ -79,7 +76,7 @@ func main() {
 	}
 }
 
-func startServer(server *httpserver.HttpServer) {
+func startServer(server *httpserver.HTTPServer) {
 	if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Error().Msgf("cannot start server because of an error: %v", err)
 		os.Exit(1)

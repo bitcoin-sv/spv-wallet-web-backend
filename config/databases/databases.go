@@ -2,6 +2,7 @@ package databases
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
@@ -69,7 +70,7 @@ func runMigration(db *sql.DB) {
 	}
 
 	err = m.Up()
-	if err != nil && err != migrate.ErrNoChange {
+	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		panic(err)
 	}
 }

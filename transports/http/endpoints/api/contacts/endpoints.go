@@ -14,12 +14,12 @@ import (
 )
 
 type handler struct {
-	cService contacts.ContactsService
+	cService contacts.Service
 	log      *zerolog.Logger
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services, log *zerolog.Logger) router.ApiEndpoints {
+func NewHandler(s *domain.Services, log *zerolog.Logger) router.APIEndpoints {
 	return &handler{
 		cService: *s.ContactsService,
 		log:      log,
@@ -27,7 +27,7 @@ func NewHandler(s *domain.Services, log *zerolog.Logger) router.ApiEndpoints {
 }
 
 // RegisterApiEndpoints registers routes that are part of service API.
-func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
+func (h *handler) RegisterAPIEndpoints(router *gin.RouterGroup) {
 	user := router.Group("/contact")
 
 	user.PUT("/:paymail", h.upsertContact)

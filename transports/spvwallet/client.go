@@ -9,6 +9,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/bitcoin-sv/spv-wallet/models/filter"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 )
 
@@ -27,7 +28,7 @@ func (c *Client) CreateAccessKey() (users.AccKey, error) {
 	}
 
 	accessKeyData := AccessKey{
-		Id:  accessKey.ID,
+		ID:  accessKey.ID,
 		Key: accessKey.Key,
 	}
 
@@ -35,17 +36,17 @@ func (c *Client) CreateAccessKey() (users.AccKey, error) {
 }
 
 // GetAccessKey checks if access key is valid.
-func (c *Client) GetAccessKey(accessKeyId string) (users.AccKey, error) {
-	accessKey, err := c.client.GetAccessKey(context.Background(), accessKeyId)
+func (c *Client) GetAccessKey(accessKeyID string) (users.AccKey, error) {
+	accessKey, err := c.client.GetAccessKey(context.Background(), accessKeyID)
 	if err != nil {
 		c.log.Error().
-			Str("accessKeyID", accessKeyId).
+			Str("accessKeyID", accessKeyID).
 			Msgf("Error while getting accessKey: %v", err.Error())
 		return nil, err
 	}
 
 	accessKeyData := AccessKey{
-		Id:  accessKey.ID,
+		ID:  accessKey.ID,
 		Key: accessKey.Key,
 	}
 
@@ -53,17 +54,17 @@ func (c *Client) GetAccessKey(accessKeyId string) (users.AccKey, error) {
 }
 
 // RevokeAccessKey revokes access key.
-func (c *Client) RevokeAccessKey(accessKeyId string) (users.AccKey, error) {
-	accessKey, err := c.client.RevokeAccessKey(context.Background(), accessKeyId)
+func (c *Client) RevokeAccessKey(accessKeyID string) (users.AccKey, error) {
+	accessKey, err := c.client.RevokeAccessKey(context.Background(), accessKeyID)
 	if err != nil {
 		c.log.Error().
-			Str("accessKeyID", accessKeyId).
+			Str("accessKeyID", accessKeyID).
 			Msgf("Error while revoking accessKey: %v", err.Error())
 		return nil, err
 	}
 
 	accessKeyData := AccessKey{
-		Id:  accessKey.ID,
+		ID:  accessKey.ID,
 		Key: accessKey.Key,
 	}
 
@@ -79,7 +80,7 @@ func (c *Client) GetXPub() (users.PubKey, error) {
 	}
 
 	xPub := XPub{
-		Id:             xpub.ID,
+		ID:             xpub.ID,
 		CurrentBalance: xpub.CurrentBalance,
 	}
 
@@ -102,7 +103,7 @@ func (c *Client) SendToRecipients(recipients []*walletclient.Recipients, senderP
 	}
 
 	t := &Transaction{
-		Id:         transaction.ID,
+		ID:         transaction.ID,
 		Direction:  fmt.Sprint(transaction.TransactionDirection),
 		TotalValue: transaction.TotalValue,
 		Status:     transaction.Status,
@@ -128,7 +129,7 @@ func (c *Client) CreateAndFinalizeTransaction(recipients []*walletclient.Recipie
 	}
 
 	draftTransaction := DraftTransaction{
-		TxDraftId: draftTx.ID,
+		TxDraftID: draftTx.ID,
 		TxHex:     hex,
 	}
 
@@ -136,10 +137,10 @@ func (c *Client) CreateAndFinalizeTransaction(recipients []*walletclient.Recipie
 }
 
 // RecordTransaction records transaction in SPV Wallet.
-func (c *Client) RecordTransaction(hex, draftTxId string, metadata map[string]any) (*models.Transaction, error) {
-	tx, err := c.client.RecordTransaction(context.Background(), hex, draftTxId, metadata)
+func (c *Client) RecordTransaction(hex, draftTxID string, metadata map[string]any) (*models.Transaction, error) {
+	tx, err := c.client.RecordTransaction(context.Background(), hex, draftTxID, metadata)
 	if err != nil {
-		c.log.Error().Str("draftTxID", draftTxId).Msgf("Error while recording tx: %v", err.Error())
+		c.log.Error().Str("draftTxID", draftTxID).Msgf("Error while recording tx: %v", err.Error())
 		return nil, err
 	}
 	return tx, nil
@@ -171,7 +172,7 @@ func (c *Client) GetTransactions(queryParam *filter.QueryParams, userPaymail str
 			status = "confirmed"
 		}
 		transactionData := Transaction{
-			Id:         transaction.ID,
+			ID:         transaction.ID,
 			Direction:  fmt.Sprint(transaction.TransactionDirection),
 			TotalValue: getAbsoluteValue(transaction.OutputValue),
 			Fee:        transaction.Fee,
@@ -187,11 +188,11 @@ func (c *Client) GetTransactions(queryParam *filter.QueryParams, userPaymail str
 }
 
 // GetTransaction returns transaction by id.
-func (c *Client) GetTransaction(transactionId, userPaymail string) (users.FullTransaction, error) {
-	transaction, err := c.client.GetTransaction(context.Background(), transactionId)
+func (c *Client) GetTransaction(transactionID, userPaymail string) (users.FullTransaction, error) {
+	transaction, err := c.client.GetTransaction(context.Background(), transactionID)
 	if err != nil {
 		c.log.Error().
-			Str("transactionId", transactionId).
+			Str("transactionId", transactionID).
 			Str("userPaymail", userPaymail).
 			Msgf("Error while getting transaction: %v", err.Error())
 		return nil, err
@@ -200,7 +201,7 @@ func (c *Client) GetTransaction(transactionId, userPaymail string) (users.FullTr
 	sender, receiver := GetPaymailsFromMetadata(transaction, userPaymail)
 
 	transactionData := FullTransaction{
-		Id:              transaction.ID,
+		ID:              transaction.ID,
 		BlockHash:       transaction.BlockHash,
 		BlockHeight:     transaction.BlockHeight,
 		TotalValue:      getAbsoluteValue(transaction.OutputValue),
@@ -254,7 +255,8 @@ func (c *Client) GetContacts(ctx context.Context, conditions *filter.ContactFilt
 
 // GenerateTotpForContact generates TOTP for contact.
 func (c *Client) GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error) {
-	return c.client.GenerateTotpForContact(contact, period, digits)
+	totp, err := c.client.GenerateTotpForContact(contact, period, digits)
+	return totp, errors.Wrap(err, "error while generating TOTP for contact")
 }
 
 func getAbsoluteValue(value int64) uint64 {

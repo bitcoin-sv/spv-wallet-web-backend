@@ -14,8 +14,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-// RatesService is a service for fetching and caching BSV exchange rates.
-type RatesService struct {
+// Service is a service for fetching and caching BSV exchange rates.
+type Service struct {
 	exchangeRate *float64
 
 	mutex     sync.Mutex
@@ -27,8 +27,9 @@ type ExchangeRate struct {
 	Rate float64
 }
 
-func NewRatesService(log *zerolog.Logger) *RatesService {
-	s := &RatesService{
+// NewRatesService creates a new RatesService instance.
+func NewRatesService(log *zerolog.Logger) *Service {
+	s := &Service{
 		exchangeRate: nil,
 	}
 
@@ -41,7 +42,7 @@ func NewRatesService(log *zerolog.Logger) *RatesService {
 }
 
 // GetExchangeRate returns the current exchange rate.
-func (s *RatesService) GetExchangeRate() (*float64, error) {
+func (s *Service) GetExchangeRate() (*float64, error) {
 	err := s.loadExchangeRate()
 	if err != nil {
 		return nil, err
@@ -50,7 +51,7 @@ func (s *RatesService) GetExchangeRate() (*float64, error) {
 	return s.exchangeRate, nil
 }
 
-func (s *RatesService) loadExchangeRate() error {
+func (s *Service) loadExchangeRate() error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -69,9 +70,9 @@ func (s *RatesService) loadExchangeRate() error {
 	return nil
 }
 
-func (s *RatesService) fetchExchangeRate() (*float64, error) {
-	exchangeRateUrl := viper.GetString(config.EnvEndpointsExchangeRate)
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, exchangeRateUrl, nil)
+func (s *Service) fetchExchangeRate() (*float64, error) {
+	exchangeRateURL := viper.GetString(config.EnvEndpointsExchangeRate)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, exchangeRateURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error during creating exchange rate request: %w", err)
 	}
@@ -95,8 +96,8 @@ func (s *RatesService) fetchExchangeRate() (*float64, error) {
 	return &exchangeRate.Rate, nil
 }
 
-func (s *RatesService) useCachedValue() bool {
-	if s.exchangeRate != nil && time.Since(s.lastFetch) < viper.GetDuration(config.EnvCacheSettingsTtl) {
+func (s *Service) useCachedValue() bool {
+	if s.exchangeRate != nil && time.Since(s.lastFetch) < viper.GetDuration(config.EnvCacheSettingsTTL) {
 		return true
 	}
 	return false

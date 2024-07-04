@@ -14,58 +14,58 @@ import (
 // ErrorUnauthorized is thrown if authorization failed.
 var ErrorUnauthorized = errors.New("unauthorized")
 
-// AuthMiddleware middleware that is checking the variables set in session.
-type AuthMiddleware struct {
+// Middleware middleware that is checking the variables set in session.
+type Middleware struct {
 	adminWalletClient   users.AdminWalletClient
 	walletClientFactory users.WalletClientFactory
 	services            *domain.Services
 }
 
 // NewAuthMiddleware create middleware that is checking the variables in session.
-func NewAuthMiddleware(s *domain.Services) *AuthMiddleware {
+func NewAuthMiddleware(s *domain.Services) *Middleware {
 	adminWalletClient, err := s.WalletClientFactory.CreateAdminClient()
 	if err != nil {
 		panic(fmt.Errorf("error during creating adminWalletClient: %w", err))
 	}
-	return &AuthMiddleware{
+	return &Middleware{
 		adminWalletClient:   adminWalletClient,
 		walletClientFactory: s.WalletClientFactory,
 		services:            s,
 	}
 }
 
-// ApplyToApi is a middleware which checks if the validity of variables in session.
-func (h *AuthMiddleware) ApplyToApi(c *gin.Context) {
+// ApplyToAPI is a middleware which checks if the validity of variables in session.
+func (h *Middleware) ApplyToAPI(c *gin.Context) {
 	session := sessions.Default(c)
 
-	accessKeyId, accessKey, userId, paymail, xPriv, err := h.authorizeSession(session)
+	accessKeyID, accessKey, userID, paymail, xPriv, err := h.authorizeSession(session)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 		return
 	}
 
-	c.Set(SessionAccessKeyId, accessKeyId)
+	c.Set(SessionAccessKeyID, accessKeyID)
 	c.Set(SessionAccessKey, accessKey)
-	c.Set(SessionUserId, userId)
+	c.Set(SessionUserID, userID)
 	c.Set(SessionUserPaymail, paymail)
 	c.Set(SessionXPriv, xPriv)
 }
 
-func (h *AuthMiddleware) authorizeSession(s sessions.Session) (accessKeyId, accessKey, userId, paymail, xPriv interface{}, err error) {
-	accessKeyId = s.Get(SessionAccessKeyId)
+func (h *Middleware) authorizeSession(s sessions.Session) (accessKeyID, accessKey, userID, paymail, xPriv interface{}, err error) {
+	accessKeyID = s.Get(SessionAccessKeyID)
 	accessKey = s.Get(SessionAccessKey)
-	userId = s.Get(SessionUserId)
+	userID = s.Get(SessionUserID)
 	paymail = s.Get(SessionUserPaymail)
 	xPriv = s.Get(SessionXPriv)
 
-	if isNilOrEmpty(accessKeyId) ||
+	if isNilOrEmpty(accessKeyID) ||
 		isNilOrEmpty(accessKey) ||
-		userId == nil ||
+		userID == nil ||
 		paymail == nil {
 		return nil, nil, nil, nil, nil, ErrorUnauthorized
 	}
 
-	err = h.checkAccessKey(accessKey.(string), accessKeyId.(string))
+	err = h.checkAccessKey(accessKey.(string), accessKeyID.(string))
 	if err != nil {
 		return nil, nil, nil, nil, nil, fmt.Errorf("%w: %w", ErrorUnauthorized, err)
 	}
@@ -77,12 +77,12 @@ func isNilOrEmpty(s interface{}) bool {
 	return s == nil || s == ""
 }
 
-func (h *AuthMiddleware) checkAccessKey(accessKey, accessKeyId string) error {
+func (h *Middleware) checkAccessKey(accessKey, accessKeyID string) error {
 	userWalletClient, err := h.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return err
 	}
 
-	_, err = userWalletClient.GetAccessKey(accessKeyId)
+	_, err = userWalletClient.GetAccessKey(accessKeyID)
 	return err
 }

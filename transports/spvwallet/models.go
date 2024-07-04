@@ -4,19 +4,19 @@ import "time"
 
 // AccessKey is a struct that contains access key data.
 type AccessKey struct {
-	Id  string `json:"id"`
+	ID  string `json:"id"`
 	Key string `json:"key"`
 }
 
 // XPub is a struct that contains xpub data.
 type XPub struct {
-	Id             string `json:"id"`
+	ID             string `json:"id"`
 	CurrentBalance uint64 `json:"current_balance"`
 }
 
 // Transaction is a struct that contains transaction data.
 type Transaction struct {
-	Id         string    `json:"id"`
+	ID         string    `json:"id"`
 	Direction  string    `json:"direction"`
 	TotalValue uint64    `json:"totalValue"`
 	Fee        uint64    `json:"fee"`
@@ -28,7 +28,7 @@ type Transaction struct {
 
 // FullTransaction is a struct that contains extended transaction data.
 type FullTransaction struct {
-	Id              string    `json:"id"`
+	ID              string    `json:"id"`
 	BlockHash       string    `json:"blockHash"`
 	BlockHeight     uint64    `json:"blockHeight"`
 	TotalValue      uint64    `json:"totalValue"`
@@ -44,7 +44,7 @@ type FullTransaction struct {
 
 // DraftTransaction is a struct that contains draft transaction data.
 type DraftTransaction struct {
-	TxDraftId string `json:"txDraftId"`
+	TxDraftID string `json:"txDraftId"`
 	TxHex     string `json:"txHex"`
 }
 
@@ -53,14 +53,14 @@ func (a *AccessKey) GetAccessKey() string {
 	return a.Key
 }
 
-// GetAccessKeyId returns access key id.
-func (a *AccessKey) GetAccessKeyId() string {
-	return a.Id
+// GetAccessKeyID returns access key id.
+func (a *AccessKey) GetAccessKeyID() string {
+	return a.ID
 }
 
-// GetId returns xpub id.
-func (x *XPub) GetId() string {
-	return x.Id
+// GetID returns xpub id.
+func (x *XPub) GetID() string {
+	return x.ID
 }
 
 // GetCurrentBalance returns current balance.
@@ -68,9 +68,9 @@ func (x *XPub) GetCurrentBalance() uint64 {
 	return x.CurrentBalance
 }
 
-// GetTransactionId returns transaction id.
-func (t *Transaction) GetTransactionId() string {
-	return t.Id
+// GetTransactionID returns transaction id.
+func (t *Transaction) GetTransactionID() string {
+	return t.ID
 }
 
 // GetTransactionDirection returns transaction direction.
@@ -108,9 +108,9 @@ func (t *Transaction) GetTransactionReceiver() string {
 	return t.Receiver
 }
 
-// GetTransactionId returns transaction id.
-func (t *FullTransaction) GetTransactionId() string {
-	return t.Id
+// GetTransactionID returns transaction id.
+func (t *FullTransaction) GetTransactionID() string {
+	return t.ID
 }
 
 // GetTransactionBlockHash returns transaction block hash.
@@ -168,9 +168,9 @@ func (t *FullTransaction) GetTransactionReceiver() string {
 	return t.Receiver
 }
 
-// GetDraftTransactionId returns draft transaction id.
-func (t *DraftTransaction) GetDraftTransactionId() string {
-	return t.TxDraftId
+// GetDraftTransactionID returns draft transaction id.
+func (t *DraftTransaction) GetDraftTransactionID() string {
+	return t.TxDraftID
 }
 
 // GetDraftTransactionHex returns draft transaction hex.

@@ -16,5 +16,8 @@ dist/
 ## Private taskfile
 Taskfile.yml
 
+## start.sh
+.local/
+
 ##Macos
 .DS_Store

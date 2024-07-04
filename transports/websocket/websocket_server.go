@@ -22,7 +22,7 @@ type Server interface {
 	Shutdown() error
 	SetupEntrypoint(*gin.Engine)
 	GetNode() *centrifuge.Node
-	GetSocket(userId string) *Socket
+	GetSocket(userID string) *Socket
 	GetSockets() map[string]*Socket
 }
 
@@ -85,7 +85,7 @@ func (s *server) SetupEntrypoint(engine *gin.Engine) {
 	r := engine.Group("/api/websocket", apiMiddlewares...)
 
 	config := centrifuge.WebsocketConfig{
-		CheckOrigin: func(r *http.Request) bool { return true },
+		CheckOrigin: func(_ *http.Request) bool { return true },
 	}
 
 	r.Use(auth.GinContextToContextMiddleware())
@@ -106,7 +106,7 @@ type connectData struct {
 }
 
 func (s *server) setupNode() {
-	s.node.OnConnecting(func(ctx context.Context, event centrifuge.ConnectEvent) (centrifuge.ConnectReply, error) {
+	s.node.OnConnecting(func(ctx context.Context, _ centrifuge.ConnectEvent) (centrifuge.ConnectReply, error) {
 		cred, ok := centrifuge.GetCredentials(ctx)
 		if !ok {
 			return centrifuge.ConnectReply{}, centrifuge.DisconnectServerError
@@ -125,13 +125,13 @@ func (s *server) setupNode() {
 			Log:    s.log,
 		}
 
-		client.OnRefresh(func(e centrifuge.RefreshEvent, cb centrifuge.RefreshCallback) {
+		client.OnRefresh(func(_ centrifuge.RefreshEvent, cb centrifuge.RefreshCallback) {
 			cb(centrifuge.RefreshReply{
 				ExpireAt: time.Now().Unix() + 10,
 			}, nil)
 		})
 
-		client.OnSubscribe(func(e centrifuge.SubscribeEvent, cb centrifuge.SubscribeCallback) {
+		client.OnSubscribe(func(_ centrifuge.SubscribeEvent, cb centrifuge.SubscribeCallback) {
 			cb(centrifuge.SubscribeReply{
 				Options: centrifuge.SubscribeOptions{
 					EmitPresence: true,
@@ -139,7 +139,7 @@ func (s *server) setupNode() {
 			}, nil)
 		})
 
-		client.OnDisconnect(func(e centrifuge.DisconnectEvent) {
+		client.OnDisconnect(func(_ centrifuge.DisconnectEvent) {
 			delete(s.sockets, client.ID())
 		})
 	})
@@ -150,8 +150,8 @@ func (s *server) GetNode() *centrifuge.Node {
 	return s.node
 }
 
-func (s *server) GetSocket(userId string) *Socket {
-	userSocket := s.sockets[userId]
+func (s *server) GetSocket(userID string) *Socket {
+	userSocket := s.sockets[userID]
 	if userSocket == nil {
 		userSocket = &Socket{Log: s.log}
 	}

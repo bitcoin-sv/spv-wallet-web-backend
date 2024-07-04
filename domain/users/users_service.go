@@ -62,15 +62,15 @@ var ErrUserAlreadyExists = &UserError{"user already exists"}
 
 // UserService represents User service and provide access to repository.
 type UserService struct {
-	repo                UsersRepository
-	ratesService        *rates.RatesService
+	repo                Repository
+	ratesService        *rates.Service
 	adminWalletClient   AdminWalletClient
 	walletClientFactory WalletClientFactory
 	log                 *zerolog.Logger
 }
 
 // NewUserService creates UserService instance.
-func NewUserService(repo UsersRepository, adminWalletClient AdminWalletClient, walletClientFactory WalletClientFactory, rService *rates.RatesService, l *zerolog.Logger) *UserService {
+func NewUserService(repo Repository, adminWalletClient AdminWalletClient, walletClientFactory WalletClientFactory, rService *rates.Service, l *zerolog.Logger) *UserService {
 	userServiceLogger := l.With().Str("service", "user-service").Logger()
 	s := &UserService{
 		repo:                repo,
@@ -251,7 +251,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	signInUser := &AuthenticatedUser{
 		User: user,
 		AccessKey: AccessKey{
-			Id:  accessKey.GetAccessKeyId(),
+			ID:  accessKey.GetAccessKeyID(),
 			Key: accessKey.GetAccessKey(),
 		},
 		Balance: *balance,
@@ -262,9 +262,9 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 }
 
 // SignOutUser signs out user by revoking access key. (Not possible at the moment, method is just a mock.)
-func (s *UserService) SignOutUser(accessKeyId, accessKey string) error {
+func (s *UserService) SignOutUser(_, _ string) error {
 
-	/// Right now we cannot revoke access key without authentication with XPriv, which is impossible here.
+	// / Right now we cannot revoke access key without authentication with XPriv, which is impossible here.
 
 	// userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	// if err != nil {
@@ -279,12 +279,12 @@ func (s *UserService) SignOutUser(accessKeyId, accessKey string) error {
 	return nil
 }
 
-// GetUserById returns user by id.
-func (s *UserService) GetUserById(userId int) (*User, error) {
-	user, err := s.repo.GetUserById(context.Background(), userId)
+// GetUserByID returns user by id.
+func (s *UserService) GetUserByID(userID int) (*User, error) {
+	user, err := s.repo.GetUserByID(context.Background(), userID)
 	if err != nil {
 		s.log.Error().
-			Str("userID", strconv.Itoa(userId)).
+			Str("userID", strconv.Itoa(userID)).
 			Msgf("Error while getting user by id: %v", err.Error())
 		return nil, err
 	}
@@ -320,7 +320,7 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
 	if err != nil {
 		s.log.Error().
-			Str("xpubID", xpub.GetId()).
+			Str("xpubID", xpub.GetID()).
 			Msgf("Error while calculating balance: %v", err.Error())
 		return nil, err
 	}
@@ -329,11 +329,11 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 }
 
 // GetUserXpriv gets user by id and decrypt xpriv.
-func (s *UserService) GetUserXpriv(userId int, password string) (string, error) {
-	user, err := s.repo.GetUserById(context.Background(), userId)
+func (s *UserService) GetUserXpriv(userID int, password string) (string, error) {
+	user, err := s.repo.GetUserByID(context.Background(), userID)
 	if err != nil {
 		s.log.Error().
-			Str("userID", strconv.Itoa(userId)).
+			Str("userID", strconv.Itoa(userID)).
 			Msgf("Error while getting user by id: %v", err.Error())
 
 		return "", err
@@ -343,7 +343,7 @@ func (s *UserService) GetUserXpriv(userId int, password string) (string, error) 
 	decryptedXpriv, err := decryptXpriv(password, user.Xpriv)
 	if err != nil {
 		s.log.Error().
-			Str("userID", strconv.Itoa(userId)).
+			Str("userID", strconv.Itoa(userID)).
 			Msgf("Error while decrypting xPriv: %v", err.Error())
 		return "", err
 	}
@@ -352,7 +352,7 @@ func (s *UserService) GetUserXpriv(userId int, password string) (string, error) 
 }
 
 func (s *UserService) validateUser(email string) error {
-	//Validate email
+	// Validate email
 	if _, err := mail.ParseAddress(email); err != nil {
 		e := &UserError{"invalid email address"}
 		s.log.Error().

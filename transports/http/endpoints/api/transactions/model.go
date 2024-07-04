@@ -12,6 +12,7 @@ type CreateTransaction struct {
 	Satoshis  uint64 `json:"satoshis"`
 }
 
+// SearchTransaction represents request for searching transactions.
 type SearchTransaction struct {
 	Conditions  map[string]interface{} `json:"conditions,omitempty"`
 	Metadata    models.Metadata        `json:"metadata,omitempty"`

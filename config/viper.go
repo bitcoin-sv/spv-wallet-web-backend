@@ -8,10 +8,10 @@ import (
 )
 
 // NewViperConfig creates and returns new viper config.
-func NewViperConfig(appname string) *Config {
+func NewViperConfig() *Config {
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	setHttpServerDefaults()
+	setHTTPServerDefaults()
 	setSpvWalletDefaults()
 	setHashDefaults()
 	setLoggingDefaults()
@@ -44,21 +44,21 @@ func (c *Config) WithDb() *Config {
 	return c
 }
 
-// setHttpServerDefaults sets default values for http server.
-func setHttpServerDefaults() {
-	viper.SetDefault(EnvHttpServerReadTimeout, 40)
-	viper.SetDefault(EnvHttpServerWriteTimeout, 40)
-	viper.SetDefault(EnvHttpServerPort, 8180)
-	viper.SetDefault(EnvHttpServerCookieDomain, "localhost")
-	viper.SetDefault(EnvHttpServerCookieSecure, false)
-	viper.SetDefault(EnvHttpServerCorsAllowedDomains, []string{})
-	viper.SetDefault(EnvHttpServerSessionSecret, "secret")
+// setHTTPServerDefaults sets default values for http server.
+func setHTTPServerDefaults() {
+	viper.SetDefault(EnvHTTPServerReadTimeout, 40)
+	viper.SetDefault(EnvHTTPServerWriteTimeout, 40)
+	viper.SetDefault(EnvHTTPServerPort, 8180)
+	viper.SetDefault(EnvHTTPServerCookieDomain, "localhost")
+	viper.SetDefault(EnvHTTPServerCookieSecure, false)
+	viper.SetDefault(EnvHTTPServerCorsAllowedDomains, []string{})
+	viper.SetDefault(EnvHTTPServerSessionSecret, "secret")
 }
 
 // setSpvWalletDefaults sets default values for spv-wallet connection.
 func setSpvWalletDefaults() {
 	viper.SetDefault(EnvAdminXpriv, "xprv9s21ZrQH143K3CbJXirfrtpLvhT3Vgusdo8coBritQ3rcS7Jy7sxWhatuxG5h2y1Cqj8FKmPp69536gmjYRpfga2MJdsGyBsnB12E19CESK")
-	viper.SetDefault(EnvServerUrl, "http://localhost:3003/v1")
+	viper.SetDefault(EnvServerURL, "http://localhost:3003/v1")
 	viper.SetDefault(EnvPaymailDomain, "example.com")
 	viper.SetDefault(EnvPaymailAvatar, "http://localhost:3003/static/paymail/avatar.jpg")
 }
@@ -83,15 +83,15 @@ func setEndpointsDefaults() {
 // setWebhookDefaults sets default values for websocket.
 func setWebsocketDefaults() {
 	viper.SetDefault(EnvWebsocketHistoryMax, 300)
-	viper.SetDefault(EnvWebsocketHistoryTtl, 10)
+	viper.SetDefault(EnvWebsocketHistoryTTL, 10)
 }
 
 func setContactsDefaults() {
-	viper.SetDefault(EnvContactsPasscodePeriod, uint(3600)) //1h
+	viper.SetDefault(EnvContactsPasscodePeriod, uint(3600)) // 1h
 	viper.SetDefault(EnvContactsPasscodeDigits, uint(2))
 }
 
 // setCacheDefaults sets default values for cache.
 func setCacheDefaults() {
-	viper.SetDefault(EnvCacheSettingsTtl, 60*time.Second)
+	viper.SetDefault(EnvCacheSettingsTTL, 60*time.Second)
 }

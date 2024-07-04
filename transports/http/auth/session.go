@@ -9,9 +9,9 @@ import (
 // UpdateSession updates session with accessKeyId and userId.
 func UpdateSession(c *gin.Context, authUser *users.AuthenticatedUser) error {
 	session := sessions.Default(c)
-	session.Set(SessionAccessKeyId, authUser.AccessKey.Id)
+	session.Set(SessionAccessKeyID, authUser.AccessKey.ID)
 	session.Set(SessionAccessKey, authUser.AccessKey.Key)
-	session.Set(SessionUserId, authUser.User.Id)
+	session.Set(SessionUserID, authUser.User.ID)
 	session.Set(SessionUserPaymail, authUser.User.Paymail)
 	session.Set(SessionXPriv, authUser.Xpriv)
 	err := session.Save()

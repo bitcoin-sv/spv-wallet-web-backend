@@ -14,17 +14,17 @@ type (
 	// AccKey is an interface that defianes access key data and methods.
 	AccKey interface {
 		GetAccessKey() string
-		GetAccessKeyId() string
+		GetAccessKeyID() string
 	}
 	// PubKey is an interface that defines xpub key data and methods.
 	PubKey interface {
-		GetId() string
+		GetID() string
 		GetCurrentBalance() uint64
 	}
 
 	// Transaction is an interface that defines transaction data and methods.
 	Transaction interface {
-		GetTransactionId() string
+		GetTransactionID() string
 		GetTransactionDirection() string
 		GetTransactionTotalValue() uint64
 		GetTransactionFee() uint64
@@ -36,7 +36,7 @@ type (
 
 	// FullTransaction is an interface that defines extended transaction data and methods.
 	FullTransaction interface {
-		GetTransactionId() string
+		GetTransactionID() string
 		GetTransactionBlockHash() string
 		GetTransactionBlockHeight() uint64
 		GetTransactionTotalValue() uint64
@@ -53,24 +53,24 @@ type (
 	// DraftTransaction is an interface that defines draft transaction data and methods.
 	DraftTransaction interface {
 		GetDraftTransactionHex() string
-		GetDraftTransactionId() string
+		GetDraftTransactionID() string
 	}
 
 	// UserWalletClient defines methods which are available for a user with access key.
 	UserWalletClient interface {
 		// Access Key methods
 		CreateAccessKey() (AccKey, error)
-		GetAccessKey(accessKeyId string) (AccKey, error)
-		RevokeAccessKey(accessKeyId string) (AccKey, error)
+		GetAccessKey(accessKeyID string) (AccKey, error)
+		RevokeAccessKey(accessKeyID string) (AccKey, error)
 		// XPub Key methods
 		GetXPub() (PubKey, error)
 		// Transaction methods
 		SendToRecipients(recipients []*walletclient.Recipients, senderPaymail string) (Transaction, error)
 		GetTransactions(queryParam *filter.QueryParams, userPaymail string) ([]Transaction, error)
-		GetTransaction(transactionId, userPaymail string) (FullTransaction, error)
+		GetTransaction(transactionID, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
 		CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata map[string]any) (DraftTransaction, error)
-		RecordTransaction(hex, draftTxId string, metadata map[string]any) (*models.Transaction, error)
+		RecordTransaction(hex, draftTxID string, metadata map[string]any) (*models.Transaction, error)
 		// Contacts methods
 		UpsertContact(ctx context.Context, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, walletclient.ResponseError)
 		AcceptContact(ctx context.Context, paymail string) walletclient.ResponseError

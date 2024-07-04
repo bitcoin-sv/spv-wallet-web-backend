@@ -11,22 +11,25 @@ import (
 	"github.com/spf13/viper"
 )
 
-type ContactsService struct {
+// Service is the service that manages contacts
+type Service struct {
 	adminWalletClient   users.AdminWalletClient
 	walletClientFactory users.WalletClientFactory
 	log                 *zerolog.Logger
 }
 
-func NewContactsService(adminWalletClient users.AdminWalletClient, walletClientFactory users.WalletClientFactory, log *zerolog.Logger) *ContactsService {
+// NewContactsService creates a new instance of the contact.Service
+func NewContactsService(adminWalletClient users.AdminWalletClient, walletClientFactory users.WalletClientFactory, log *zerolog.Logger) *Service {
 	transactionServiceLogger := log.With().Str("service", "contacts-service").Logger()
-	return &ContactsService{
+	return &Service{
 		adminWalletClient:   adminWalletClient,
 		walletClientFactory: walletClientFactory,
 		log:                 &transactionServiceLogger,
 	}
 }
 
-func (s *ContactsService) UpsertContact(ctx context.Context, accessKey, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error) {
+// UpsertContact creates or updates a contact
+func (s *Service) UpsertContact(ctx context.Context, accessKey, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
@@ -35,7 +38,8 @@ func (s *ContactsService) UpsertContact(ctx context.Context, accessKey, paymail,
 	return userWalletClient.UpsertContact(ctx, paymail, fullName, requesterPaymail, metadata)
 }
 
-func (s *ContactsService) AcceptContact(ctx context.Context, accessKey, paymail string) error {
+// AcceptContact accepts a contact invitation
+func (s *Service) AcceptContact(ctx context.Context, accessKey, paymail string) error {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return err
@@ -44,7 +48,8 @@ func (s *ContactsService) AcceptContact(ctx context.Context, accessKey, paymail 
 	return userWalletClient.AcceptContact(ctx, paymail)
 }
 
-func (s *ContactsService) RejectContact(ctx context.Context, accessKey, paymail string) error {
+// RejectContact rejects a contact invitation
+func (s *Service) RejectContact(ctx context.Context, accessKey, paymail string) error {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return err
@@ -53,7 +58,8 @@ func (s *ContactsService) RejectContact(ctx context.Context, accessKey, paymail 
 	return userWalletClient.RejectContact(ctx, paymail)
 }
 
-func (s *ContactsService) ConfirmContact(ctx context.Context, xPriv string, contact *models.Contact, passcode, requesterPaymail string) error {
+// ConfirmContact confirms a contact
+func (s *Service) ConfirmContact(ctx context.Context, xPriv string, contact *models.Contact, passcode, requesterPaymail string) error {
 	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv)
 	if err != nil {
 		return err
@@ -62,7 +68,8 @@ func (s *ContactsService) ConfirmContact(ctx context.Context, xPriv string, cont
 	return userWalletClient.ConfirmContact(ctx, contact, passcode, requesterPaymail, getConfPeriod(), getConfDigits())
 }
 
-func (s *ContactsService) GetContacts(ctx context.Context, accessKey string, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, error) {
+// GetContacts retrieves contacts for the user
+func (s *Service) GetContacts(ctx context.Context, accessKey string, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
 		return nil, err
@@ -71,8 +78,9 @@ func (s *ContactsService) GetContacts(ctx context.Context, accessKey string, con
 	return userWalletClient.GetContacts(ctx, conditions, metadata, queryParams)
 }
 
-func (s *ContactsService) GenerateTotpForContact(ctx context.Context, xPriv string, contact *models.Contact) (string, error) {
-	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv) //xPriv instead of accessKey because it is necessary to calculate the shared secret
+// GenerateTotpForContact generates a TOTP for a contact
+func (s *Service) GenerateTotpForContact(_ context.Context, xPriv string, contact *models.Contact) (string, error) {
+	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv) // xPriv instead of accessKey because it is necessary to calculate the shared secret
 	if err != nil {
 		return "", err
 	}

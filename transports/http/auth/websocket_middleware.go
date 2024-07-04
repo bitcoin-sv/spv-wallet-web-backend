@@ -48,12 +48,12 @@ func WsAuthMiddleware(h http.Handler) http.Handler {
 			return
 		}
 		s := sessions.Default(gc)
-		userId := s.Get(SessionUserId)
-		if userId == "" {
+		userID := s.Get(SessionUserID)
+		if userID == "" {
 			return
 		}
 		newCtx := centrifuge.SetCredentials(ctx, &centrifuge.Credentials{
-			UserID: strconv.Itoa(userId.(int)),
+			UserID: strconv.Itoa(userID.(int)),
 		})
 		r = r.WithContext(newCtx)
 		h.ServeHTTP(w, r)

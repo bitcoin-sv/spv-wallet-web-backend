@@ -18,7 +18,7 @@ type handler struct {
 }
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, router.ApiEndpoints) {
+func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, router.APIEndpoints) {
 	h := &handler{
 		service: s.UsersService,
 		log:     log,
@@ -32,7 +32,7 @@ func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, 
 	})
 
 	// Register api endpoints which are authorized by session token.
-	apiEndpoints := router.ApiEndpointsFunc(func(router *gin.RouterGroup) {
+	apiEndpoints := router.APIEndpointsFunc(func(router *gin.RouterGroup) {
 		router.POST("/sign-out", h.signOut)
 	})
 
@@ -93,7 +93,7 @@ func (h *handler) signIn(c *gin.Context) {
 //	@Success 200
 //	@Router /api/v1/sign-out [post]
 func (h *handler) signOut(c *gin.Context) {
-	err := h.service.SignOutUser(c.GetString(auth.SessionAccessKeyId), c.GetString(auth.SessionAccessKey))
+	err := h.service.SignOutUser(c.GetString(auth.SessionAccessKeyID), c.GetString(auth.SessionAccessKey))
 	if err != nil {
 		h.log.Error().Msgf("Sign-out error: %s", err)
 		c.JSON(http.StatusInternalServerError, "An error occurred during the logout process.")

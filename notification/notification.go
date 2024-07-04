@@ -23,7 +23,7 @@ type TransactionEvent struct {
 
 // Transaction represents simplified transaction which is return in webhook.
 type Transaction struct {
-	Id         string    `json:"id"`
+	ID         string    `json:"id"`
 	Receiver   string    `json:"receiver"`
 	Sender     string    `json:"sender"`
 	Status     string    `json:"status"`
@@ -46,7 +46,7 @@ func PrepareTransactionEvent(tx *models.Transaction) TransactionEvent {
 			EventType: "create_transaction",
 		},
 		Transaction: &Transaction{
-			Id:         tx.ID,
+			ID:         tx.ID,
 			Receiver:   receiver,
 			Sender:     sender,
 			Status:     status,

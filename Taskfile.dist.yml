@@ -192,4 +192,4 @@ tasks:
     desc: "Update swagger definitions"
     run: once
     cmds:
-      - swag init -g ./cmd/main.go
+      - swag init -g ./cmd/main.go -pd true
