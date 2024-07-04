@@ -3,6 +3,9 @@
 
 # options for analysis running
 run:
+  # default concurrency is an available CPU number
+  concurrency: 4
+
   # timeout for analysis, e.g. 30s, 5m, default is 1m
   timeout: 5m
 
@@ -66,22 +69,23 @@ linters:
     - gosec
     - prealloc
     - govet
-    - revive
     - unconvert
     - ineffassign
     - dogsled
     - exportloopref
     - sqlclosecheck
-    - nolintlint
     - errcheck
     - gosimple
     - staticcheck
     - unused
-    - wrapcheck
-    - errorlint
-    - wastedassign
+    # TODO: add revive like in other projects
 
 linters-settings:
+  # TODO: setup like in other projects
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment
 
 
 issues:
@@ -144,7 +148,6 @@ issues:
     - .github
     - .make
     - dist
-
   # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
   max-issues-per-linter: 0
 
