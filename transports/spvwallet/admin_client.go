@@ -1,3 +1,5 @@
+// Package spvwallet contains spv-wallet client adapters
+//nolint:wrapcheck // error wrapped by service
 package spvwallet
 
 import (

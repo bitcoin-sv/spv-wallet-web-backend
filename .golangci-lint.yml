@@ -77,7 +77,7 @@ linters:
     - gosimple
     - staticcheck
     - unused
-    # - wrapcheck
+    - wrapcheck
     - errorlint
     - wastedassign
 

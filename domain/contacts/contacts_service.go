@@ -7,6 +7,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/bitcoin-sv/spv-wallet/models/filter"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 )
@@ -32,7 +33,7 @@ func NewContactsService(adminWalletClient users.AdminWalletClient, walletClientF
 func (s *Service) UpsertContact(ctx context.Context, accessKey, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "internal error")
 	}
 
 	return userWalletClient.UpsertContact(ctx, paymail, fullName, requesterPaymail, metadata)
@@ -42,7 +43,7 @@ func (s *Service) UpsertContact(ctx context.Context, accessKey, paymail, fullNam
 func (s *Service) AcceptContact(ctx context.Context, accessKey, paymail string) error {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "internal error")
 	}
 
 	return userWalletClient.AcceptContact(ctx, paymail)
@@ -52,7 +53,7 @@ func (s *Service) AcceptContact(ctx context.Context, accessKey, paymail string) 
 func (s *Service) RejectContact(ctx context.Context, accessKey, paymail string) error {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "internal error")
 	}
 
 	return userWalletClient.RejectContact(ctx, paymail)
@@ -62,7 +63,7 @@ func (s *Service) RejectContact(ctx context.Context, accessKey, paymail string) 
 func (s *Service) ConfirmContact(ctx context.Context, xPriv string, contact *models.Contact, passcode, requesterPaymail string) error {
 	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "internal error")
 	}
 
 	return userWalletClient.ConfirmContact(ctx, contact, passcode, requesterPaymail, getConfPeriod(), getConfDigits())
@@ -72,7 +73,7 @@ func (s *Service) ConfirmContact(ctx context.Context, xPriv string, contact *mod
 func (s *Service) GetContacts(ctx context.Context, accessKey string, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "internal error")
 	}
 
 	return userWalletClient.GetContacts(ctx, conditions, metadata, queryParams)
@@ -82,10 +83,11 @@ func (s *Service) GetContacts(ctx context.Context, accessKey string, conditions 
 func (s *Service) GenerateTotpForContact(_ context.Context, xPriv string, contact *models.Contact) (string, error) {
 	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv) // xPriv instead of accessKey because it is necessary to calculate the shared secret
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "internal error")
 	}
 
-	return userWalletClient.GenerateTotpForContact(contact, getConfPeriod(), getConfDigits())
+	totp, err := userWalletClient.GenerateTotpForContact(contact, getConfPeriod(), getConfDigits())
+	return totp, errors.Wrap(err, "spv wallet error")
 }
 
 func getConfPeriod() uint {

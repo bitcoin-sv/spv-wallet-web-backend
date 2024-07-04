@@ -63,13 +63,13 @@ func (s *HTTPServer) ApplyConfiguration(opts ...GinEngineOpt) {
 // Start is used to start http server.
 func (s *HTTPServer) Start() error {
 	s.log.Info().Msgf("Starting server on address %s", s.httpServer.Addr)
-	return s.httpServer.ListenAndServe()
+	return s.httpServer.ListenAndServe() //nolint:wrapcheck // no need for wrapping as we will stop everything on any error here.
 }
 
 // ShutdownWithContext is used to stop http server using provided context.
 func (s *HTTPServer) ShutdownWithContext(ctx context.Context) error {
 	s.log.Info().Msg("HTTP Server Shutdown")
-	return s.httpServer.Shutdown(ctx)
+	return s.httpServer.Shutdown(ctx) //nolint:wrapcheck // no need for wrapping as it is done at the shutting down flow.
 }
 
 // Shutdown is used to stop http server.

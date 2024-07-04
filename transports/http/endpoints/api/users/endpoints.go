@@ -7,6 +7,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -54,13 +55,13 @@ func (h *handler) register(c *gin.Context) {
 	// Check if request body is valid JSON
 	if err := c.Bind(&reqUser); err != nil {
 		h.log.Error().Msgf("Invalid payload: %s", err)
-		c.JSON(http.StatusBadRequest, "Invalid request.")
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Invalid request."))
 		return
 	}
 
 	// Check if sended passwords match
 	if reqUser.Password != reqUser.PasswordConfirmation {
-		c.JSON(http.StatusBadRequest, "Passwords do not match.")
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Passwords do not match."))
 		return
 	}
 
@@ -71,13 +72,13 @@ func (h *handler) register(c *gin.Context) {
 		//nolint:errorlint // it's working as expected
 		switch err.(type) {
 		case *users.UserError:
-			c.JSON(http.StatusBadRequest, fmt.Sprintf("Error creating user: %v", err))
+			c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString(fmt.Sprintf("Error creating user: %v", err)))
 		case *users.PaymailError:
-			c.JSON(http.StatusBadRequest, fmt.Sprintf("Error registering Paymail: %v", err))
+			c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString(fmt.Sprintf("Error registering Paymail: %v", err)))
 		case *users.XPubError:
-			c.JSON(http.StatusBadRequest, fmt.Sprintf("Error registering XPub: %v", err))
+			c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString(fmt.Sprintf("Error registering XPub: %v", err)))
 		default:
-			c.JSON(http.StatusInternalServerError, "Something went wrong when creating new user. Please try again later.")
+			c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("Something went wrong when creating new user. Please try again later."))
 		}
 		return
 	}

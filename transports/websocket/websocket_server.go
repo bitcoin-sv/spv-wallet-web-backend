@@ -13,6 +13,7 @@ import (
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/centrifugal/centrifuge"
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 )
 
@@ -94,11 +95,12 @@ func (s *server) SetupEntrypoint(engine *gin.Engine) {
 
 func newNode(l *zerolog.Logger) (*centrifuge.Node, error) {
 	lh := newLogHandler(l)
-	return centrifuge.New(centrifuge.Config{
+	node, err := centrifuge.New(centrifuge.Config{
 		Name:       "spv-wallet",
 		LogLevel:   lh.Level(),
 		LogHandler: lh.Log,
 	})
+	return node, errors.Wrap(err, "internal error")
 }
 
 type connectData struct {

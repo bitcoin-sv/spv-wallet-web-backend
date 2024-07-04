@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -42,20 +43,21 @@ func NewUsersRepository(db *sql.DB) *Repository {
 func (r *Repository) InsertUser(ctx context.Context, user *users.User) error {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "internal error")
 	}
 	defer func() {
 		_ = tx.Rollback()
 	}()
 	stmt, err := r.db.Prepare(postgresInsertUser)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "internal error")
 	}
 	defer stmt.Close() //nolint:all
 	if _, err = stmt.Exec(user.Email, user.Xpriv, user.Paymail, user.CreatedAt); err != nil {
-		return err
+		return errors.Wrap(err, "internal error")
 	}
-	return tx.Commit()
+	err = tx.Commit()
+	return errors.Wrap(err, "internal error")
 }
 
 // GetUserByEmail returns user by email.
@@ -63,7 +65,7 @@ func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*users.U
 	var user UserDto
 	row := r.db.QueryRowContext(ctx, postgresGetUserByEmail, email)
 	if err := row.Scan(&user.ID, &user.Email, &user.Xpriv, &user.Paymail, &user.CreatedAt); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "internal error")
 	}
 	return user.toUser(), nil
 }
@@ -73,7 +75,7 @@ func (r *Repository) GetUserByID(ctx context.Context, id int) (*users.User, erro
 	var user UserDto
 	row := r.db.QueryRowContext(ctx, postgresGetUserByID, id)
 	if err := row.Scan(&user.ID, &user.Email, &user.Xpriv, &user.Paymail, &user.CreatedAt); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "internal error")
 	}
 	return user.toUser(), nil
 }

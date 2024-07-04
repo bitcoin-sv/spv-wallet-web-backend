@@ -7,6 +7,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -62,19 +63,19 @@ func (h *handler) signIn(c *gin.Context) {
 	signInUser, err := h.service.SignInUser(reqUser.Email, reqUser.Password)
 	if err != nil {
 		if errors.Is(err, users.ErrInvalidCredentials) {
-			c.JSON(http.StatusBadRequest, "Sorry, your username or password is incorrect. Please try again.")
+			c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Sorry, your username or password is incorrect. Please try again."))
 			return
 		}
 
 		h.log.Error().Msgf("Sign-in error: %s", err)
-		c.JSON(http.StatusInternalServerError, "Something went wrong. Please try again later.")
+		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("Something went wrong. Please try again later."))
 		return
 	}
 
 	err = auth.UpdateSession(c, signInUser)
 	if err != nil {
 		h.log.Error().Msgf("Sign-in error. Session wasn't saved: %s", err)
-		c.JSON(http.StatusBadRequest, "Something went wrong. Please try again later.")
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Something went wrong. Please try again later."))
 	}
 
 	response := SignInResponse{
@@ -96,14 +97,14 @@ func (h *handler) signOut(c *gin.Context) {
 	err := h.service.SignOutUser(c.GetString(auth.SessionAccessKeyID), c.GetString(auth.SessionAccessKey))
 	if err != nil {
 		h.log.Error().Msgf("Sign-out error: %s", err)
-		c.JSON(http.StatusInternalServerError, "An error occurred during the logout process.")
+		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred during the logout process."))
 		return
 	}
 
 	err = auth.TerminateSession(c)
 	if err != nil {
 		h.log.Error().Msgf("Sign-out error. Session wasn't terminated: %s", err)
-		c.JSON(http.StatusInternalServerError, "An error occurred during the logout process.")
+		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred during the logout process."))
 		return
 	}
 
