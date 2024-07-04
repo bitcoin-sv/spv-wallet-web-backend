@@ -78,10 +78,10 @@ linters:
     - gosimple
     - staticcheck
     - unused
-    #TODO: add revive like in other projects
+    # TODO: add revive like in other projects
 
 linters-settings:
-  #TODO: setup like in other projects
+  # TODO: setup like in other projects
   govet:
     enable-all: true
     disable:

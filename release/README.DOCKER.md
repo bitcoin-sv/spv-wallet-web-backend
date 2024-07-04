@@ -9,7 +9,7 @@ To run the `spv-wallet-web-backend` as a Docker image with custom configuration,
 Here's the updated command with environment variables for the Docker container:
 
 ```bash
-docker run -p 8180:8180 -e SPVWALLET_PAYMAIL_DOMAIN=example.com ${DOCKERHUB_OWNER}/${DOCKERHUB_REPO}:latest
+docker run -p 8180:8180 -e SPVWALLET_PAYMAIL_DOMAIN=example.com ${DOCKER_IMAGE}:latest
 ```
 
 ### Configuration
