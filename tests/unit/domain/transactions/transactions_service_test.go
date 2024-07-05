@@ -116,7 +116,7 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 		{
 			name:          "Transaction doesn't exist",
 			transactionID: "imnothere",
-			expectdErr:    errors.New("Not found"),
+			expectdErr:    errors.New("spv wallet error: Not found"),
 		},
 	}
 
