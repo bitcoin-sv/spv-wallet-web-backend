@@ -8,6 +8,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 )
 
@@ -15,18 +16,18 @@ import (
 type Services struct {
 	UsersService        *users.UserService
 	TransactionsService *transactions.TransactionService
-	ContactsService     *contacts.ContactsService
+	ContactsService     *contacts.Service
 	WalletClientFactory users.WalletClientFactory
-	ConfigService       *config.ConfigService
-	RatesService        *rates.RatesService
+	ConfigService       *config.Service
+	RatesService        *rates.Service
 }
 
 // NewServices creates services instance.
-func NewServices(usersRepo *db_users.UsersRepository, log *zerolog.Logger) (*Services, error) {
+func NewServices(usersRepo *db_users.Repository, log *zerolog.Logger) (*Services, error) {
 	walletClientFactory := spvwallet.NewWalletClientFactory(log)
 	adminWalletClient, err := walletClientFactory.CreateAdminClient()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "internal error")
 	}
 
 	rService := rates.NewRatesService(log)

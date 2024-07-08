@@ -180,7 +180,8 @@ tasks:
   lint:check:
     desc: "Run linter"
     cmds:
-      - golangci-lint run {{.CLI_ARGS}}
+      - golangci-lint run -c .golangci-lint.yml {{.CLI_ARGS}}
+      - golangci-lint run -c .golangci-style.yml {{.CLI_ARGS}}
 
   lint:fix:
     desc: "Run linter (with --fix)"
@@ -192,4 +193,4 @@ tasks:
     desc: "Update swagger definitions"
     run: once
     cmds:
-      - swag init -g ./cmd/main.go
+      - swag init -g ./cmd/main.go -pd true

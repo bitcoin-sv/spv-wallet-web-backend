@@ -20,28 +20,28 @@ const (
 
 // Define basic http server config keys.
 const (
-	// EnvHttpServerReadTimeout http server read timeout.
-	EnvHttpServerReadTimeout = "http.server.readTimeout"
-	// EnvHttpServerWriteTimeout http server write timeout.
-	EnvHttpServerWriteTimeout = "http.server.writeTimeout"
-	// EnvHttpServerPort http server port.
-	EnvHttpServerPort = "http.server.port"
-	// EnvHttpServerCookieDomain http server cookie domain parameter.
-	EnvHttpServerCookieDomain = "http.server.cookie.domain"
-	// EnvHttpServerCookieSecure http server cookie secure parameter.
-	EnvHttpServerCookieSecure = "http.server.cookie.secure"
-	// EnvHttpServerCorsAllowedDomains http server cors origin allowed domains.
-	EnvHttpServerCorsAllowedDomains = "http.server.cors.allowedDomains"
-	// EnvHttpServerSessionSecret gin session store secret to encrypt session data in database.
-	EnvHttpServerSessionSecret = "http.server.session.secret" //nolint: gosec
+	// EnvHTTPServerReadTimeout http server read timeout.
+	EnvHTTPServerReadTimeout = "http.server.readTimeout"
+	// EnvHTTPServerWriteTimeout http server write timeout.
+	EnvHTTPServerWriteTimeout = "http.server.writeTimeout"
+	// EnvHTTPServerPort http server port.
+	EnvHTTPServerPort = "http.server.port"
+	// EnvHTTPServerCookieDomain http server cookie domain parameter.
+	EnvHTTPServerCookieDomain = "http.server.cookie.domain"
+	// EnvHTTPServerCookieSecure http server cookie secure parameter.
+	EnvHTTPServerCookieSecure = "http.server.cookie.secure"
+	// EnvHTTPServerCorsAllowedDomains http server cors origin allowed domains.
+	EnvHTTPServerCorsAllowedDomains = "http.server.cors.allowedDomains"
+	// EnvHTTPServerSessionSecret gin session store secret to encrypt session data in database.
+	EnvHTTPServerSessionSecret = "http.server.session.secret" //nolint: gosec
 )
 
 // Define basic spv-wallet config keys.
 const (
 	// EnvAdminXpriv define the admin xpriv.
 	EnvAdminXpriv = "spvwallet.admin.xpriv"
-	// EnvServerUrl define the url of the spv-wallet (non-custodial wallet) service.
-	EnvServerUrl = "spvwallet.server.url"
+	// EnvServerURL define the url of the spv-wallet (non-custodial wallet) service.
+	EnvServerURL = "spvwallet.server.url"
 	// EnvPaymailDomain define the paymail domain.
 	EnvPaymailDomain = "spvwallet.paymail.domain"
 	// EnvPaymailAvatar define the paymail avatar url.
@@ -52,9 +52,9 @@ const (
 	// EnvWebsocketHistoryMax max number of published events that should be hold
 	// and send to client in case of restored lost connection.
 	EnvWebsocketHistoryMax = "websocket.history.max"
-	// EnvWebsocketHistoryTtl max minutes for which published events should be hold
+	// EnvWebsocketHistoryTTL max minutes for which published events should be hold
 	// and send to client in case of restored lost connection.
-	EnvWebsocketHistoryTtl = "websocket.history.ttl"
+	EnvWebsocketHistoryTTL = "websocket.history.ttl"
 )
 
 // EnvHashSalt define the hash salt.
@@ -77,13 +77,15 @@ const (
 )
 
 const (
+	// EnvContactsPasscodePeriod define the contacts passcode validity period.
 	EnvContactsPasscodePeriod = "contacts.passcode.period"
+	// EnvContactsPasscodeDigits define the contacts passcode digits number.
 	EnvContactsPasscodeDigits = "contacts.passcode.digits"
 )
 
 const (
-	// EnvCacheSettingsTtl define the cache settings ttl used for exchange rates storage.
-	EnvCacheSettingsTtl = "cache.settings.ttl"
+	// EnvCacheSettingsTTL define the cache settings ttl used for exchange rates storage.
+	EnvCacheSettingsTTL = "cache.settings.ttl"
 )
 
 // Config returns strongly typed config values.

@@ -4,9 +4,9 @@ import (
 	"context"
 )
 
-// UsersRepository is an interface which defines methods for UsersRepository.
-type UsersRepository interface {
+// Repository is an interface which defines methods for Repository.
+type Repository interface {
 	InsertUser(ctx context.Context, user *User) error
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
-	GetUserById(ctx context.Context, id int) (*User, error)
+	GetUserByID(ctx context.Context, id int) (*User, error)
 }

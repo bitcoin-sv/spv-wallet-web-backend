@@ -23,9 +23,9 @@ func NewWalletClientFactory(log *zerolog.Logger) users.WalletClientFactory {
 // CreateAdminClient returns AdminWalletClient as spv-wallet-go-client instance with admin key.
 func (bf *walletClientFactory) CreateAdminClient() (users.AdminWalletClient, error) {
 	adminKey := viper.GetString(config.EnvAdminXpriv)
-	serverUrl := getServerData()
+	serverURL := getServerData()
 
-	adminWalletClient := walletclient.NewWithAdminKey(serverUrl, adminKey)
+	adminWalletClient := walletclient.NewWithAdminKey(serverURL, adminKey)
 
 	return &AdminWalletClient{
 		client: adminWalletClient,
@@ -35,9 +35,9 @@ func (bf *walletClientFactory) CreateAdminClient() (users.AdminWalletClient, err
 
 // CreateWithXpriv returns UserWalletClient as spv-wallet-go-client instance with given xpriv.
 func (bf *walletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletClient, error) {
-	serverUrl := getServerData()
+	serverURL := getServerData()
 
-	userWalletClient := walletclient.NewWithXPriv(serverUrl, xpriv)
+	userWalletClient := walletclient.NewWithXPriv(serverURL, xpriv)
 
 	return &Client{
 		client: userWalletClient,
@@ -48,9 +48,9 @@ func (bf *walletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletCl
 // CreateWithAccessKey returns UserWalletClient as spv-wallet-go-client instance with given access key.
 func (bf *walletClientFactory) CreateWithAccessKey(accessKey string) (users.UserWalletClient, error) {
 	// Get env variables.
-	serverUrl := getServerData()
+	serverURL := getServerData()
 
-	userWalletClient := walletclient.NewWithAccessKey(serverUrl, accessKey)
+	userWalletClient := walletclient.NewWithAccessKey(serverURL, accessKey)
 
 	return &Client{
 		client: userWalletClient,
@@ -60,5 +60,5 @@ func (bf *walletClientFactory) CreateWithAccessKey(accessKey string) (users.User
 
 func getServerData() string {
 	// Get env variables.
-	return viper.GetString(config.EnvServerUrl)
+	return viper.GetString(config.EnvServerURL)
 }

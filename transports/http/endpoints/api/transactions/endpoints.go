@@ -9,6 +9,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
@@ -28,7 +29,7 @@ type handler struct {
 type FullTransaction = spvwallet.FullTransaction
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services, log *zerolog.Logger, ws websocket.Server) router.ApiEndpoints {
+func NewHandler(s *domain.Services, log *zerolog.Logger, ws websocket.Server) router.APIEndpoints {
 	return &handler{
 		uService: *s.UsersService,
 		tService: *s.TransactionsService,
@@ -37,8 +38,8 @@ func NewHandler(s *domain.Services, log *zerolog.Logger, ws websocket.Server) ro
 	}
 }
 
-// RegisterApiEndpoints registers routes that are part of service API.
-func (h *handler) RegisterApiEndpoints(router *gin.RouterGroup) {
+// RegisterAPIEndpoints registers routes that are part of service API.
+func (h *handler) RegisterAPIEndpoints(router *gin.RouterGroup) {
 	user := router.Group("/transaction")
 	{
 		user.POST("", h.createTransaction)
@@ -59,7 +60,7 @@ func (h *handler) getTransactions(c *gin.Context) {
 	err := c.Bind(&req)
 	if err != nil {
 		h.log.Error().Msgf("Invalid payload: %s", err)
-		c.JSON(http.StatusBadRequest, "Invalid request. Please check conditions and metadata")
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Invalid request. Please check conditions and metadata"))
 		return
 	}
 
@@ -74,7 +75,7 @@ func (h *handler) getTransactions(c *gin.Context) {
 	txs, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey), c.GetString(auth.SessionUserPaymail), req.QueryParams)
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while trying to get a list of transactions: %s", err)
-		c.JSON(http.StatusInternalServerError, "An error occurred while trying to get a list of transactions")
+		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred while trying to get a list of transactions"))
 		return
 	}
 
@@ -90,13 +91,13 @@ func (h *handler) getTransactions(c *gin.Context) {
 //	@Router /api/v1/transaction/{id} [get]
 //	@Param id path string true "Transaction id"
 func (h *handler) getTransaction(c *gin.Context) {
-	transactionId := c.Param("id")
+	transactionID := c.Param("id")
 
 	// Get transaction by id.
-	transaction, err := h.tService.GetTransaction(c.GetString(auth.SessionAccessKey), transactionId, c.GetString(auth.SessionUserPaymail))
+	transaction, err := h.tService.GetTransaction(c.GetString(auth.SessionAccessKey), transactionID, c.GetString(auth.SessionUserPaymail))
 	if err != nil {
 		h.log.Error().Msgf("An error occurred while trying to get transaction details: %s", err)
-		c.JSON(http.StatusInternalServerError, "An error occurred while trying to get transaction details")
+		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred while trying to get transaction details"))
 		return
 	}
 
@@ -116,12 +117,12 @@ func (h *handler) createTransaction(c *gin.Context) {
 	err := c.Bind(&reqTransaction)
 	if err != nil {
 		h.log.Error().Msgf("Invalid payload: %s", err)
-		c.JSON(http.StatusBadRequest, "Invalid request. Please check transaction details")
+		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Invalid request. Please check transaction details"))
 		return
 	}
 
 	// Validate user.
-	xpriv, err := h.uService.GetUserXpriv(c.GetInt(auth.SessionUserId), reqTransaction.Password)
+	xpriv, err := h.uService.GetUserXpriv(c.GetInt(auth.SessionUserID), reqTransaction.Password)
 	if err != nil {
 		h.log.Error().Msgf("Invalid password: %s", err)
 		c.JSON(http.StatusBadRequest, "Invalid password.")
@@ -137,7 +138,7 @@ func (h *handler) createTransaction(c *gin.Context) {
 	}
 	go func() {
 		transaction := <-events
-		h.ws.GetSocket(strconv.Itoa(c.GetInt(auth.SessionUserId))).Notify(transaction)
+		h.ws.GetSocket(strconv.Itoa(c.GetInt(auth.SessionUserID))).Notify(transaction)
 	}()
 
 	c.Status(http.StatusOK)

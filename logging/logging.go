@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 	"go.elastic.co/ecszerolog"
@@ -41,7 +42,7 @@ func CreateLogger() (*zerolog.Logger, error) {
 
 	parsedLevel, err := zerolog.ParseLevel(viper.GetString(config.EnvLoggingLevel))
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "configuration error")
 	}
 
 	instanceName := viper.GetString(config.EnvLoggingInstanceName)

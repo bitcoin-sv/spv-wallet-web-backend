@@ -12,7 +12,7 @@ import (
         gomock "github.com/golang/mock/gomock"
 )
 
-// MockUsersRepository is a mock of UsersRepository interface.
+// MockUsersRepository is a mock of Repository interface.
 type MockUsersRepository struct {
         ctrl     *gomock.Controller
         recorder *MockUsersRepositoryMockRecorder
@@ -51,9 +51,9 @@ func (mr *MockUsersRepositoryMockRecorder) GetUserByEmail(ctx, email interface{}
 }
 
 // GetUserById mocks base method.
-func (m *MockUsersRepository) GetUserById(ctx context.Context, id int) (*users.User, error) {
+func (m *MockUsersRepository) GetUserByID(ctx context.Context, id int) (*users.User, error) {
         m.ctrl.T.Helper()
-        ret := m.ctrl.Call(m, "GetUserById", ctx, id)
+        ret := m.ctrl.Call(m, "GetUserByID", ctx, id)
         ret0, _ := ret[0].(*users.User)
         ret1, _ := ret[1].(error)
         return ret0, ret1
@@ -62,7 +62,7 @@ func (m *MockUsersRepository) GetUserById(ctx context.Context, id int) (*users.U
 // GetUserById indicates an expected call of GetUserById.
 func (mr *MockUsersRepositoryMockRecorder) GetUserById(ctx, id interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserById", reflect.TypeOf((*MockUsersRepository)(nil).GetUserById), ctx, id)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockUsersRepository)(nil).GetUserByID), ctx, id)
 }
 
 // InsertUser mocks base method.

@@ -22,19 +22,19 @@ import (
 
 // SetupWalletRoutes main point where we're registering endpoints registrars (handlers that will register endpoints in gin engine)
 //
-//	and middlewares. It's returning function that can be used to setup engine of httpserver.HttpServer
+//	and middlewares. It's returning function that can be used to setup engine of httpserver.HTTPServer
 func SetupWalletRoutes(s *domain.Services, db *sql.DB, log *zerolog.Logger, ws websocket.Server) httpserver.GinEngineOpt {
-	accessRootEndpoints, accessApiEndpoints := access.NewHandler(s, log)
-	usersRootEndpoints, usersApiEndpoints := users.NewHandler(s, log)
+	accessRootEndpoints, accessAPIEndpoints := access.NewHandler(s, log)
+	usersRootEndpoints, usersAPIEndpoints := users.NewHandler(s, log)
 
 	routes := []interface{}{
 		swagger.NewHandler(),
 		status.NewHandler(),
 		config.NewHandler(s),
 		usersRootEndpoints,
-		usersApiEndpoints,
+		usersAPIEndpoints,
 		accessRootEndpoints,
-		accessApiEndpoints,
+		accessAPIEndpoints,
 		transactions.NewHandler(s, log, ws),
 		contacts.NewHandler(s, log),
 	}
@@ -51,8 +51,8 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB, log *zerolog.Logger, ws w
 			switch r := r.(type) {
 			case router.RootEndpoints:
 				r.RegisterEndpoints(rootRouter)
-			case router.ApiEndpoints:
-				r.RegisterApiEndpoints(apiRouter)
+			case router.APIEndpoints:
+				r.RegisterAPIEndpoints(apiRouter)
 			default:
 				panic(errors.New("unexpected router endpoints registrar"))
 			}

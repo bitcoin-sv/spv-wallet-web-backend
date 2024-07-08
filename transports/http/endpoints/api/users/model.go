@@ -17,7 +17,7 @@ type RegisterResponse struct {
 
 // UserResponse is a struct that represents user information.
 type UserResponse struct {
-	UserId  int           `json:"userId"`
+	UserID  int           `json:"userId"`
 	Paymail string        `json:"paymail"`
 	Email   string        `json:"email"`
 	Balance users.Balance `json:"balance"`

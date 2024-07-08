@@ -14,8 +14,8 @@ import (
 
 const cacheTTL = 10 * time.Minute
 
-// ConfigService is a service for fetching and caching SharedConfig from the spv-wallet and providing PublicConfig.
-type ConfigService struct {
+// Service is a service for fetching and caching SharedConfig from the spv-wallet and providing PublicConfig.
+type Service struct {
 	adminWalletClient users.AdminWalletClient
 	log               *zerolog.Logger
 
@@ -26,8 +26,8 @@ type ConfigService struct {
 }
 
 // NewConfigService creates a new ConfigService.
-func NewConfigService(adminWalletClient users.AdminWalletClient, log *zerolog.Logger) *ConfigService {
-	return &ConfigService{
+func NewConfigService(adminWalletClient users.AdminWalletClient, log *zerolog.Logger) *Service {
+	return &Service{
 		adminWalletClient: adminWalletClient,
 		log:               log,
 		sharedConfig:      nil,
@@ -38,18 +38,18 @@ func NewConfigService(adminWalletClient users.AdminWalletClient, log *zerolog.Lo
 // GetSharedConfig returns shared config.
 // If shared config is not cached, it will be fetched from the spv-wallet.
 // SharedConfig should not be exposed to the public - use PublicConfig instead.
-func (s *ConfigService) GetSharedConfig() *models.SharedConfig {
+func (s *Service) GetSharedConfig() *models.SharedConfig {
 	s.makeConfigs()
 	return s.sharedConfig
 }
 
 // GetPublicConfig returns public config.
-func (s *ConfigService) GetPublicConfig() *PublicConfig {
+func (s *Service) GetPublicConfig() *PublicConfig {
 	s.makeConfigs()
 	return s.publicConfig
 }
 
-func (s *ConfigService) makeConfigs() {
+func (s *Service) makeConfigs() {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -68,7 +68,7 @@ func (s *ConfigService) makeConfigs() {
 	s.publicConfig = s.makePublicConfig(shared)
 }
 
-func (s *ConfigService) makePublicConfig(shared *models.SharedConfig) *PublicConfig {
+func (s *Service) makePublicConfig(shared *models.SharedConfig) *PublicConfig {
 	configuredPaymailDomain := viper.GetString(backendconfig.EnvPaymailDomain)
 	if !slices.Contains(shared.PaymailDomains, configuredPaymailDomain) {
 		s.log.Warn().Str("configuredPaymailDomain", configuredPaymailDomain).Msg("Configured paymail domain is not in the list of paymail domains from SPV Wallet")

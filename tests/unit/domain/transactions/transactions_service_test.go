@@ -63,11 +63,11 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 
 	cases := []struct {
 		name          string
-		transactionId string
+		transactionID string
 	}{
 		{
 			name:          "Get transaction, return transaction details",
-			transactionId: ts[0].GetTransactionId(),
+			transactionID: ts[0].GetTransactionID(),
 		},
 	}
 
@@ -82,8 +82,8 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 
 			mockUserWalletClient := mock.NewMockUserWalletClient(ctrl)
 			mockUserWalletClient.EXPECT().
-				GetTransaction(tc.transactionId, paymail).
-				Return(findById(ts, tc.transactionId))
+				GetTransaction(tc.transactionID, paymail).
+				Return(findByID(ts, tc.transactionID))
 
 			clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 			clientFctrMq.EXPECT().
@@ -93,13 +93,13 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 			sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
 			// Act
-			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
+			result, err := sut.GetTransaction(accessKey, tc.transactionID, paymail)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			// Assert
-			assert.Equal(t, tc.transactionId, result.GetTransactionId())
+			assert.Equal(t, tc.transactionID, result.GetTransactionID())
 		})
 	}
 }
@@ -110,13 +110,13 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 
 	cases := []struct {
 		name          string
-		transactionId string
+		transactionID string
 		expectdErr    error
 	}{
 		{
 			name:          "Transaction doesn't exist",
-			transactionId: "imnothere",
-			expectdErr:    errors.New("Not found"),
+			transactionID: "imnothere",
+			expectdErr:    errors.New("spv wallet error: Not found"),
 		},
 	}
 
@@ -131,8 +131,8 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 
 			mockUserWalletClient := mock.NewMockUserWalletClient(ctrl)
 			mockUserWalletClient.EXPECT().
-				GetTransaction(tc.transactionId, paymail).
-				Return(findById(ts, tc.transactionId))
+				GetTransaction(tc.transactionID, paymail).
+				Return(findByID(ts, tc.transactionID))
 
 			clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 			clientFctrMq.EXPECT().
@@ -142,7 +142,7 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 			sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
 			// Act
-			result, err := sut.GetTransaction(accessKey, tc.transactionId, paymail)
+			result, err := sut.GetTransaction(accessKey, tc.transactionID, paymail)
 
 			// Assert
 			require.EqualError(t, tc.expectdErr, err.Error())
@@ -151,8 +151,8 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 	}
 }
 
-func findById(collection []spvwallet.FullTransaction, id string) (users.FullTransaction, error) {
-	result := utils.Find(collection, func(t spvwallet.FullTransaction) bool { return t.Id == id })
+func findByID(collection []spvwallet.FullTransaction, id string) (users.FullTransaction, error) {
+	result := utils.Find(collection, func(t spvwallet.FullTransaction) bool { return t.ID == id })
 
 	if result == nil {
 		return nil, errors.New("Not found")

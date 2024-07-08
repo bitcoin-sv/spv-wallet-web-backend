@@ -18,7 +18,7 @@ func TestTerminateSession(t *testing.T) {
 	ctx := setupTest()
 	session := sessions.Default(ctx)
 
-	session.Set(auth.SessionAccessKeyId, gofakeit.HexUint256())
+	session.Set(auth.SessionAccessKeyID, gofakeit.HexUint256())
 	session.Set(auth.SessionAccessKey, gofakeit.HexUint256())
 	session.Set("random-key", gofakeit.HipsterWord())
 	session.Save()
@@ -29,7 +29,7 @@ func TestTerminateSession(t *testing.T) {
 	// Assert
 	session = sessions.Default(ctx)
 
-	assert.Nil(t, session.Get(auth.SessionAccessKeyId))
+	assert.Nil(t, session.Get(auth.SessionAccessKeyID))
 	assert.Nil(t, session.Get(auth.SessionAccessKey))
 	assert.Nil(t, session.Get("random-key"))
 }
@@ -40,11 +40,11 @@ func TestUpdateSession(t *testing.T) {
 
 	user := users.AuthenticatedUser{
 		AccessKey: users.AccessKey{
-			Id:  gofakeit.HexUint256(),
+			ID:  gofakeit.HexUint256(),
 			Key: gofakeit.HexUint256(),
 		},
 		User: &users.User{
-			Id:      gofakeit.IntRange(0, 1000),
+			ID:      gofakeit.IntRange(0, 1000),
 			Paymail: gofakeit.HexUint256(),
 		},
 		Xpriv: "xprivtest",
@@ -56,9 +56,9 @@ func TestUpdateSession(t *testing.T) {
 	// Assert
 	session := sessions.Default(ctx)
 
-	assert.Equal(t, user.AccessKey.Id, session.Get(auth.SessionAccessKeyId))
+	assert.Equal(t, user.AccessKey.ID, session.Get(auth.SessionAccessKeyID))
 	assert.Equal(t, user.AccessKey.Key, session.Get(auth.SessionAccessKey))
-	assert.Equal(t, user.User.Id, session.Get(auth.SessionUserId))
+	assert.Equal(t, user.User.ID, session.Get(auth.SessionUserID))
 	assert.Equal(t, user.User.Paymail, session.Get(auth.SessionUserPaymail))
 	assert.Equal(t, user.Xpriv, session.Get(auth.SessionXPriv))
 }
