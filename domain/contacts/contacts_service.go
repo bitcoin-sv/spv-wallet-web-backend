@@ -36,7 +36,11 @@ func (s *Service) UpsertContact(ctx context.Context, accessKey, paymail, fullNam
 		return nil, errors.Wrap(err, "internal error")
 	}
 
-	return userWalletClient.UpsertContact(ctx, paymail, fullName, requesterPaymail, metadata)
+	contact, err := userWalletClient.UpsertContact(ctx, paymail, fullName, requesterPaymail, metadata)
+	if err != nil {
+		return nil, errors.Wrap(err, "upsert contact error")
+	}
+	return contact, nil
 }
 
 // AcceptContact accepts a contact invitation
@@ -46,7 +50,7 @@ func (s *Service) AcceptContact(ctx context.Context, accessKey, paymail string) 
 		return errors.Wrap(err, "internal error")
 	}
 
-	return userWalletClient.AcceptContact(ctx, paymail)
+	return errors.Wrap(userWalletClient.AcceptContact(ctx, paymail), "accept contact error")
 }
 
 // RejectContact rejects a contact invitation
@@ -56,7 +60,7 @@ func (s *Service) RejectContact(ctx context.Context, accessKey, paymail string) 
 		return errors.Wrap(err, "internal error")
 	}
 
-	return userWalletClient.RejectContact(ctx, paymail)
+	return errors.Wrap(userWalletClient.RejectContact(ctx, paymail), "reject contact error")
 }
 
 // ConfirmContact confirms a contact
@@ -66,7 +70,7 @@ func (s *Service) ConfirmContact(ctx context.Context, xPriv string, contact *mod
 		return errors.Wrap(err, "internal error")
 	}
 
-	return userWalletClient.ConfirmContact(ctx, contact, passcode, requesterPaymail, getConfPeriod(), getConfDigits())
+	return errors.Wrap(userWalletClient.ConfirmContact(ctx, contact, passcode, requesterPaymail, getConfPeriod(), getConfDigits()), "confirm contact error")
 }
 
 // GetContacts retrieves contacts for the user
@@ -76,7 +80,11 @@ func (s *Service) GetContacts(ctx context.Context, accessKey string, conditions 
 		return nil, errors.Wrap(err, "internal error")
 	}
 
-	return userWalletClient.GetContacts(ctx, conditions, metadata, queryParams)
+	resp, err := userWalletClient.GetContacts(ctx, conditions, metadata, queryParams)
+	if err != nil {
+		return nil, errors.Wrap(err, "get contacts error")
+	}
+	return resp, nil
 }
 
 // GenerateTotpForContact generates a TOTP for a contact

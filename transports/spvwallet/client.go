@@ -24,7 +24,7 @@ func (c *Client) CreateAccessKey() (users.AccKey, error) {
 	accessKey, err := c.client.CreateAccessKey(context.Background(), nil)
 	if err != nil {
 		c.log.Error().Msgf("Error while creating new accessKey: %v", err.Error())
-		return nil, err
+		return nil, errors.Wrap(err, "error while creating new accessKey ")
 	}
 
 	accessKeyData := AccessKey{
@@ -32,7 +32,7 @@ func (c *Client) CreateAccessKey() (users.AccKey, error) {
 		Key: accessKey.Key,
 	}
 
-	return &accessKeyData, err
+	return &accessKeyData, nil
 }
 
 // GetAccessKey checks if access key is valid.
@@ -42,7 +42,7 @@ func (c *Client) GetAccessKey(accessKeyID string) (users.AccKey, error) {
 		c.log.Error().
 			Str("accessKeyID", accessKeyID).
 			Msgf("Error while getting accessKey: %v", err.Error())
-		return nil, err
+		return nil, errors.Wrap(err, "error while getting accessKey")
 	}
 
 	accessKeyData := AccessKey{
@@ -60,7 +60,7 @@ func (c *Client) RevokeAccessKey(accessKeyID string) (users.AccKey, error) {
 		c.log.Error().
 			Str("accessKeyID", accessKeyID).
 			Msgf("Error while revoking accessKey: %v", err.Error())
-		return nil, err
+		return nil, errors.Wrap(err, "error while revoking accessKey")
 	}
 
 	accessKeyData := AccessKey{
@@ -76,7 +76,7 @@ func (c *Client) GetXPub() (users.PubKey, error) {
 	xpub, err := c.client.GetXPub(context.Background())
 	if err != nil {
 		c.log.Error().Msgf("Error while getting new xPub: %v", err.Error())
-		return nil, err
+		return nil, errors.Wrap(err, "error while getting new xPub")
 	}
 
 	xPub := XPub{
@@ -99,7 +99,7 @@ func (c *Client) SendToRecipients(recipients []*walletclient.Recipients, senderP
 	transaction, err := c.client.SendToRecipients(context.Background(), recipients, metadata)
 	if err != nil {
 		c.log.Error().Msgf("Error while creating new tx: %v", err.Error())
-		return nil, err
+		return nil, errors.Wrap(err, "error while creating new tx")
 	}
 
 	t := &Transaction{
@@ -118,14 +118,14 @@ func (c *Client) CreateAndFinalizeTransaction(recipients []*walletclient.Recipie
 	draftTx, err := c.client.DraftToRecipients(context.Background(), recipients, metadata)
 	if err != nil {
 		c.log.Error().Msgf("Error while creating new draft tx: %v", err.Error())
-		return nil, err
+		return nil, errors.Wrap(err, "error while creating new draft tx")
 	}
 
 	// Finalize draft transaction.
 	hex, err := c.client.FinalizeTransaction(draftTx)
 	if err != nil {
 		c.log.Error().Str("draftTxID", draftTx.ID).Msgf("Error while finalizing tx: %v", err.Error())
-		return nil, err
+		return nil, errors.Wrap(err, "error while finalizing tx")
 	}
 
 	draftTransaction := DraftTransaction{
@@ -141,7 +141,7 @@ func (c *Client) RecordTransaction(hex, draftTxID string, metadata map[string]an
 	tx, err := c.client.RecordTransaction(context.Background(), hex, draftTxID, metadata)
 	if err != nil {
 		c.log.Error().Str("draftTxID", draftTxID).Msgf("Error while recording tx: %v", err.Error())
-		return nil, err
+		return nil, errors.Wrap(err, "error while recording tx")
 	}
 	return tx, nil
 }
@@ -161,7 +161,7 @@ func (c *Client) GetTransactions(queryParam *filter.QueryParams, userPaymail str
 		c.log.Error().
 			Str("userPaymail", userPaymail).
 			Msgf("Error while getting transactions: %v", err.Error())
-		return nil, err
+		return nil, errors.Wrap(err, "error while getting transactions")
 	}
 
 	var transactionsData = make([]users.Transaction, 0)
@@ -195,7 +195,7 @@ func (c *Client) GetTransaction(transactionID, userPaymail string) (users.FullTr
 			Str("transactionId", transactionID).
 			Str("userPaymail", userPaymail).
 			Msgf("Error while getting transaction: %v", err.Error())
-		return nil, err
+		return nil, errors.Wrap(err, "error while getting transaction")
 	}
 
 	sender, receiver := GetPaymailsFromMetadata(transaction, userPaymail)
@@ -223,34 +223,42 @@ func (c *Client) GetTransactionsCount() (int64, error) {
 	count, err := c.client.GetTransactionsCount(context.Background(), nil, nil)
 	if err != nil {
 		c.log.Error().Msgf("Error while getting transactions count: %v", err.Error())
-		return 0, err
+		return 0, errors.Wrap(err, "error while getting transactions count")
 	}
 	return count, nil
 }
 
 // UpsertContact creates or updates contact.
-func (c *Client) UpsertContact(ctx context.Context, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, walletclient.ResponseError) {
-	return c.client.UpsertContact(ctx, paymail, fullName, requesterPaymail, metadata)
+func (c *Client) UpsertContact(ctx context.Context, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error) {
+	contact, err := c.client.UpsertContact(ctx, paymail, fullName, requesterPaymail, metadata)
+	if err != nil {
+		return nil, errors.Wrap(err, "upsert contact error")
+	}
+	return contact, nil
 }
 
 // AcceptContact accepts contact.
-func (c *Client) AcceptContact(ctx context.Context, paymail string) walletclient.ResponseError {
-	return c.client.AcceptContact(ctx, paymail)
+func (c *Client) AcceptContact(ctx context.Context, paymail string) error {
+	return errors.Wrap(c.client.AcceptContact(ctx, paymail), "accept contact error")
 }
 
 // RejectContact rejects contact.
-func (c *Client) RejectContact(ctx context.Context, paymail string) walletclient.ResponseError {
-	return c.client.RejectContact(ctx, paymail)
+func (c *Client) RejectContact(ctx context.Context, paymail string) error {
+	return errors.Wrap(c.client.RejectContact(ctx, paymail), "reject contact error")
 }
 
 // ConfirmContact confirms contact.
-func (c *Client) ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) walletclient.ResponseError {
-	return c.client.ConfirmContact(ctx, contact, passcode, requesterPaymail, period, digits)
+func (c *Client) ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) error {
+	return errors.Wrap(c.client.ConfirmContact(ctx, contact, passcode, requesterPaymail, period, digits), "confirm contact error")
 }
 
 // GetContacts returns all contacts.
-func (c *Client) GetContacts(ctx context.Context, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError) {
-	return c.client.GetContacts(ctx, conditions, metadata, queryParams)
+func (c *Client) GetContacts(ctx context.Context, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, error) {
+	resp, err := c.client.GetContacts(ctx, conditions, metadata, queryParams)
+	if err != nil {
+		return nil, errors.Wrap(err, "get contacts error")
+	}
+	return resp, nil
 }
 
 // GenerateTotpForContact generates TOTP for contact.

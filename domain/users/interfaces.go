@@ -72,11 +72,11 @@ type (
 		CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata map[string]any) (DraftTransaction, error)
 		RecordTransaction(hex, draftTxID string, metadata map[string]any) (*models.Transaction, error)
 		// Contacts methods
-		UpsertContact(ctx context.Context, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, walletclient.ResponseError)
-		AcceptContact(ctx context.Context, paymail string) walletclient.ResponseError
-		RejectContact(ctx context.Context, paymail string) walletclient.ResponseError
-		ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) walletclient.ResponseError
-		GetContacts(ctx context.Context, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, walletclient.ResponseError)
+		UpsertContact(ctx context.Context, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error)
+		AcceptContact(ctx context.Context, paymail string) error
+		RejectContact(ctx context.Context, paymail string) error
+		ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) error
+		GetContacts(ctx context.Context, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, error)
 		GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error)
 	}
 
