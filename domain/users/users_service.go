@@ -204,17 +204,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, errors.Wrap(err, "cannot get xpriv")
 	}
 
-	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(decryptedXpriv)
-	if err != nil {
-		s.log.Error().
-			Str("userEmail", email).
-			Msgf("Error while creating userWalletClient: %v", err.Error())
-		// "no keys available" error is a custom spv-wallet-go-client error which says that the client can't be provided(in our case due to wrong xpriv)
-		if err.Error() == "no keys available" {
-			return nil, ErrInvalidCredentials
-		}
-		return nil, errors.Wrap(err, "internal error")
-	}
+	userWalletClient := s.walletClientFactory.CreateWithXpriv(decryptedXpriv)
 
 	accessKey, err := userWalletClient.CreateAccessKey()
 	if err != nil {
@@ -266,10 +256,7 @@ func (s *UserService) SignOutUser(_, _ string) error {
 
 	// / Right now we cannot revoke access key without authentication with XPriv, which is impossible here.
 
-	// userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
-	// if err != nil {
-	// 	return err
-	// }
+	// userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
 
 	// _, err = userWalletClient.RevokeAccessKey(accessKeyId)
 	// if err != nil {
@@ -294,12 +281,7 @@ func (s *UserService) GetUserByID(userID int) (*User, error) {
 
 // GetUserBalance returns user balance using access key.
 func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
-	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
-	if err != nil {
-		s.log.Error().
-			Msgf("Error while creating userWalletClient: %v", err.Error())
-		return nil, fmt.Errorf("internal error, cause: %w", err)
-	}
+	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
 
 	// Get xpub.
 	xpub, err := userWalletClient.GetXPub()

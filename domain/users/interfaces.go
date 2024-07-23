@@ -89,8 +89,8 @@ type (
 
 	// WalletClientFactory defines methods to create user and admin clients.
 	WalletClientFactory interface {
-		CreateWithXpriv(xpriv string) (UserWalletClient, error)
-		CreateWithAccessKey(accessKey string) (UserWalletClient, error)
+		CreateWithXpriv(xpriv string) UserWalletClient
+		CreateWithAccessKey(accessKey string) UserWalletClient
 		CreateAdminClient() (AdminWalletClient, error)
 	}
 )

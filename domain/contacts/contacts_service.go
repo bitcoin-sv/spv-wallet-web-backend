@@ -5,9 +5,9 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/bitcoin-sv/spv-wallet/models/filter"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 )
@@ -31,71 +31,74 @@ func NewContactsService(adminWalletClient users.AdminWalletClient, walletClientF
 
 // UpsertContact creates or updates a contact
 func (s *Service) UpsertContact(ctx context.Context, accessKey, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error) {
-	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
-	if err != nil {
-		return nil, errors.Wrap(err, "internal error")
-	}
+	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
 
 	contact, err := userWalletClient.UpsertContact(ctx, paymail, fullName, requesterPaymail, metadata)
 	if err != nil {
-		return nil, errors.Wrap(err, "upsert contact error")
+		s.log.Debug().Msgf("Error during upsert contact: %s", err.Error())
+		return nil, spverrors.ErrUpsertContact
 	}
 	return contact, nil
 }
 
 // AcceptContact accepts a contact invitation
 func (s *Service) AcceptContact(ctx context.Context, accessKey, paymail string) error {
-	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
-	if err != nil {
-		return errors.Wrap(err, "internal error")
-	}
+	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
 
-	return errors.Wrap(userWalletClient.AcceptContact(ctx, paymail), "accept contact error")
+	err := userWalletClient.AcceptContact(ctx, paymail)
+	if err != nil {
+		s.log.Debug().Msgf("Error during accepting contact: %s", err.Error())
+		return spverrors.ErrAcceptContact
+	}
+	return nil
 }
 
 // RejectContact rejects a contact invitation
 func (s *Service) RejectContact(ctx context.Context, accessKey, paymail string) error {
-	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
-	if err != nil {
-		return errors.Wrap(err, "internal error")
-	}
+	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
 
-	return errors.Wrap(userWalletClient.RejectContact(ctx, paymail), "reject contact error")
+	err := userWalletClient.RejectContact(ctx, paymail)
+	if err != nil {
+		s.log.Debug().Msgf("Error during rejecting contact: %s", err.Error())
+		return spverrors.ErrRejectContact
+	}
+	return nil
 }
 
 // ConfirmContact confirms a contact
 func (s *Service) ConfirmContact(ctx context.Context, xPriv string, contact *models.Contact, passcode, requesterPaymail string) error {
-	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv)
-	if err != nil {
-		return errors.Wrap(err, "internal error")
-	}
+	userWalletClient := s.walletClientFactory.CreateWithXpriv(xPriv)
 
-	return errors.Wrap(userWalletClient.ConfirmContact(ctx, contact, passcode, requesterPaymail, getConfPeriod(), getConfDigits()), "confirm contact error")
+	err := userWalletClient.ConfirmContact(ctx, contact, passcode, requesterPaymail, getConfPeriod(), getConfDigits())
+	if err != nil {
+		s.log.Debug().Msgf("Error during confirming contact: %s", err.Error())
+		return spverrors.ErrConfirmContact
+	}
+	return nil
 }
 
 // GetContacts retrieves contacts for the user
 func (s *Service) GetContacts(ctx context.Context, accessKey string, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, error) {
-	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
-	if err != nil {
-		return nil, errors.Wrap(err, "internal error")
-	}
+	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
 
 	resp, err := userWalletClient.GetContacts(ctx, conditions, metadata, queryParams)
 	if err != nil {
-		return nil, errors.Wrap(err, "get contacts error")
+		s.log.Debug().Msgf("Error during getting contacts: %s", err.Error())
+		return nil, spverrors.ErrGetContacts
 	}
 	return resp, nil
 }
 
 // GenerateTotpForContact generates a TOTP for a contact
 func (s *Service) GenerateTotpForContact(_ context.Context, xPriv string, contact *models.Contact) (string, error) {
-	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv) // xPriv instead of accessKey because it is necessary to calculate the shared secret
-	if err != nil {
-		return "", errors.Wrap(err, "internal error")
-	}
+	userWalletClient := s.walletClientFactory.CreateWithXpriv(xPriv) // xPriv instead of accessKey because it is necessary to calculate the shared secret
 
 	totp, err := userWalletClient.GenerateTotpForContact(contact, getConfPeriod(), getConfDigits())
-	return totp, errors.Wrap(err, "spv wallet error")
+	if err != nil {
+		s.log.Debug().Msgf("Error during generating TOTP for contact: %s", err.Error())
+		return "", spverrors.ErrGenerateTotpForContact
+	}
+	return totp, nil
 }
 
 func getConfPeriod() uint {
