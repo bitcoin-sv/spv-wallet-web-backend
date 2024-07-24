@@ -1,11 +1,11 @@
 package users
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
@@ -67,19 +67,8 @@ func (h *handler) register(c *gin.Context) {
 
 	newUser, err := h.service.CreateNewUser(reqUser.Email, reqUser.Password)
 
-	// Check if user with this email already exists or there is another error
 	if err != nil {
-		//nolint:errorlint // it's working as expected
-		switch err.(type) {
-		case *users.UserError:
-			c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString(fmt.Sprintf("Error creating user: %v", err)))
-		case *users.PaymailError:
-			c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString(fmt.Sprintf("Error registering Paymail: %v", err)))
-		case *users.XPubError:
-			c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString(fmt.Sprintf("Error registering XPub: %v", err)))
-		default:
-			c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("Something went wrong when creating new user. Please try again later."))
-		}
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 

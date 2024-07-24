@@ -8,9 +8,9 @@ import (
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/bitcoin-sv/spv-wallet/models/filter"
-	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 )
 
@@ -49,7 +49,8 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 
 	draftTransaction, err := userWalletClient.CreateAndFinalizeTransaction(recipients, metadata)
 	if err != nil {
-		return errors.Wrap(err, "spv wallet error")
+		s.log.Debug().Msgf("Error during create transaction: %s", err.Error())
+		return spverrors.ErrCreateTransaction
 	}
 
 	go func() {
@@ -71,7 +72,8 @@ func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (
 
 	transaction, err := userWalletClient.GetTransaction(id, userPaymail)
 	if err != nil {
-		return nil, errors.Wrap(err, "spv wallet error")
+		s.log.Debug().Msgf("Error during get transaction: %s", err.Error())
+		return nil, spverrors.ErrGetTransaction
 	}
 
 	return transaction, nil
@@ -84,12 +86,14 @@ func (s *TransactionService) GetTransactions(accessKey, userPaymail string, quer
 
 	count, err := userWalletClient.GetTransactionsCount()
 	if err != nil {
-		return nil, errors.Wrap(err, "spv wallet error")
+		s.log.Debug().Msgf("Error during get transactions count: %s", err.Error())
+		return nil, spverrors.ErrCountTransactions
 	}
 
 	transactions, err := userWalletClient.GetTransactions(queryParam, userPaymail)
 	if err != nil {
-		return nil, errors.Wrap(err, "spv wallet error")
+		s.log.Debug().Msgf("Error during get transactions: %s", err.Error())
+		return nil, spverrors.ErrGetTransactions
 	}
 
 	// Calculate pages.
@@ -112,7 +116,7 @@ func tryRecordTransaction(userWalletClient users.UserWalletClient, draftTx users
 		log.Error().
 			Str("draftTxID", draftTx.GetDraftTransactionID()).
 			Msgf("record transaction failed: %s", recordErr.Error())
-		return nil, recordErr
+		return nil, spverrors.ErrRecordTransaction
 	}
 
 	log.Debug().
