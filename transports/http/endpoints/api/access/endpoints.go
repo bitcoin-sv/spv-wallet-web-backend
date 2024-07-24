@@ -1,11 +1,11 @@
 package access
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
@@ -62,13 +62,7 @@ func (h *handler) signIn(c *gin.Context) {
 
 	signInUser, err := h.service.SignInUser(reqUser.Email, reqUser.Password)
 	if err != nil {
-		if errors.Is(err, users.ErrInvalidCredentials) {
-			c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Sorry, your username or password is incorrect. Please try again."))
-			return
-		}
-
-		h.log.Error().Msgf("Sign-in error: %s", err)
-		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("Something went wrong. Please try again later."))
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 

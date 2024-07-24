@@ -354,7 +354,7 @@ func splitEmail(email string) (string, string) {
 
 func emptyString(input string) bool {
 	trimed := strings.TrimSpace(input)
-	return trimed != ""
+	return trimed == ""
 }
 
 func calculateBalance(satoshis uint64, exchangeRate *float64) (*Balance, error) {

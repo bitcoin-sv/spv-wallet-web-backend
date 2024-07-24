@@ -1,11 +1,10 @@
 package users_test
 
 import (
-	"database/sql"
-	"errors"
 	"testing"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	mock "github.com/bitcoin-sv/spv-wallet-web-backend/tests/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/rs/zerolog"
@@ -40,12 +39,12 @@ func TestCreateNewUser_ReturnsUser(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repoMq := mock.NewMockUsersRepository(ctrl)
+			repoMq := mock.NewMockRepository(ctrl)
 			mockAdminWalletClient := mock.NewMockAdminWalletClient(ctrl)
 
 			repoMq.EXPECT().
 				GetUserByEmail(gomock.Any(), tc.userEmail).
-				Return(nil, sql.ErrNoRows)
+				Return(nil, nil)
 
 			repoMq.EXPECT().InsertUser(gomock.Any(), gomock.Any())
 
@@ -82,19 +81,19 @@ func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
 			name:        "User already exists",
 			userEmail:   "marge.simpson@example.com",
 			userPswd:    "strongP4$$word",
-			expectedErr: users.ErrUserAlreadyExists,
+			expectedErr: spverrors.ErrUserAlreadyExists,
 		},
 		{
 			name:        "Invalid email",
 			userEmail:   "bart.simpson_example.com",
 			userPswd:    "strongP4$$word",
-			expectedErr: errors.New("invalid email address"),
+			expectedErr: spverrors.ErrIncorrectEmail,
 		},
 		{
 			name:        "Invalid password",
 			userEmail:   "ned.flanders@example.com",
 			userPswd:    "",
-			expectedErr: errors.New("correct password is required"),
+			expectedErr: spverrors.ErrEmptyPassword,
 		},
 	}
 
@@ -104,12 +103,12 @@ func TestCreateNewUser_InvalidData_ReturnsError(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repoMq := mock.NewMockUsersRepository(ctrl)
+			repoMq := mock.NewMockRepository(ctrl)
 			mockAdminWalletClient := mock.NewMockAdminWalletClient(ctrl)
 
 			repoMq.EXPECT().
 				GetUserByEmail(gomock.Any(), tc.userEmail).
-				Return(nil, nil).
+				Return(&users.User{}, nil).
 				AnyTimes()
 
 			sut := users.NewUserService(repoMq, mockAdminWalletClient, nil, nil, &testLogger)
