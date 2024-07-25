@@ -17,7 +17,7 @@ type Socket struct {
 func (s *Socket) Notify(event any) {
 	bytes, err := json.Marshal(event)
 	if err != nil {
-		s.Log.Error().Msgf("Error when marshalling event %v: %v", event, err.Error())
+		s.Log.Error().Msgf("Error when marshaling event %v: %v", event, err.Error())
 		return
 	}
 

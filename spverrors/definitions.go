@@ -9,242 +9,374 @@ import (
 // ////////////////////////////////// CONTACT ERRORS
 
 // ErrUpsertContact indicates failure to upsert the contact
+
 var ErrUpsertContact = models.SPVError{
-	Message:    "Cannot upsert the contact",
+
+	Message: "Cannot upsert the contact",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-upsert-contact",
+
+	Code: "error-upsert-contact",
 }
 
 // ErrAcceptContact indicates failure to accept the contact
+
 var ErrAcceptContact = models.SPVError{
-	Message:    "Cannot accept the contact",
+
+	Message: "Cannot accept the contact",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-accept-contact",
+
+	Code: "error-accept-contact",
 }
 
 // ErrRejectContact indicates failure to reject the contact
+
 var ErrRejectContact = models.SPVError{
-	Message:    "Cannot reject the contact",
+
+	Message: "Cannot reject the contact",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-reject-contact",
+
+	Code: "error-reject-contact",
 }
 
 // ErrConfirmContact indicates failure to confirm the contact
+
 var ErrConfirmContact = models.SPVError{
-	Message:    "Cannot confirm the contact",
+
+	Message: "Cannot confirm the contact",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-confirm-contact",
+
+	Code: "error-confirm-contact",
 }
 
 // ErrGetContacts indicates failure to get contacts
+
 var ErrGetContacts = models.SPVError{
-	Message:    "Cannot get contacts",
+
+	Message: "Cannot get contacts",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-get-contacts",
+
+	Code: "error-get-contacts",
 }
 
 // ErrGenerateTotpForContact indicates failure to generate TOTP for contact
+
 var ErrGenerateTotpForContact = models.SPVError{
-	Message:    "Cannot generate TOTP for contact",
+
+	Message: "Cannot generate TOTP for contact",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-generate-totp-for-contact",
+
+	Code: "error-generate-totp-for-contact",
 }
 
 // ErrContactNotProvided indicates the contact was not provided
+
 var ErrContactNotProvided = models.SPVError{
-	Message:    "Contact not provided",
+
+	Message: "Contact not provided",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-contact-not-provided",
+
+	Code: "error-contact-not-provided",
 }
 
 // ////////////////////////////////// TRANSACTION ERRORS
 
 // ErrCreateTransaction indicates failure to create a transaction
+
 var ErrCreateTransaction = models.SPVError{
-	Message:    "Cannot create transaction",
+
+	Message: "Cannot create transaction",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-transaction-create",
+
+	Code: "error-transaction-create",
 }
 
 // ErrGetTransaction indicates failure to get a transaction
+
 var ErrGetTransaction = models.SPVError{
-	Message:    "Cannot get transaction",
+
+	Message: "Cannot get transaction",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-transaction-get",
+
+	Code: "error-transaction-get",
 }
 
 // ErrGetTransactions indicates failure to get transactions
+
 var ErrGetTransactions = models.SPVError{
-	Message:    "Cannot get transactions",
+
+	Message: "Cannot get transactions",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-transactions-get",
+
+	Code: "error-transactions-get",
 }
 
 // ErrCountTransactions indicates failure to count transactions
+
 var ErrCountTransactions = models.SPVError{
-	Message:    "Cannot count transactions",
+
+	Message: "Cannot count transactions",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-transactions-count",
+
+	Code: "error-transactions-count",
 }
 
 // ErrRecordTransaction indicates failure to record a transaction
+
 var ErrRecordTransaction = models.SPVError{
-	Message:    "Cannot record transaction",
+
+	Message: "Cannot record transaction",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-transaction-record",
+
+	Code: "error-transaction-record",
 }
 
 // ////////////////////////////////// USER ERRORS
 
 // ErrInvalidCredentials indicates invalid credentials were provided
+
 var ErrInvalidCredentials = models.SPVError{
-	Message:    "Invalid credentials",
+
+	Message: "Invalid credentials",
+
 	StatusCode: http.StatusUnauthorized,
-	Code:       "error-credentials-invalid",
+
+	Code: "error-credentials-invalid",
 }
 
 // ErrUserAlreadyExists indicates the user already exists
+
 var ErrUserAlreadyExists = models.SPVError{
-	Message:    "User already exists",
+
+	Message: "User already exists",
+
 	StatusCode: http.StatusConflict,
-	Code:       "error-user-already-exists",
+
+	Code: "error-user-already-exists",
 }
 
 // ErrInsertUser indicates failure to insert a new user
+
 var ErrInsertUser = models.SPVError{
-	Message:    "Cannot insert new user",
+
+	Message: "Cannot insert new user",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-user-insert",
+
+	Code: "error-user-insert",
 }
 
 // ErrEmptyPassword indicates the password cannot be empty
+
 var ErrEmptyPassword = models.SPVError{
-	Message:    "Password cannot be empty",
+
+	Message: "Password cannot be empty",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-password-empty",
+
+	Code: "error-password-empty",
 }
 
 // ErrPasswordMismatch indicates the password and confirmation password do not match
+
 var ErrPasswordMismatch = models.SPVError{
-	Message:    "Password and confirmation password do not match",
+
+	Message: "Password and confirmation password do not match",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-password-mismatch",
+
+	Code: "error-password-mismatch",
 }
 
 // ErrIncorrectEmail indicates an incorrect email was provided
+
 var ErrIncorrectEmail = models.SPVError{
-	Message:    "Incorrect email",
+
+	Message: "Incorrect email",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-email-incorrect",
+
+	Code: "error-email-incorrect",
 }
 
 // ErrRegisterXPub indicates failure to register a new xPub
+
 var ErrRegisterXPub = models.SPVError{
-	Message:    "Cannot register new xPub",
+
+	Message: "Cannot register new xPub",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-xpub-register",
+
+	Code: "error-xpub-register",
 }
 
 // ErrRegisterPaymail indicates failure to register a new Paymail
+
 var ErrRegisterPaymail = models.SPVError{
-	Message:    "Cannot register new Paymail",
+
+	Message: "Cannot register new Paymail",
+
 	StatusCode: http.StatusBadRequest,
-	Code:       "error-paymail-register",
+
+	Code: "error-paymail-register",
 }
 
 // ErrGenerateMnemonic indicates failure to generate a mnemonic
+
 var ErrGenerateMnemonic = models.SPVError{
-	Message:    "Cannot generate mnemonic",
+
+	Message: "Cannot generate mnemonic",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-mnemonic-generate",
+
+	Code: "error-mnemonic-generate",
 }
 
 // ErrGenerateXPriv indicates failure to generate an xPriv
+
 var ErrGenerateXPriv = models.SPVError{
-	Message:    "Cannot generate xPriv",
+
+	Message: "Cannot generate xPriv",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-xpriv-generate",
+
+	Code: "error-xpriv-generate",
 }
 
 // ErrEncryptXPriv indicates failure to encrypt an xPriv
+
 var ErrEncryptXPriv = models.SPVError{
-	Message:    "Cannot encrypt xPriv",
+
+	Message: "Cannot encrypt xPriv",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-xpriv-encrypt",
+
+	Code: "error-xpriv-encrypt",
 }
 
 // ErrDecryptXPriv indicates failure to decrypt an xPriv
+
 var ErrDecryptXPriv = models.SPVError{
-	Message:    "Cannot decrypt xPriv",
+
+	Message: "Cannot decrypt xPriv",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-xpriv-decrypt",
+
+	Code: "error-xpriv-decrypt",
 }
 
 // ErrGetUser indicates failure to get user information
+
 var ErrGetUser = models.SPVError{
-	Message:    "Cannot get user",
+
+	Message: "Cannot get user",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-user-get",
+
+	Code: "error-user-get",
 }
 
 // ErrCreateAccessKey indicates failure to create an access key
+
 var ErrCreateAccessKey = models.SPVError{
-	Message:    "Cannot create access key",
+
+	Message: "Cannot create access key",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-access-key-create",
+
+	Code: "error-access-key-create",
 }
 
 // ErrGetXPub indicates failure to get an xPub
+
 var ErrGetXPub = models.SPVError{
-	Message:    "Cannot get xPub",
+
+	Message: "Cannot get xPub",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-xpub-get",
+
+	Code: "error-xpub-get",
 }
 
 // ErrGetBalance indicates failure to get the balance
+
 var ErrGetBalance = models.SPVError{
-	Message:    "Cannot get balance",
+
+	Message: "Cannot get balance",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-balance-get",
+
+	Code: "error-balance-get",
 }
 
 // ErrSessionUpdate indicates failure to update the session
+
 var ErrSessionUpdate = models.SPVError{
-	Message:    "Cannot update session",
+
+	Message: "Cannot update session",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-session-update",
+
+	Code: "error-session-update",
 }
 
 // ErrSessionTerminate indicates failure to terminate the session
+
 var ErrSessionTerminate = models.SPVError{
-	Message:    "Cannot terminate session",
+
+	Message: "Cannot terminate session",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-session-terminate",
+
+	Code: "error-session-terminate",
 }
 
 // ////////////////////////////////// RATE ERRORS
 
 // ErrRateNotFound indicates the requested rate was not found
+
 var ErrRateNotFound = models.SPVError{
-	Message:    "Rate not found",
+
+	Message: "Rate not found",
+
 	StatusCode: http.StatusNotFound,
-	Code:       "error-rate-not-found",
+
+	Code: "error-rate-not-found",
 }
 
 // ////////////////////////////////// BINDING ERRORS
 
 // ErrCannotBindRequest is when request body cannot be bind into struct
+
 var ErrCannotBindRequest = models.SPVError{
-	Message:    "cannot bind request body",
+
+	Message: "cannot bind request body",
+
 	StatusCode: 400,
-	Code:       "error-bind-body-invalid",
+
+	Code: "error-bind-body-invalid",
 }
 
 // ////////////////////////////////// CONFIG ERRORS
 
 // ErrGetConfig indicates failure to get the configuration
+
 var ErrGetConfig = models.SPVError{
-	Message:    "Cannot get configuration",
+
+	Message: "Cannot get configuration",
+
 	StatusCode: http.StatusInternalServerError,
-	Code:       "error-config-get",
+
+	Code: "error-config-get",
 }
