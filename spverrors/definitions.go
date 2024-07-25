@@ -43,3 +43,21 @@ var ErrIncorrectEmail = models.SPVError{Message: "Incorrect email", StatusCode: 
 var ErrRegisterXPub = models.SPVError{Message: "Cannot register new xPub", StatusCode: 400, Code: "error-xpub-register"}
 
 var ErrRegisterPaymail = models.SPVError{Message: "Cannot register new Paymail", StatusCode: 400, Code: "error-paymail-register"}
+
+var ErrGenerateMnemonic = models.SPVError{Message: "Cannot generate mnemonic", StatusCode: 500, Code: "error-mnemonic-generate"}
+
+var ErrGenerateXPriv = models.SPVError{Message: "Cannot generate xPriv", StatusCode: 500, Code: "error-xpriv-generate"}
+
+var ErrEncryptXPriv = models.SPVError{Message: "Cannot encrypt xPriv", StatusCode: 500, Code: "error-xpriv-encrypt"}
+
+var ErrDecryptXPriv = models.SPVError{Message: "Cannot decrypt xPriv", StatusCode: 500, Code: "error-xpriv-decrypt"}
+
+var ErrGetUser = models.SPVError{Message: "Cannot get user", StatusCode: 500, Code: "error-user-get"}
+
+var ErrCreateAccessKey = models.SPVError{Message: "Cannot create access key", StatusCode: 500, Code: "error-access-key-create"}
+
+var ErrGetXPub = models.SPVError{Message: "Cannot get xPub", StatusCode: 500, Code: "error-xpub-get"}
+
+// ////////////////////////////////// RATE
+
+var ErrRateNotFound = models.SPVError{Message: "Rate not found", StatusCode: 404, Code: "error-rate-not-found"}

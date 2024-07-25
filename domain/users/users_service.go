@@ -64,19 +64,19 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	mnemonic, seed, err := generateMnemonic()
 	if err != nil {
 		s.log.Error().Msgf("Error while generating mnemonic: %v", err.Error())
-		return nil, errors.Wrap(err, "error while generating mnemonic")
+		return nil, spverrors.ErrGenerateMnemonic
 	}
 
 	xpriv, err := generateXpriv(seed)
 	if err != nil {
 		s.log.Error().Msgf("Error while generating xPriv: %v", err.Error())
-		return nil, errors.Wrap(err, "error while generating xPriv")
+		return nil, spverrors.ErrGenerateXPriv
 	}
 
 	encryptedXpriv, err := encryptXpriv(password, xpriv.String())
 	if err != nil {
 		s.log.Error().Msgf("Error while encrypting xPriv: %v", err.Error())
-		return nil, errors.Wrap(err, "error while encrypting xPriv")
+		return nil, spverrors.ErrEncryptXPriv
 	}
 
 	xpub, err := s.adminWalletClient.RegisterXpub(xpriv)
@@ -103,9 +103,6 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	}
 
 	if err = s.InsertUser(user); err != nil {
-		s.log.Error().
-			Str("newUserEmail", email).
-			Msgf("Error while inserting user: %v", err.Error())
 		return nil, spverrors.ErrInsertUser
 	}
 
@@ -128,7 +125,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, spverrors.ErrInvalidCredentials
 		}
-		return nil, errors.Wrap(err, "cannot get user")
+		return nil, spverrors.ErrGetUser
 	}
 
 	// Decrypt xpriv.
@@ -137,7 +134,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		s.log.Error().
 			Str("userEmail", email).
 			Msgf("Error while decrypting xPriv: %v", err.Error())
-		return nil, errors.Wrap(err, "cannot get xpriv")
+		return nil, spverrors.ErrDecryptXPriv
 	}
 
 	userWalletClient := s.walletClientFactory.CreateWithXpriv(decryptedXpriv)
@@ -147,7 +144,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		s.log.Error().
 			Str("userEmail", email).
 			Msgf("Error while creating access key: %v", err.Error())
-		return nil, errors.Wrap(err, "cannot create access key")
+		return nil, spverrors.ErrCreateAccessKey
 	}
 
 	xpub, err := userWalletClient.GetXPub()
@@ -155,24 +152,17 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		s.log.Error().
 			Str("userEmail", email).
 			Msgf("Error while getting xPub: %v", err.Error())
-		return nil, errors.Wrap(err, "cannot get spv wallet user info")
+		return nil, spverrors.ErrGetXPub
 	}
 
 	exchangeRate, err := s.ratesService.GetExchangeRate()
 	if err != nil {
 		s.log.Error().
-			Str("userEmail", email).
 			Msgf("Exchange rate not found: %v", err.Error())
-		return nil, errors.Wrap(err, "cannot get exchange rate")
+		return nil, spverrors.ErrRateNotFound
 	}
 
-	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
-	if err != nil {
-		s.log.Error().
-			Str("userEmail", email).
-			Msgf("Error while calculating balance: %v", err.Error())
-		return nil, errors.Wrap(err, "cannot calculate balance")
-	}
+	balance := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
 
 	signInUser := &AuthenticatedUser{
 		User: user,
@@ -209,7 +199,7 @@ func (s *UserService) GetUserByID(userID int) (*User, error) {
 		s.log.Error().
 			Str("userID", strconv.Itoa(userID)).
 			Msgf("Error while getting user by id: %v", err.Error())
-		return nil, fmt.Errorf("cannot get user, cause: %w", err)
+		return nil, spverrors.ErrGetUser
 	}
 
 	return user, nil
@@ -222,26 +212,17 @@ func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
 	// Get xpub.
 	xpub, err := userWalletClient.GetXPub()
 	if err != nil {
-		s.log.Error().
-			Msgf("Error while getting xPub: %v", err.Error())
-		return nil, fmt.Errorf("cannot get user balance, cause: %w", err)
+		s.log.Error().Msgf("Error while getting xPub: %v", err.Error())
+		return nil, spverrors.ErrGetXPub
 	}
 
 	exchangeRate, err := s.ratesService.GetExchangeRate()
 	if err != nil {
-		s.log.Error().
-			Msgf("Exchange rate not found: %v", err.Error())
-		return nil, fmt.Errorf("exchange rate not found, cause: %w", err)
+		s.log.Error().Msgf("Exchange rate not found: %v", err.Error())
+		return nil, spverrors.ErrRateNotFound
 	}
 
-	// Calculate balance.
-	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
-	if err != nil {
-		s.log.Error().
-			Str("xpubID", xpub.GetID()).
-			Msgf("Error while calculating balance: %v", err.Error())
-		return nil, err
-	}
+	balance := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
 
 	return balance, nil
 }
@@ -254,7 +235,7 @@ func (s *UserService) GetUserXpriv(userID int, password string) (string, error) 
 			Str("userID", strconv.Itoa(userID)).
 			Msgf("Error while getting user by id: %v", err.Error())
 
-		return "", fmt.Errorf("cannot get user, cause: %w", err)
+		return "", spverrors.ErrGetUser
 	}
 
 	// Decrypt xpriv.
@@ -263,7 +244,7 @@ func (s *UserService) GetUserXpriv(userID int, password string) (string, error) 
 		s.log.Error().
 			Str("userID", strconv.Itoa(userID)).
 			Msgf("Error while decrypting xPriv: %v", err.Error())
-		return "", fmt.Errorf("cannot decrypt xpriv, cause: %w", err)
+		return "", spverrors.ErrDecryptXPriv
 	}
 
 	return decryptedXpriv, nil
@@ -357,7 +338,7 @@ func emptyString(input string) bool {
 	return trimed == ""
 }
 
-func calculateBalance(satoshis uint64, exchangeRate *float64) (*Balance, error) {
+func calculateBalance(satoshis uint64, exchangeRate *float64) *Balance {
 	balanceBSV := float64(satoshis) / 100000000
 	balanceUSD := balanceBSV * *exchangeRate
 
@@ -367,5 +348,5 @@ func calculateBalance(satoshis uint64, exchangeRate *float64) (*Balance, error) 
 		Satoshis: satoshis,
 	}
 
-	return balance, nil
+	return balance
 }
