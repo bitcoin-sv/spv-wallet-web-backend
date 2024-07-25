@@ -2,7 +2,6 @@ package users
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net/mail"
 	"strconv"
@@ -116,19 +115,18 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 
 // SignInUser signs in user.
 func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, error) {
-	// Check if user exists.
 	user, err := s.repo.GetUserByEmail(context.Background(), email)
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
 			Msgf("User wasn't found by email: %v", err.Error())
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, spverrors.ErrInvalidCredentials
-		}
 		return nil, spverrors.ErrGetUser
 	}
 
-	// Decrypt xpriv.
+	if user == nil {
+		return nil, spverrors.ErrInvalidCredentials
+	}
+
 	decryptedXpriv, err := decryptXpriv(password, user.Xpriv)
 	if err != nil {
 		s.log.Error().
