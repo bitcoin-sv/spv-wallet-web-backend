@@ -50,6 +50,13 @@ var ErrGenerateTotpForContact = models.SPVError{
 	Code:       "error-generate-totp-for-contact",
 }
 
+// ErrContactNotProvided indicates the contact was not provided
+var ErrContactNotProvided = models.SPVError{
+	Message:    "Contact not provided",
+	StatusCode: http.StatusBadRequest,
+	Code:       "error-contact-not-provided",
+}
+
 // ////////////////////////////////// TRANSACTION ERRORS
 
 // ErrCreateTransaction indicates failure to create a transaction
@@ -115,6 +122,13 @@ var ErrEmptyPassword = models.SPVError{
 	Message:    "Password cannot be empty",
 	StatusCode: http.StatusBadRequest,
 	Code:       "error-password-empty",
+}
+
+// ErrPasswordMismatch indicates the password and confirmation password do not match
+var ErrPasswordMismatch = models.SPVError{
+	Message:    "Password and confirmation password do not match",
+	StatusCode: http.StatusBadRequest,
+	Code:       "error-password-mismatch",
 }
 
 // ErrIncorrectEmail indicates an incorrect email was provided
@@ -187,6 +201,27 @@ var ErrGetXPub = models.SPVError{
 	Code:       "error-xpub-get",
 }
 
+// ErrGetBalance indicates failure to get the balance
+var ErrGetBalance = models.SPVError{
+	Message:    "Cannot get balance",
+	StatusCode: http.StatusInternalServerError,
+	Code:       "error-balance-get",
+}
+
+// ErrSessionUpdate indicates failure to update the session
+var ErrSessionUpdate = models.SPVError{
+	Message:    "Cannot update session",
+	StatusCode: http.StatusInternalServerError,
+	Code:       "error-session-update",
+}
+
+// ErrSessionTerminate indicates failure to terminate the session
+var ErrSessionTerminate = models.SPVError{
+	Message:    "Cannot terminate session",
+	StatusCode: http.StatusInternalServerError,
+	Code:       "error-session-terminate",
+}
+
 // ////////////////////////////////// RATE ERRORS
 
 // ErrRateNotFound indicates the requested rate was not found
@@ -194,4 +229,22 @@ var ErrRateNotFound = models.SPVError{
 	Message:    "Rate not found",
 	StatusCode: http.StatusNotFound,
 	Code:       "error-rate-not-found",
+}
+
+// ////////////////////////////////// BINDING ERRORS
+
+// ErrCannotBindRequest is when request body cannot be bind into struct
+var ErrCannotBindRequest = models.SPVError{
+	Message:    "cannot bind request body",
+	StatusCode: 400,
+	Code:       "error-bind-body-invalid",
+}
+
+// ////////////////////////////////// CONFIG ERRORS
+
+// ErrGetConfig indicates failure to get the configuration
+var ErrGetConfig = models.SPVError{
+	Message:    "Cannot get configuration",
+	StatusCode: http.StatusInternalServerError,
+	Code:       "error-config-get",
 }

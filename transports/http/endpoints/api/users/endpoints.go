@@ -7,7 +7,6 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -54,19 +53,17 @@ func (h *handler) register(c *gin.Context) {
 	var reqUser RegisterUser
 	// Check if request body is valid JSON
 	if err := c.Bind(&reqUser); err != nil {
-		h.log.Error().Msgf("Invalid payload: %s", err)
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Invalid request."))
+		spverrors.ErrorResponse(c, spverrors.ErrCannotBindRequest, h.log)
 		return
 	}
 
 	// Check if sended passwords match
 	if reqUser.Password != reqUser.PasswordConfirmation {
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Passwords do not match."))
+		spverrors.ErrorResponse(c, spverrors.ErrPasswordMismatch, h.log)
 		return
 	}
 
 	newUser, err := h.service.CreateNewUser(reqUser.Email, reqUser.Password)
-
 	if err != nil {
 		spverrors.ErrorResponse(c, err, h.log)
 		return
@@ -93,14 +90,14 @@ func (h *handler) getUser(c *gin.Context) {
 	user, err := h.service.GetUserByID(c.GetInt(auth.SessionUserID))
 	if err != nil {
 		h.log.Error().Msgf("User not found: %s", err)
-		c.JSON(http.StatusBadRequest, "An error occurred while getting user details")
+		spverrors.ErrorResponse(c, spverrors.ErrGetUser, h.log)
 		return
 	}
 
 	currentBalance, err := h.service.GetUserBalance(c.GetString(auth.SessionAccessKey))
 	if err != nil {
 		h.log.Error().Msgf("Balance not found: %s", err)
-		c.JSON(http.StatusBadRequest, "An error occurred while getting user details")
+		spverrors.ErrorResponse(c, spverrors.ErrGetBalance, h.log)
 		return
 	}
 

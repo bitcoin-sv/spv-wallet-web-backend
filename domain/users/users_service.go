@@ -177,21 +177,6 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	return signInUser, nil
 }
 
-// SignOutUser signs out user by revoking access key. (Not possible at the moment, method is just a mock.)
-func (s *UserService) SignOutUser(_, _ string) error {
-
-	// / Right now we cannot revoke access key without authentication with XPriv, which is impossible here.
-
-	// userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
-
-	// _, err = userWalletClient.RevokeAccessKey(accessKeyId)
-	// if err != nil {
-	// 	return err
-	// }
-
-	return nil
-}
-
 // GetUserByID returns user by id.
 func (s *UserService) GetUserByID(userID int) (*User, error) {
 	user, err := s.repo.GetUserByID(context.Background(), userID)

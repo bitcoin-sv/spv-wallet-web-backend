@@ -30,7 +30,7 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB, log *zerolog.Logger, ws w
 	routes := []interface{}{
 		swagger.NewHandler(),
 		status.NewHandler(),
-		config.NewHandler(s),
+		config.NewHandler(s, log),
 		usersRootEndpoints,
 		usersAPIEndpoints,
 		accessRootEndpoints,
