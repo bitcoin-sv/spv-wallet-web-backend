@@ -96,6 +96,13 @@ var ErrRecordTransaction = models.SPVError{
 
 // ////////////////////////////////// USER ERRORS
 
+// ErrUnauthorized indicates the user is unauthorized
+var ErrUnauthorized = models.SPVError{
+	Message:    "Unauthorized",
+	StatusCode: http.StatusUnauthorized,
+	Code:       "error-unauthorized",
+}
+
 // ErrInvalidCredentials indicates invalid credentials were provided
 var ErrInvalidCredentials = models.SPVError{
 	Message:    "Invalid credentials",

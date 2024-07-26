@@ -3,12 +3,13 @@ package auth
 import (
 	"errors"
 	"fmt"
-	"net/http"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 )
 
 // ErrorUnauthorized is thrown if authorization failed.
@@ -19,18 +20,21 @@ type Middleware struct {
 	adminWalletClient   users.AdminWalletClient
 	walletClientFactory users.WalletClientFactory
 	services            *domain.Services
+	log                 *zerolog.Logger
 }
 
 // NewAuthMiddleware create middleware that is checking the variables in session.
-func NewAuthMiddleware(s *domain.Services) *Middleware {
+func NewAuthMiddleware(s *domain.Services, logger *zerolog.Logger) *Middleware {
 	adminWalletClient, err := s.WalletClientFactory.CreateAdminClient()
 	if err != nil {
 		panic(fmt.Errorf("error during creating adminWalletClient: %w", err))
 	}
+	log := logger.With().Str("service", "auth-middleware").Logger()
 	return &Middleware{
 		adminWalletClient:   adminWalletClient,
 		walletClientFactory: s.WalletClientFactory,
 		services:            s,
+		log:                 &log,
 	}
 }
 
@@ -40,7 +44,7 @@ func (h *Middleware) ApplyToAPI(c *gin.Context) {
 
 	accessKeyID, accessKey, userID, paymail, xPriv, err := h.authorizeSession(session)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
+		spverrors.AbortWithErrorResponse(c, spverrors.ErrUnauthorized, h.log)
 		return
 	}
 
