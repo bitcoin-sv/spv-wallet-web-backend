@@ -1,15 +1,13 @@
 module github.com/bitcoin-sv/spv-wallet-web-backend
 
-go 1.22.4
-
-toolchain go1.22.5
+go 1.22.5
 
 require (
 	github.com/avast/retry-go/v4 v4.6.0
-	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.11
-	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.16
+	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.12
+	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.18
 	github.com/brianvoe/gofakeit/v6 v6.28.0
-	github.com/centrifugal/centrifuge v0.32.2
+	github.com/centrifugal/centrifuge v0.33.0
 	github.com/gin-contrib/sessions v1.0.1
 	github.com/golang/mock v1.6.0
 	github.com/libsv/go-bk v0.1.6
@@ -26,19 +24,21 @@ require (
 require (
 	github.com/FZambia/eagle v0.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/Yiling-J/theine-go v0.3.2 // indirect
 	github.com/antonlindstrom/pgstore v0.0.0-20220421113606-e3a6e3fed12a // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bitcoinschema/go-bitcoin/v2 v2.0.5 // indirect
 	github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173 // indirect
 	github.com/boombuler/barcode v1.0.2 // indirect
-	github.com/bytedance/sonic v1.11.9 // indirect
-	github.com/bytedance/sonic/loader v0.1.1 // indirect
-	github.com/centrifugal/protocol v0.13.3 // indirect
+	github.com/bytedance/sonic v1.12.0 // indirect
+	github.com/bytedance/sonic/loader v0.2.0 // indirect
+	github.com/centrifugal/protocol v0.13.4-0.20240702174651-e8db704aa2d2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/gabriel-vasile/mimetype v1.4.4 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.5 // indirect
+	github.com/gammazero/deque v0.2.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/jsonreference v0.21.0 // indirect
@@ -73,20 +73,22 @@ require (
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/quasoft/memstore v0.0.0-20191010062613-2bce066d2b0b // indirect
-	github.com/redis/rueidis v1.0.41 // indirect
+	github.com/redis/rueidis v1.0.43 // indirect
 	github.com/sagikazarmark/locafero v0.6.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/segmentio/encoding v0.4.0 // indirect
+	github.com/shadowspore/fossil-delta v0.0.0-20240102155221-e3a8590b820b // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	github.com/zeebo/xxh3 v1.0.2 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
-	golang.org/x/exp v0.0.0-20240716175740-e3f259677ff7 // indirect
+	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/tools v0.23.0 // indirect
