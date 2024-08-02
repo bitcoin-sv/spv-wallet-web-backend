@@ -1,13 +1,12 @@
 package access
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -51,31 +50,22 @@ func NewHandler(s *domain.Services, log *zerolog.Logger) (router.RootEndpoints, 
 //	@Param data body SignInUser true "User sign in data"
 func (h *handler) signIn(c *gin.Context) {
 	var reqUser SignInUser
-	err := c.Bind(&reqUser)
-
-	// Check if request body is valid JSON
-	if err != nil {
-		h.log.Error().Msgf("Invalid payload. Error: %s", err)
-		c.JSON(http.StatusBadRequest, "Invalid request.")
+	if err := c.Bind(&reqUser); err != nil {
+		spverrors.ErrorResponse(c, spverrors.ErrCannotBindRequest, h.log)
 		return
 	}
 
 	signInUser, err := h.service.SignInUser(reqUser.Email, reqUser.Password)
 	if err != nil {
-		if errors.Is(err, users.ErrInvalidCredentials) {
-			c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Sorry, your username or password is incorrect. Please try again."))
-			return
-		}
-
-		h.log.Error().Msgf("Sign-in error: %s", err)
-		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("Something went wrong. Please try again later."))
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 
 	err = auth.UpdateSession(c, signInUser)
 	if err != nil {
 		h.log.Error().Msgf("Sign-in error. Session wasn't saved: %s", err)
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Something went wrong. Please try again later."))
+		spverrors.ErrorResponse(c, spverrors.ErrSessionUpdate, h.log)
+		return
 	}
 
 	response := SignInResponse{
@@ -94,17 +84,13 @@ func (h *handler) signIn(c *gin.Context) {
 //	@Success 200
 //	@Router /api/v1/sign-out [post]
 func (h *handler) signOut(c *gin.Context) {
-	err := h.service.SignOutUser(c.GetString(auth.SessionAccessKeyID), c.GetString(auth.SessionAccessKey))
-	if err != nil {
-		h.log.Error().Msgf("Sign-out error: %s", err)
-		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred during the logout process."))
-		return
-	}
+	// Right now we cannot revoke access key without authentication with XPriv
+	// All we can do is to terminate session
 
-	err = auth.TerminateSession(c)
+	err := auth.TerminateSession(c)
 	if err != nil {
 		h.log.Error().Msgf("Sign-out error. Session wasn't terminated: %s", err)
-		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred during the logout process."))
+		spverrors.ErrorResponse(c, spverrors.ErrSessionTerminate, h.log)
 		return
 	}
 

@@ -81,7 +81,7 @@ func (s *server) ShutdownWithContext(ctx context.Context) error {
 func (s *server) SetupEntrypoint(engine *gin.Engine) {
 	apiMiddlewares := router.ToHandlers(
 		auth.NewSessionMiddleware(s.db, engine),
-		auth.NewAuthMiddleware(s.services),
+		auth.NewAuthMiddleware(s.services, s.log),
 	)
 	r := engine.Group("/api/websocket", apiMiddlewares...)
 

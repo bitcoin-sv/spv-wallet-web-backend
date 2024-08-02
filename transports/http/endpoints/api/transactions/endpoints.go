@@ -8,8 +8,8 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
@@ -57,10 +57,8 @@ func (h *handler) RegisterAPIEndpoints(router *gin.RouterGroup) {
 //	@Router /api/v1/transaction/search [post]
 func (h *handler) getTransactions(c *gin.Context) {
 	var req SearchTransaction
-	err := c.Bind(&req)
-	if err != nil {
-		h.log.Error().Msgf("Invalid payload: %s", err)
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Invalid request. Please check conditions and metadata"))
+	if err := c.Bind(&req); err != nil {
+		spverrors.ErrorResponse(c, spverrors.ErrCannotBindRequest, h.log)
 		return
 	}
 
@@ -74,8 +72,7 @@ func (h *handler) getTransactions(c *gin.Context) {
 	// Get user transactions.
 	txs, err := h.tService.GetTransactions(c.GetString(auth.SessionAccessKey), c.GetString(auth.SessionUserPaymail), req.QueryParams)
 	if err != nil {
-		h.log.Error().Msgf("An error occurred while trying to get a list of transactions: %s", err)
-		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred while trying to get a list of transactions"))
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 
@@ -96,8 +93,7 @@ func (h *handler) getTransaction(c *gin.Context) {
 	// Get transaction by id.
 	transaction, err := h.tService.GetTransaction(c.GetString(auth.SessionAccessKey), transactionID, c.GetString(auth.SessionUserPaymail))
 	if err != nil {
-		h.log.Error().Msgf("An error occurred while trying to get transaction details: %s", err)
-		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred while trying to get transaction details"))
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 
@@ -114,26 +110,22 @@ func (h *handler) getTransaction(c *gin.Context) {
 //	@Param data body CreateTransaction true "Create transaction data"
 func (h *handler) createTransaction(c *gin.Context) {
 	var reqTransaction CreateTransaction
-	err := c.Bind(&reqTransaction)
-	if err != nil {
-		h.log.Error().Msgf("Invalid payload: %s", err)
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Invalid request. Please check transaction details"))
+	if err := c.Bind(&reqTransaction); err != nil {
+		spverrors.ErrorResponse(c, spverrors.ErrCannotBindRequest, h.log)
 		return
 	}
 
 	// Validate user.
 	xpriv, err := h.uService.GetUserXpriv(c.GetInt(auth.SessionUserID), reqTransaction.Password)
 	if err != nil {
-		h.log.Error().Msgf("Invalid password: %s", err)
-		c.JSON(http.StatusBadRequest, "Invalid password.")
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 
 	events := make(chan notification.TransactionEvent)
 	err = h.tService.CreateTransaction(c.GetString(auth.SessionUserPaymail), xpriv, reqTransaction.Recipient, reqTransaction.Satoshis, events)
 	if err != nil {
-		h.log.Error().Msgf("An error occurred while creating a transaction: %s", err)
-		c.JSON(http.StatusBadRequest, "An error occurred while creating a transaction.")
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 	go func() {

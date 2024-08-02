@@ -3,8 +3,6 @@ package websocket
 import (
 	"encoding/json"
 
-	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
-	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/centrifugal/centrifuge"
 	"github.com/rs/zerolog"
 )
@@ -19,6 +17,7 @@ type Socket struct {
 func (s *Socket) Notify(event any) {
 	bytes, err := json.Marshal(event)
 	if err != nil {
+		s.Log.Error().Msgf("Error when marshaling event %v: %v", event, err.Error())
 		return
 	}
 
@@ -31,23 +30,4 @@ func (s *Socket) Notify(event any) {
 		s.Log.Error().Msgf("Error when sending event %v to websocket: %v", event, err.Error())
 	}
 	s.Log.Info().Msgf("Event %v sent to websocket", event)
-}
-
-// NotifyAboutTransaction will send notification about new transaction.
-func (s *Socket) NotifyAboutTransaction(tx *models.Transaction) {
-	txEvent := notification.PrepareTransactionEvent(tx)
-	s.Notify(txEvent)
-}
-
-// SendError send error notification.
-func (s *Socket) SendError(error error) {
-	bytes, err := json.Marshal(error)
-	if err != nil {
-		return
-	}
-
-	if err = s.Client.Send(bytes); err != nil {
-		s.Log.Error().Msgf("Error when sending event %v to websocket: %v", error.Error(), err.Error())
-	}
-	s.Log.Info().Msgf("Event %v sent to websocket", error.Error())
 }

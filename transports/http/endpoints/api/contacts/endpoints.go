@@ -5,8 +5,8 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/contacts"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
-	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/api"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/bitcoin-sv/spv-wallet/models/filter"
@@ -49,18 +49,15 @@ func (h *handler) RegisterAPIEndpoints(router *gin.RouterGroup) {
 //	@Param data body SearchContact true "Conditions for filtering contacts"
 func (h *handler) getContacts(c *gin.Context) {
 	var req filter.SearchContacts
-	err := c.Bind(&req)
-	if err != nil {
-		h.log.Error().Msgf("Invalid payload: %s", err)
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Invalid request. Please check conditions and metadata"))
+	if err := c.Bind(&req); err != nil {
+		spverrors.ErrorResponse(c, spverrors.ErrCannotBindRequest, h.log)
 		return
 	}
 
 	// Get user contacts.
 	paginatedContacts, err := h.cService.GetContacts(c.Request.Context(), c.GetString(auth.SessionAccessKey), req.Conditions, req.Metadata, req.QueryParams)
 	if err != nil {
-		h.log.Error().Msgf("An error occurred while trying to get a list of contacts: %s", err)
-		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred while trying to get a list of contacts"))
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 
@@ -79,17 +76,14 @@ func (h *handler) upsertContact(c *gin.Context) {
 	paymail := c.Param("paymail")
 
 	var req UpsertContact
-	err := c.Bind(&req)
-	if err != nil {
-		h.log.Error().Msgf("Invalid payload: %s", err)
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Invalid request. Please check contact details"))
+	if err := c.Bind(&req); err != nil {
+		spverrors.ErrorResponse(c, spverrors.ErrCannotBindRequest, h.log)
 		return
 	}
 
-	_, err = h.cService.UpsertContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail, req.FullName, c.GetString(auth.SessionUserPaymail), req.Metadata)
+	_, err := h.cService.UpsertContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail, req.FullName, c.GetString(auth.SessionUserPaymail), req.Metadata)
 	if err != nil {
-		h.log.Error().Msgf("An error occurred while upserting the contact: %s", err)
-		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred while upserting the contact."))
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 
@@ -108,8 +102,7 @@ func (h *handler) acceptContact(c *gin.Context) {
 
 	err := h.cService.AcceptContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail)
 	if err != nil {
-		h.log.Error().Msgf("An error occurred while accepting the contact: %s", err)
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("An error occurred while accepting the contact."))
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 
@@ -128,8 +121,7 @@ func (h *handler) rejectContact(c *gin.Context) {
 
 	err := h.cService.RejectContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail)
 	if err != nil {
-		h.log.Error().Msgf("An error occurred while rejecting the contact: %s", err)
-		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred while rejecting the contact."))
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 
@@ -146,24 +138,20 @@ func (h *handler) rejectContact(c *gin.Context) {
 //	@Param data body ConfirmContact true "Confirm contact data"
 func (h *handler) confirmContact(c *gin.Context) {
 	var req ConfirmContact
-	err := c.Bind(&req)
-	if err != nil {
-		h.log.Error().Msgf("Invalid payload: %s", err)
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Invalid request. Please check contact details and passcode"))
+	if err := c.Bind(&req); err != nil {
+		spverrors.ErrorResponse(c, spverrors.ErrCannotBindRequest, h.log)
 		return
 	}
 	if req.Contact == nil {
-		h.log.Error().Msgf("Invalid payload. Contact is not provided: %s", err)
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Invalid request. Contact is not provided"))
+		spverrors.ErrorResponse(c, spverrors.ErrContactNotProvided, h.log)
 		return
 	}
 
 	requesterPaymail := c.GetString(auth.SessionUserPaymail)
 
-	err = h.cService.ConfirmContact(c.Request.Context(), c.GetString(auth.SessionXPriv), req.Contact, req.Passcode, requesterPaymail)
+	err := h.cService.ConfirmContact(c.Request.Context(), c.GetString(auth.SessionXPriv), req.Contact, req.Passcode, requesterPaymail)
 	if err != nil {
-		h.log.Error().Msgf("An error occurred while confirming the contact: %s", err)
-		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred while confirming the contact."))
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 
@@ -180,17 +168,14 @@ func (h *handler) confirmContact(c *gin.Context) {
 //	@Param data body models.Contact true "Contact details"
 func (h *handler) generateTotp(c *gin.Context) {
 	var contact models.Contact
-	err := c.Bind(&contact)
-	if err != nil {
-		h.log.Error().Msgf("Invalid payload: %s", err)
-		c.JSON(http.StatusBadRequest, api.NewErrorResponseFromString("Invalid request. Please check contact details"))
+	if err := c.Bind(&contact); err != nil {
+		spverrors.ErrorResponse(c, spverrors.ErrCannotBindRequest, h.log)
 		return
 	}
 
 	passcode, err := h.cService.GenerateTotpForContact(c.Request.Context(), c.GetString(auth.SessionXPriv), &contact)
 	if err != nil {
-		h.log.Error().Msgf("An error occurred while generating TOTP for the contact: %s", err)
-		c.JSON(http.StatusInternalServerError, api.NewErrorResponseFromString("An error occurred while generating TOTP for the contact."))
+		spverrors.ErrorResponse(c, err, h.log)
 		return
 	}
 

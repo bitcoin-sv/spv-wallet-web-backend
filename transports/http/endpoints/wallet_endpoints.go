@@ -30,7 +30,7 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB, log *zerolog.Logger, ws w
 	routes := []interface{}{
 		swagger.NewHandler(),
 		status.NewHandler(),
-		config.NewHandler(s),
+		config.NewHandler(s, log),
 		usersRootEndpoints,
 		usersAPIEndpoints,
 		accessRootEndpoints,
@@ -42,7 +42,7 @@ func SetupWalletRoutes(s *domain.Services, db *sql.DB, log *zerolog.Logger, ws w
 	return func(engine *gin.Engine) {
 		apiMiddlewares := router.ToHandlers(
 			auth.NewSessionMiddleware(db, engine),
-			auth.NewAuthMiddleware(s),
+			auth.NewAuthMiddleware(s, log),
 		)
 
 		rootRouter := engine.Group("")

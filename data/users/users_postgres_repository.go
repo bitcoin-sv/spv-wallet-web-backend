@@ -60,11 +60,14 @@ func (r *Repository) InsertUser(ctx context.Context, user *users.User) error {
 	return errors.Wrap(err, "internal error")
 }
 
-// GetUserByEmail returns user by email.
+// GetUserByEmail returns user by email. Can return nil user without an error - if no rows found.
 func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*users.User, error) {
 	var user UserDto
 	row := r.db.QueryRowContext(ctx, postgresGetUserByEmail, email)
 	if err := row.Scan(&user.ID, &user.Email, &user.Xpriv, &user.Paymail, &user.CreatedAt); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, errors.Wrap(err, "internal error")
 	}
 	return user.toUser(), nil

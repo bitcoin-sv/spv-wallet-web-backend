@@ -7,6 +7,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/transactions"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/tests/data"
 	mock "github.com/bitcoin-sv/spv-wallet-web-backend/tests/mocks"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/tests/utils"
@@ -44,7 +45,7 @@ func TestCreateTransaction(t *testing.T) {
 		clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 		clientFctrMq.EXPECT().
 			CreateWithXpriv(xpriv).
-			Return(mockUserWalletClient, nil)
+			Return(mockUserWalletClient)
 
 		sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
@@ -88,7 +89,7 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 			clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
-				Return(mockUserWalletClient, nil)
+				Return(mockUserWalletClient)
 
 			sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
@@ -116,7 +117,7 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 		{
 			name:          "Transaction doesn't exist",
 			transactionID: "imnothere",
-			expectdErr:    errors.New("spv wallet error: Not found"),
+			expectdErr:    spverrors.ErrGetTransaction,
 		},
 	}
 
@@ -137,7 +138,7 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 			clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
-				Return(mockUserWalletClient, nil)
+				Return(mockUserWalletClient)
 
 			sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 

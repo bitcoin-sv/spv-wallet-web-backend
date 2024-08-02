@@ -386,7 +386,7 @@ func (m *MockFullTransaction) GetTransactionNumberOfOutputs() uint32 {
 // GetTransactionNumberOfOutputs indicates an expected call of GetTransactionNumberOfOutputs.
 func (mr *MockFullTransactionMockRecorder) GetTransactionNumberOfOutputs() *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionNumberOfOutputs", reflect.TypeOf((*MockFullTransaction)(nil).GetTransactionNumberOfOutputs))        
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionNumberOfOutputs", reflect.TypeOf((*MockFullTransaction)(nil).GetTransactionNumberOfOutputs))       
 }
 
 // GetTransactionReceiver mocks base method.
@@ -619,7 +619,7 @@ func (m *MockUserWalletClient) GetContacts(ctx context.Context, conditions *filt
 // GetContacts indicates an expected call of GetContacts.
 func (mr *MockUserWalletClientMockRecorder) GetContacts(ctx, conditions, metadata, queryParams interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetContacts", reflect.TypeOf((*MockUserWalletClient)(nil).GetContacts), ctx, conditions, metadata, queryParams)   
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetContacts", reflect.TypeOf((*MockUserWalletClient)(nil).GetContacts), ctx, conditions, metadata, queryParams)  
 }
 
 // GetTransaction mocks base method.
@@ -634,7 +634,7 @@ func (m *MockUserWalletClient) GetTransaction(transactionID, userPaymail string)
 // GetTransaction indicates an expected call of GetTransaction.
 func (mr *MockUserWalletClientMockRecorder) GetTransaction(transactionID, userPaymail interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransaction", reflect.TypeOf((*MockUserWalletClient)(nil).GetTransaction), transactionID, userPaymail)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransaction", reflect.TypeOf((*MockUserWalletClient)(nil).GetTransaction), transactionID, userPaymail)        
 }
 
 // GetTransactions mocks base method.
@@ -694,7 +694,7 @@ func (m *MockUserWalletClient) RecordTransaction(hex, draftTxID string, metadata
 // RecordTransaction indicates an expected call of RecordTransaction.
 func (mr *MockUserWalletClientMockRecorder) RecordTransaction(hex, draftTxID, metadata interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecordTransaction", reflect.TypeOf((*MockUserWalletClient)(nil).RecordTransaction), hex, draftTxID, metadata)     
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecordTransaction", reflect.TypeOf((*MockUserWalletClient)(nil).RecordTransaction), hex, draftTxID, metadata)    
 }
 
 // RejectContact mocks base method.
@@ -738,7 +738,7 @@ func (m *MockUserWalletClient) SendToRecipients(recipients []*walletclient.Recip
 // SendToRecipients indicates an expected call of SendToRecipients.
 func (mr *MockUserWalletClientMockRecorder) SendToRecipients(recipients, senderPaymail interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendToRecipients", reflect.TypeOf((*MockUserWalletClient)(nil).SendToRecipients), recipients, senderPaymail)      
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendToRecipients", reflect.TypeOf((*MockUserWalletClient)(nil).SendToRecipients), recipients, senderPaymail)     
 }
 
 // UpsertContact mocks base method.
@@ -863,12 +863,11 @@ func (mr *MockWalletClientFactoryMockRecorder) CreateAdminClient() *gomock.Call 
 }
 
 // CreateWithAccessKey mocks base method.
-func (m *MockWalletClientFactory) CreateWithAccessKey(accessKey string) (users.UserWalletClient, error) {
+func (m *MockWalletClientFactory) CreateWithAccessKey(accessKey string) users.UserWalletClient {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateWithAccessKey", accessKey)
         ret0, _ := ret[0].(users.UserWalletClient)
-        ret1, _ := ret[1].(error)
-        return ret0, ret1
+        return ret0
 }
 
 // CreateWithAccessKey indicates an expected call of CreateWithAccessKey.
@@ -878,12 +877,11 @@ func (mr *MockWalletClientFactoryMockRecorder) CreateWithAccessKey(accessKey int
 }
 
 // CreateWithXpriv mocks base method.
-func (m *MockWalletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletClient, error) {
+func (m *MockWalletClientFactory) CreateWithXpriv(xpriv string) users.UserWalletClient {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateWithXpriv", xpriv)
         ret0, _ := ret[0].(users.UserWalletClient)
-        ret1, _ := ret[1].(error)
-        return ret0, ret1
+        return ret0
 }
 
 // CreateWithXpriv indicates an expected call of CreateWithXpriv.

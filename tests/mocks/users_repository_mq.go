@@ -12,31 +12,31 @@ import (
         gomock "github.com/golang/mock/gomock"
 )
 
-// MockUsersRepository is a mock of Repository interface.
-type MockUsersRepository struct {
+// MockRepository is a mock of Repository interface.
+type MockRepository struct {
         ctrl     *gomock.Controller
-        recorder *MockUsersRepositoryMockRecorder
+        recorder *MockRepositoryMockRecorder
 }
 
-// MockUsersRepositoryMockRecorder is the mock recorder for MockUsersRepository.
-type MockUsersRepositoryMockRecorder struct {
-        mock *MockUsersRepository
+// MockRepositoryMockRecorder is the mock recorder for MockRepository.
+type MockRepositoryMockRecorder struct {
+        mock *MockRepository
 }
 
-// NewMockUsersRepository creates a new mock instance.
-func NewMockUsersRepository(ctrl *gomock.Controller) *MockUsersRepository {
-        mock := &MockUsersRepository{ctrl: ctrl}
-        mock.recorder = &MockUsersRepositoryMockRecorder{mock}
+// NewMockRepository creates a new mock instance.
+func NewMockRepository(ctrl *gomock.Controller) *MockRepository {
+        mock := &MockRepository{ctrl: ctrl}
+        mock.recorder = &MockRepositoryMockRecorder{mock}
         return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUsersRepository) EXPECT() *MockUsersRepositoryMockRecorder {
+func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
         return m.recorder
 }
 
 // GetUserByEmail mocks base method.
-func (m *MockUsersRepository) GetUserByEmail(ctx context.Context, email string) (*users.User, error) {
+func (m *MockRepository) GetUserByEmail(ctx context.Context, email string) (*users.User, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetUserByEmail", ctx, email)
         ret0, _ := ret[0].(*users.User)
@@ -45,13 +45,13 @@ func (m *MockUsersRepository) GetUserByEmail(ctx context.Context, email string) 
 }
 
 // GetUserByEmail indicates an expected call of GetUserByEmail.
-func (mr *MockUsersRepositoryMockRecorder) GetUserByEmail(ctx, email interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) GetUserByEmail(ctx, email interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockUsersRepository)(nil).GetUserByEmail), ctx, email)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockRepository)(nil).GetUserByEmail), ctx, email)
 }
 
-// GetUserById mocks base method.
-func (m *MockUsersRepository) GetUserByID(ctx context.Context, id int) (*users.User, error) {
+// GetUserByID mocks base method.
+func (m *MockRepository) GetUserByID(ctx context.Context, id int) (*users.User, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "GetUserByID", ctx, id)
         ret0, _ := ret[0].(*users.User)
@@ -59,14 +59,14 @@ func (m *MockUsersRepository) GetUserByID(ctx context.Context, id int) (*users.U
         return ret0, ret1
 }
 
-// GetUserById indicates an expected call of GetUserById.
-func (mr *MockUsersRepositoryMockRecorder) GetUserById(ctx, id interface{}) *gomock.Call {
+// GetUserByID indicates an expected call of GetUserByID.
+func (mr *MockRepositoryMockRecorder) GetUserByID(ctx, id interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockUsersRepository)(nil).GetUserByID), ctx, id)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByID", reflect.TypeOf((*MockRepository)(nil).GetUserByID), ctx, id)
 }
 
 // InsertUser mocks base method.
-func (m *MockUsersRepository) InsertUser(ctx context.Context, user *users.User) error {
+func (m *MockRepository) InsertUser(ctx context.Context, user *users.User) error {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "InsertUser", ctx, user)
         ret0, _ := ret[0].(error)
@@ -74,7 +74,7 @@ func (m *MockUsersRepository) InsertUser(ctx context.Context, user *users.User) 
 }
 
 // InsertUser indicates an expected call of InsertUser.
-func (mr *MockUsersRepositoryMockRecorder) InsertUser(ctx, user interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) InsertUser(ctx, user interface{}) *gomock.Call {
         mr.mock.ctrl.T.Helper()
-        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertUser", reflect.TypeOf((*MockUsersRepository)(nil).InsertUser), ctx, user)
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertUser", reflect.TypeOf((*MockRepository)(nil).InsertUser), ctx, user)
 }
