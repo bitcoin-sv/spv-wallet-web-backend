@@ -180,13 +180,6 @@ var ErrEncryptXPriv = models.SPVError{
 	Code:       "error-xpriv-encrypt",
 }
 
-// ErrDecryptXPriv indicates failure to decrypt an xPriv
-var ErrDecryptXPriv = models.SPVError{
-	Message:    "Cannot decrypt xPriv",
-	StatusCode: http.StatusInternalServerError,
-	Code:       "error-xpriv-decrypt",
-}
-
 // ErrGetUser indicates failure to get user information
 var ErrGetUser = models.SPVError{
 	Message:    "Cannot get user",

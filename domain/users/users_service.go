@@ -132,7 +132,7 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		s.log.Error().
 			Str("userEmail", email).
 			Msgf("Error while decrypting xPriv: %v", err.Error())
-		return nil, spverrors.ErrDecryptXPriv
+		return nil, spverrors.ErrInvalidCredentials
 	}
 
 	userWalletClient := s.walletClientFactory.CreateWithXpriv(decryptedXpriv)
@@ -227,7 +227,7 @@ func (s *UserService) GetUserXpriv(userID int, password string) (string, error) 
 		s.log.Error().
 			Str("userID", strconv.Itoa(userID)).
 			Msgf("Error while decrypting xPriv: %v", err.Error())
-		return "", spverrors.ErrDecryptXPriv
+		return "", spverrors.ErrInvalidCredentials
 	}
 
 	return decryptedXpriv, nil
