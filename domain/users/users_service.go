@@ -2,7 +2,6 @@ package users
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net/mail"
 	"strconv"
@@ -11,54 +10,13 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/rates"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/encryption"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/libsv/go-bk/bip32"
 	"github.com/libsv/go-bk/bip39"
 	"github.com/libsv/go-bk/chaincfg"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 )
-
-// CredentialsError Generic error type / wrapper for Credentials errors.
-type CredentialsError struct {
-	message string
-}
-
-func (e *CredentialsError) Error() string {
-	return e.message
-}
-
-// UserError Generic error type / wrapper for User errors.
-type UserError struct {
-	message string
-}
-
-func (e *UserError) Error() string {
-	return e.message
-}
-
-// PaymailError Generic error type / wrapper for Paymail errors.
-type PaymailError struct {
-	message string
-}
-
-func (e *PaymailError) Error() string {
-	return e.message
-}
-
-// XPubError Generic error type / wrapper for XPub errors.
-type XPubError struct {
-	message string
-}
-
-func (e *XPubError) Error() string {
-	return e.message
-}
-
-// ErrInvalidCredentials is throwing when invalid credentials were used.
-var ErrInvalidCredentials = &CredentialsError{"invalid credentials"}
-
-// ErrUserAlreadyExists is throwing when we try to register a user with already used email.
-var ErrUserAlreadyExists = &UserError{"user already exists"}
 
 // UserService represents User service and provide access to repository.
 type UserService struct {
@@ -86,76 +44,54 @@ func NewUserService(repo Repository, adminWalletClient AdminWalletClient, wallet
 // InsertUser inserts user to database.
 func (s *UserService) InsertUser(user *User) error {
 	if err := s.repo.InsertUser(context.Background(), user); err != nil {
-		e := &UserError{err.Error()}
-		s.log.Error().Msgf("Error while inserting user: %v", e.Error())
-		return e
+		s.log.Error().Msgf("Error while inserting user: %v", err.Error())
+		return spverrors.ErrInsertUser
 	}
 	return nil
 }
 
 // CreateNewUser creates new user.
 func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error) {
-	if err := validatePassword(password); err != nil {
-		e := &UserError{err.Error()}
-		s.log.Error().
-			Str("newUserEmail", email).
-			Msgf("Error while validating password: %v", e.Error())
-		return nil, e
+	if emptyString(password) {
+		return nil, spverrors.ErrEmptyPassword
 	}
 
 	if err := s.validateUser(email); err != nil {
-		e := &UserError{err.Error()}
-		s.log.Error().
-			Str("newUserEmail", email).
-			Msgf("Error while validating user: %v", e.Error())
-		return nil, e
+		return nil, err
 	}
 
 	mnemonic, seed, err := generateMnemonic()
 	if err != nil {
-		e := &UserError{err.Error()}
-		s.log.Error().
-			Str("newUserEmail", email).
-			Msgf("Error while generating mnemonic: %v", e.Error())
-		return nil, e
+		s.log.Error().Msgf("Error while generating mnemonic: %v", err.Error())
+		return nil, spverrors.ErrGenerateMnemonic
 	}
 
 	xpriv, err := generateXpriv(seed)
 	if err != nil {
-		e := &UserError{err.Error()}
-		s.log.Error().
-			Str("newUserEmail", email).
-			Msgf("Error while generating xPriv: %v", e.Error())
-		return nil, e
+		s.log.Error().Msgf("Error while generating xPriv: %v", err.Error())
+		return nil, spverrors.ErrGenerateXPriv
 	}
 
 	encryptedXpriv, err := encryptXpriv(password, xpriv.String())
 	if err != nil {
-		e := &UserError{err.Error()}
-		s.log.Error().
-			Str("newUserEmail", email).
-			Msgf("Error while encrypting xPriv: %v", e.Error())
-		return nil, e
+		s.log.Error().Msgf("Error while encrypting xPriv: %v", err.Error())
+		return nil, spverrors.ErrEncryptXPriv
 	}
 
 	xpub, err := s.adminWalletClient.RegisterXpub(xpriv)
 	if err != nil {
-		e := &XPubError{fmt.Sprintf("error registering xpub in spv-wallet: %s", err)}
-		s.log.Error().
-			Str("newUserEmail", email).
-			Msgf("Error while registering xPub: %v", e.Error())
-		return nil, e
+		s.log.Error().Msgf("Error while registering xPub: %v", err.Error())
+		return nil, spverrors.ErrRegisterXPub
 	}
 
 	username, _ := splitEmail(email)
 
 	paymail, err := s.adminWalletClient.RegisterPaymail(username, xpub)
 	if err != nil {
-		e := &PaymailError{fmt.Sprintf("error registering paymail in spv-wallet: %s", err)}
 		s.log.Error().
-			Str("newUserEmail", email).
-			Msgf("Error while registering paymail: %v", e.Error())
-		return nil, e
+			Str("alias", username).
+			Msgf("Error while registering paymail: %v", err.Error())
+		return nil, spverrors.ErrRegisterPaymail
 	}
 
 	user := &User{
@@ -166,11 +102,7 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 	}
 
 	if err = s.InsertUser(user); err != nil {
-		e := &UserError{err.Error()}
-		s.log.Error().
-			Str("newUserEmail", email).
-			Msgf("Error while inserting user: %v", e.Error())
-		return nil, e
+		return nil, spverrors.ErrInsertUser
 	}
 
 	newUSerData := &CreatedUser{
@@ -183,45 +115,34 @@ func (s *UserService) CreateNewUser(email, password string) (*CreatedUser, error
 
 // SignInUser signs in user.
 func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, error) {
-	// Check if user exists.
 	user, err := s.repo.GetUserByEmail(context.Background(), email)
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
 			Msgf("User wasn't found by email: %v", err.Error())
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrInvalidCredentials
-		}
-		return nil, errors.Wrap(err, "cannot get user")
+		return nil, spverrors.ErrGetUser
 	}
 
-	// Decrypt xpriv.
+	if user == nil {
+		return nil, spverrors.ErrInvalidCredentials
+	}
+
 	decryptedXpriv, err := decryptXpriv(password, user.Xpriv)
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
 			Msgf("Error while decrypting xPriv: %v", err.Error())
-		return nil, errors.Wrap(err, "cannot get xpriv")
+		return nil, spverrors.ErrInvalidCredentials
 	}
 
-	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(decryptedXpriv)
-	if err != nil {
-		s.log.Error().
-			Str("userEmail", email).
-			Msgf("Error while creating userWalletClient: %v", err.Error())
-		// "no keys available" error is a custom spv-wallet-go-client error which says that the client can't be provided(in our case due to wrong xpriv)
-		if err.Error() == "no keys available" {
-			return nil, ErrInvalidCredentials
-		}
-		return nil, errors.Wrap(err, "internal error")
-	}
+	userWalletClient := s.walletClientFactory.CreateWithXpriv(decryptedXpriv)
 
 	accessKey, err := userWalletClient.CreateAccessKey()
 	if err != nil {
 		s.log.Error().
 			Str("userEmail", email).
 			Msgf("Error while creating access key: %v", err.Error())
-		return nil, errors.Wrap(err, "cannot create access key")
+		return nil, spverrors.ErrCreateAccessKey
 	}
 
 	xpub, err := userWalletClient.GetXPub()
@@ -229,24 +150,17 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		s.log.Error().
 			Str("userEmail", email).
 			Msgf("Error while getting xPub: %v", err.Error())
-		return nil, errors.Wrap(err, "cannot get spv wallet user info")
+		return nil, spverrors.ErrGetXPub
 	}
 
 	exchangeRate, err := s.ratesService.GetExchangeRate()
 	if err != nil {
 		s.log.Error().
-			Str("userEmail", email).
 			Msgf("Exchange rate not found: %v", err.Error())
-		return nil, errors.Wrap(err, "cannot get exchange rate")
+		return nil, spverrors.ErrRateNotFound
 	}
 
-	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
-	if err != nil {
-		s.log.Error().
-			Str("userEmail", email).
-			Msgf("Error while calculating balance: %v", err.Error())
-		return nil, errors.Wrap(err, "cannot calculate balance")
-	}
+	balance := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
 
 	signInUser := &AuthenticatedUser{
 		User: user,
@@ -261,24 +175,6 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 	return signInUser, nil
 }
 
-// SignOutUser signs out user by revoking access key. (Not possible at the moment, method is just a mock.)
-func (s *UserService) SignOutUser(_, _ string) error {
-
-	// / Right now we cannot revoke access key without authentication with XPriv, which is impossible here.
-
-	// userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// _, err = userWalletClient.RevokeAccessKey(accessKeyId)
-	// if err != nil {
-	// 	return err
-	// }
-
-	return nil
-}
-
 // GetUserByID returns user by id.
 func (s *UserService) GetUserByID(userID int) (*User, error) {
 	user, err := s.repo.GetUserByID(context.Background(), userID)
@@ -286,7 +182,7 @@ func (s *UserService) GetUserByID(userID int) (*User, error) {
 		s.log.Error().
 			Str("userID", strconv.Itoa(userID)).
 			Msgf("Error while getting user by id: %v", err.Error())
-		return nil, fmt.Errorf("cannot get user, cause: %w", err)
+		return nil, spverrors.ErrGetUser
 	}
 
 	return user, nil
@@ -294,36 +190,22 @@ func (s *UserService) GetUserByID(userID int) (*User, error) {
 
 // GetUserBalance returns user balance using access key.
 func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
-	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
-	if err != nil {
-		s.log.Error().
-			Msgf("Error while creating userWalletClient: %v", err.Error())
-		return nil, fmt.Errorf("internal error, cause: %w", err)
-	}
+	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
 
 	// Get xpub.
 	xpub, err := userWalletClient.GetXPub()
 	if err != nil {
-		s.log.Error().
-			Msgf("Error while getting xPub: %v", err.Error())
-		return nil, fmt.Errorf("cannot get user balance, cause: %w", err)
+		s.log.Error().Msgf("Error while getting xPub: %v", err.Error())
+		return nil, spverrors.ErrGetXPub
 	}
 
 	exchangeRate, err := s.ratesService.GetExchangeRate()
 	if err != nil {
-		s.log.Error().
-			Msgf("Exchange rate not found: %v", err.Error())
-		return nil, fmt.Errorf("exchange rate not found, cause: %w", err)
+		s.log.Error().Msgf("Exchange rate not found: %v", err.Error())
+		return nil, spverrors.ErrRateNotFound
 	}
 
-	// Calculate balance.
-	balance, err := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
-	if err != nil {
-		s.log.Error().
-			Str("xpubID", xpub.GetID()).
-			Msgf("Error while calculating balance: %v", err.Error())
-		return nil, err
-	}
+	balance := calculateBalance(xpub.GetCurrentBalance(), exchangeRate)
 
 	return balance, nil
 }
@@ -336,7 +218,7 @@ func (s *UserService) GetUserXpriv(userID int, password string) (string, error) 
 			Str("userID", strconv.Itoa(userID)).
 			Msgf("Error while getting user by id: %v", err.Error())
 
-		return "", fmt.Errorf("cannot get user, cause: %w", err)
+		return "", spverrors.ErrGetUser
 	}
 
 	// Decrypt xpriv.
@@ -345,7 +227,7 @@ func (s *UserService) GetUserXpriv(userID int, password string) (string, error) 
 		s.log.Error().
 			Str("userID", strconv.Itoa(userID)).
 			Msgf("Error while decrypting xPriv: %v", err.Error())
-		return "", fmt.Errorf("cannot decrypt xpriv, cause: %w", err)
+		return "", spverrors.ErrInvalidCredentials
 	}
 
 	return decryptedXpriv, nil
@@ -354,25 +236,23 @@ func (s *UserService) GetUserXpriv(userID int, password string) (string, error) 
 func (s *UserService) validateUser(email string) error {
 	// Validate email
 	if _, err := mail.ParseAddress(email); err != nil {
-		e := &UserError{"invalid email address"}
-		s.log.Error().
+		s.log.Debug().
 			Str("userEmail", email).
-			Msgf("Error while validating email: %v", e.Error())
-		return e
+			Msgf("Error while validating email: %v", err.Error())
+		return spverrors.ErrIncorrectEmail
 	}
 
 	// Check if user with email already exists.
-	if _, err := s.repo.GetUserByEmail(context.Background(), email); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil
-		}
-		s.log.Error().
-			Str("userEmail", email).
-			Msgf("Error while validating email: %v", err.Error())
-		return &UserError{err.Error()}
+	user, err := s.repo.GetUserByEmail(context.Background(), email)
+	if err != nil {
+		return errors.Wrap(err, "Cannot get user by email")
 	}
 
-	return ErrUserAlreadyExists
+	if user != nil {
+		return spverrors.ErrUserAlreadyExists
+	}
+
+	return nil
 }
 
 // generateMnemonic generates mnemonic and seed.
@@ -422,7 +302,7 @@ func decryptXpriv(password, encryptedXpriv string) (string, error) {
 	// Decrypt xpriv with hashed password
 	xpriv := encryption.Decrypt(hashedPassword, encryptedXpriv)
 	if xpriv == "" {
-		return "", ErrInvalidCredentials
+		return "", spverrors.ErrInvalidCredentials
 	}
 
 	return xpriv, nil
@@ -436,17 +316,12 @@ func splitEmail(email string) (string, string) {
 	return username, domain
 }
 
-// validatePassword trim and validates password.
-func validatePassword(password string) error {
-	trimedPassword := strings.TrimSpace(password)
-	if trimedPassword == "" {
-		return fmt.Errorf("correct password is required")
-	}
-
-	return nil
+func emptyString(input string) bool {
+	trimed := strings.TrimSpace(input)
+	return trimed == ""
 }
 
-func calculateBalance(satoshis uint64, exchangeRate *float64) (*Balance, error) {
+func calculateBalance(satoshis uint64, exchangeRate *float64) *Balance {
 	balanceBSV := float64(satoshis) / 100000000
 	balanceUSD := balanceBSV * *exchangeRate
 
@@ -456,5 +331,5 @@ func calculateBalance(satoshis uint64, exchangeRate *float64) (*Balance, error) 
 		Satoshis: satoshis,
 	}
 
-	return balance, nil
+	return balance
 }
