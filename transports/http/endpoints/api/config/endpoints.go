@@ -3,21 +3,25 @@ package config
 import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/config"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 )
 
 type handler struct {
 	services *domain.Services
+	log      *zerolog.Logger
 }
 
 // PublicConfig is used for swagger generation
 type PublicConfig = config.PublicConfig
 
 // NewHandler creates new endpoint handler.
-func NewHandler(s *domain.Services) router.RootEndpoints {
+func NewHandler(s *domain.Services, log *zerolog.Logger) router.RootEndpoints {
 	return &handler{
 		services: s,
+		log:      log,
 	}
 }
 
@@ -37,7 +41,8 @@ func (h *handler) RegisterEndpoints(router *gin.RouterGroup) {
 func (h *handler) getPublicConfig(c *gin.Context) {
 	pubConf := h.services.ConfigService.GetPublicConfig()
 	if pubConf == nil {
-		c.JSON(500, "Failed to get public config")
+		h.log.Error().Msg("Failed to get public config")
+		spverrors.ErrorResponse(c, spverrors.ErrGetConfig, h.log)
 		return
 	}
 	c.JSON(200, pubConf)
