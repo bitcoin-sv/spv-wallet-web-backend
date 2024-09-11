@@ -1,13 +1,11 @@
 module github.com/bitcoin-sv/spv-wallet-web-backend
 
-go 1.22.4
-
-toolchain go1.22.5
+go 1.22.5
 
 require (
 	github.com/avast/retry-go/v4 v4.6.0
-	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.11
-	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.16
+	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.14
+	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.25
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/centrifugal/centrifuge v0.33.3
 	github.com/gin-contrib/sessions v1.0.1
@@ -28,8 +26,7 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/antonlindstrom/pgstore v0.0.0-20220421113606-e3a6e3fed12a // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/bitcoinschema/go-bitcoin/v2 v2.0.5 // indirect
-	github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173 // indirect
+	github.com/bitcoin-sv/go-sdk v1.1.7 // indirect
 	github.com/boombuler/barcode v1.0.2 // indirect
 	github.com/bytedance/sonic v1.11.9 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
@@ -60,7 +57,6 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.8 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/libsv/go-bt/v2 v2.2.5 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
