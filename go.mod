@@ -4,7 +4,7 @@ go 1.22.5
 
 require (
 	github.com/avast/retry-go/v4 v4.6.0
-	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.13.0.20240911071252-0af54b5c167a
+	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.14
 	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.25
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/centrifugal/centrifuge v0.33.2
