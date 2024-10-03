@@ -31,7 +31,10 @@ func NewContactsService(adminWalletClient users.AdminWalletClient, walletClientF
 
 // UpsertContact creates or updates a contact
 func (s *Service) UpsertContact(ctx context.Context, accessKey, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error) {
-	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return nil, spverrors.ErrUpsertContact.Wrap(err)
+	}
 
 	contact, err := userWalletClient.UpsertContact(ctx, paymail, fullName, requesterPaymail, metadata)
 	if err != nil {
@@ -43,9 +46,12 @@ func (s *Service) UpsertContact(ctx context.Context, accessKey, paymail, fullNam
 
 // AcceptContact accepts a contact invitation
 func (s *Service) AcceptContact(ctx context.Context, accessKey, paymail string) error {
-	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return spverrors.ErrAcceptContact.Wrap(err)
+	}
 
-	err := userWalletClient.AcceptContact(ctx, paymail)
+	err = userWalletClient.AcceptContact(ctx, paymail)
 	if err != nil {
 		s.log.Debug().Msgf("Error during accepting contact: %s", err.Error())
 		return spverrors.ErrAcceptContact
@@ -55,9 +61,12 @@ func (s *Service) AcceptContact(ctx context.Context, accessKey, paymail string) 
 
 // RejectContact rejects a contact invitation
 func (s *Service) RejectContact(ctx context.Context, accessKey, paymail string) error {
-	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return spverrors.ErrRejectContact.Wrap(err)
+	}
 
-	err := userWalletClient.RejectContact(ctx, paymail)
+	err = userWalletClient.RejectContact(ctx, paymail)
 	if err != nil {
 		s.log.Debug().Msgf("Error during rejecting contact: %s", err.Error())
 		return spverrors.ErrRejectContact
@@ -67,9 +76,12 @@ func (s *Service) RejectContact(ctx context.Context, accessKey, paymail string) 
 
 // ConfirmContact confirms a contact
 func (s *Service) ConfirmContact(ctx context.Context, xPriv string, contact *models.Contact, passcode, requesterPaymail string) error {
-	userWalletClient := s.walletClientFactory.CreateWithXpriv(xPriv)
+	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv)
+	if err != nil {
+		return spverrors.ErrConfirmContact.Wrap(err)
+	}
 
-	err := userWalletClient.ConfirmContact(ctx, contact, passcode, requesterPaymail, getConfPeriod(), getConfDigits())
+	err = userWalletClient.ConfirmContact(ctx, contact, passcode, requesterPaymail, getConfPeriod(), getConfDigits())
 	if err != nil {
 		s.log.Debug().Msgf("Error during confirming contact: %s", err.Error())
 		return spverrors.ErrConfirmContact
@@ -79,7 +91,10 @@ func (s *Service) ConfirmContact(ctx context.Context, xPriv string, contact *mod
 
 // GetContacts retrieves contacts for the user
 func (s *Service) GetContacts(ctx context.Context, accessKey string, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, error) {
-	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return nil, spverrors.ErrGetContacts.Wrap(err)
+	}
 
 	resp, err := userWalletClient.GetContacts(ctx, conditions, metadata, queryParams)
 	if err != nil {
@@ -91,7 +106,10 @@ func (s *Service) GetContacts(ctx context.Context, accessKey string, conditions 
 
 // GenerateTotpForContact generates a TOTP for a contact
 func (s *Service) GenerateTotpForContact(_ context.Context, xPriv string, contact *models.Contact) (string, error) {
-	userWalletClient := s.walletClientFactory.CreateWithXpriv(xPriv) // xPriv instead of accessKey because it is necessary to calculate the shared secret
+	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv) // xPriv instead of accessKey because it is necessary to calculate the shared secret
+	if err != nil {
+		return "", spverrors.ErrGenerateTotpForContact.Wrap(err)
+	}
 
 	totp, err := userWalletClient.GenerateTotpForContact(contact, getConfPeriod(), getConfDigits())
 	if err != nil {

@@ -33,7 +33,10 @@ func NewTransactionService(adminWalletClient users.AdminWalletClient, walletClie
 
 // CreateTransaction creates transaction.
 func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient string, satoshis uint64, events chan notification.TransactionEvent) error {
-	userWalletClient := s.walletClientFactory.CreateWithXpriv(xpriv)
+	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xpriv)
+	if err != nil {
+		return spverrors.ErrCreateTransaction.Wrap(err)
+	}
 
 	var recipients = []*walletclient.Recipients{
 		{
@@ -68,7 +71,10 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 // GetTransaction returns transaction by id.
 func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (users.FullTransaction, error) {
 	// Try to generate user-client with decrypted xpriv.
-	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return nil, spverrors.ErrGetTransaction.Wrap(err)
+	}
 
 	transaction, err := userWalletClient.GetTransaction(id, userPaymail)
 	if err != nil {
@@ -82,18 +88,21 @@ func (s *TransactionService) GetTransaction(accessKey, id, userPaymail string) (
 // GetTransactions returns transactions by access key.
 func (s *TransactionService) GetTransactions(accessKey, userPaymail string, queryParam *filter.QueryParams) (*PaginatedTransactions, error) {
 	// Try to generate user-client with decrypted xpriv.
-	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return nil, spverrors.ErrGetTransactions.Wrap(err)
+	}
 
 	count, err := userWalletClient.GetTransactionsCount()
 	if err != nil {
 		s.log.Debug().Msgf("Error during get transactions count: %s", err.Error())
-		return nil, spverrors.ErrCountTransactions
+		return nil, spverrors.ErrGetTransactions.Wrap(err)
 	}
 
 	transactions, err := userWalletClient.GetTransactions(queryParam, userPaymail)
 	if err != nil {
 		s.log.Debug().Msgf("Error during get transactions: %s", err.Error())
-		return nil, spverrors.ErrGetTransactions
+		return nil, spverrors.ErrGetTransactions.Wrap(err)
 	}
 
 	// Calculate pages.

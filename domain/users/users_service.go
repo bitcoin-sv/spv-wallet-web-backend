@@ -135,7 +135,10 @@ func (s *UserService) SignInUser(email, password string) (*AuthenticatedUser, er
 		return nil, spverrors.ErrInvalidCredentials
 	}
 
-	userWalletClient := s.walletClientFactory.CreateWithXpriv(decryptedXpriv)
+	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(decryptedXpriv)
+	if err != nil {
+		return nil, spverrors.ErrInvalidCredentials.Wrap(err)
+	}
 
 	accessKey, err := userWalletClient.CreateAccessKey()
 	if err != nil {
@@ -190,7 +193,10 @@ func (s *UserService) GetUserByID(userID int) (*User, error) {
 
 // GetUserBalance returns user balance using access key.
 func (s *UserService) GetUserBalance(accessKey string) (*Balance, error) {
-	userWalletClient := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return nil, spverrors.ErrGetBalance.Wrap(err)
+	}
 
 	// Get xpub.
 	xpub, err := userWalletClient.GetXPub()
