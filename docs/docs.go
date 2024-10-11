@@ -477,7 +477,7 @@ const docTemplate = `{
                     "description": "Status is a contact's current status.",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/models.ContactStatus"
+                            "$ref": "#/definitions/response.ContactStatus"
                         }
                     ],
                     "example": "unconfirmed"
@@ -488,21 +488,6 @@ const docTemplate = `{
                     "example": "2024-02-26T11:01:28.069911Z"
                 }
             }
-        },
-        "models.ContactStatus": {
-            "type": "string",
-            "enum": [
-                "unconfirmed",
-                "awaiting",
-                "confirmed",
-                "rejected"
-            ],
-            "x-enum-varnames": [
-                "ContactNotConfirmed",
-                "ContactAwaitAccept",
-                "ContactConfirmed",
-                "ContactRejected"
-            ]
         },
         "models.Metadata": {
             "type": "object",
@@ -556,6 +541,21 @@ const docTemplate = `{
                     ]
                 }
             }
+        },
+        "response.ContactStatus": {
+            "type": "string",
+            "enum": [
+                "unconfirmed",
+                "awaiting",
+                "confirmed",
+                "rejected"
+            ],
+            "x-enum-varnames": [
+                "ContactNotConfirmed",
+                "ContactAwaitAccept",
+                "ContactConfirmed",
+                "ContactRejected"
+            ]
         },
         "transports_http_endpoints_api_access.SignInResponse": {
             "type": "object",

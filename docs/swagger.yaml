@@ -66,7 +66,7 @@ definitions:
         type: string
       status:
         allOf:
-        - $ref: '#/definitions/models.ContactStatus'
+        - $ref: '#/definitions/response.ContactStatus'
         description: Status is a contact's current status.
         example: unconfirmed
       updated_at:
@@ -74,18 +74,6 @@ definitions:
         example: "2024-02-26T11:01:28.069911Z"
         type: string
     type: object
-  models.ContactStatus:
-    enum:
-    - unconfirmed
-    - awaiting
-    - confirmed
-    - rejected
-    type: string
-    x-enum-varnames:
-    - ContactNotConfirmed
-    - ContactAwaitAccept
-    - ContactConfirmed
-    - ContactRejected
   models.Metadata:
     additionalProperties: true
     type: object
@@ -122,6 +110,18 @@ definitions:
         - $ref: '#/definitions/models.Page'
         description: Pagination details
     type: object
+  response.ContactStatus:
+    enum:
+    - unconfirmed
+    - awaiting
+    - confirmed
+    - rejected
+    type: string
+    x-enum-varnames:
+    - ContactNotConfirmed
+    - ContactAwaitAccept
+    - ContactConfirmed
+    - ContactRejected
   transports_http_endpoints_api_access.SignInResponse:
     properties:
       balance:
