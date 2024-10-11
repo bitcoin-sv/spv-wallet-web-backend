@@ -80,13 +80,6 @@ var ErrGetTransactions = models.SPVError{
 	Code:       "error-transactions-get",
 }
 
-// ErrCountTransactions indicates failure to count transactions
-var ErrCountTransactions = models.SPVError{
-	Message:    "Cannot count transactions",
-	StatusCode: http.StatusBadRequest,
-	Code:       "error-transactions-count",
-}
-
 // ErrRecordTransaction indicates failure to record a transaction
 var ErrRecordTransaction = models.SPVError{
 	Message:    "Cannot record transaction",
@@ -247,4 +240,11 @@ var ErrGetConfig = models.SPVError{
 	Message:    "Cannot get configuration",
 	StatusCode: http.StatusInternalServerError,
 	Code:       "error-config-get",
+}
+
+// ErrCreateClientAdminKey indicates failure to create a client with an AdminKey (most probably wrong key in config)
+var ErrCreateClientAdminKey = models.SPVError{
+	Message:    "Cannot create client with admin key",
+	StatusCode: http.StatusInternalServerError,
+	Code:       "error-client-create-admin-key",
 }

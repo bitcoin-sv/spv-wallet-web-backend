@@ -863,11 +863,12 @@ func (mr *MockWalletClientFactoryMockRecorder) CreateAdminClient() *gomock.Call 
 }
 
 // CreateWithAccessKey mocks base method.
-func (m *MockWalletClientFactory) CreateWithAccessKey(accessKey string) users.UserWalletClient {
+func (m *MockWalletClientFactory) CreateWithAccessKey(accessKey string) (users.UserWalletClient, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateWithAccessKey", accessKey)
         ret0, _ := ret[0].(users.UserWalletClient)
-        return ret0
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
 }
 
 // CreateWithAccessKey indicates an expected call of CreateWithAccessKey.
@@ -877,11 +878,12 @@ func (mr *MockWalletClientFactoryMockRecorder) CreateWithAccessKey(accessKey int
 }
 
 // CreateWithXpriv mocks base method.
-func (m *MockWalletClientFactory) CreateWithXpriv(xpriv string) users.UserWalletClient {
+func (m *MockWalletClientFactory) CreateWithXpriv(xpriv string) (users.UserWalletClient, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateWithXpriv", xpriv)
         ret0, _ := ret[0].(users.UserWalletClient)
-        return ret0
+        ret1, _ := ret[1].(error)
+        return ret0, ret1
 }
 
 // CreateWithXpriv indicates an expected call of CreateWithXpriv.

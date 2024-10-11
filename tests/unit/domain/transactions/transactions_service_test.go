@@ -45,7 +45,7 @@ func TestCreateTransaction(t *testing.T) {
 		clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 		clientFctrMq.EXPECT().
 			CreateWithXpriv(xpriv).
-			Return(mockUserWalletClient)
+			Return(mockUserWalletClient, nil)
 
 		sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
@@ -89,7 +89,7 @@ func TestGetTransaction_ReturnsTransactionDetails(t *testing.T) {
 			clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
-				Return(mockUserWalletClient)
+				Return(mockUserWalletClient, nil)
 
 			sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 
@@ -138,7 +138,7 @@ func TestGetTransaction_ReturnsError(t *testing.T) {
 			clientFctrMq := mock.NewMockWalletClientFactory(ctrl)
 			clientFctrMq.EXPECT().
 				CreateWithAccessKey(accessKey).
-				Return(mockUserWalletClient)
+				Return(mockUserWalletClient, nil)
 
 			sut := transactions.NewTransactionService(mock.NewMockAdminWalletClient(ctrl), clientFctrMq, &testLogger)
 

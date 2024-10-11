@@ -83,8 +83,11 @@ func isNilOrEmpty(s interface{}) bool {
 
 //nolint:wrapcheck // error wrapped higher
 func (h *Middleware) checkAccessKey(accessKey, accessKeyID string) error {
-	userWalletClient := h.walletClientFactory.CreateWithAccessKey(accessKey)
+	userWalletClient, err := h.walletClientFactory.CreateWithAccessKey(accessKey)
+	if err != nil {
+		return err
+	}
 
-	_, err := userWalletClient.GetAccessKey(accessKeyID)
+	_, err = userWalletClient.GetAccessKey(accessKeyID)
 	return err
 }
