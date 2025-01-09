@@ -12,6 +12,7 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
+
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/websocket"
 	"github.com/bitcoin-sv/spv-wallet/models/filter"
 	"github.com/gin-gonic/gin"

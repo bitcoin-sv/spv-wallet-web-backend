@@ -1,6 +1,3 @@
-// Package spvwallet contains spv-wallet client adapters
-//
-//nolint:wrapcheck // error wrapped by service
 package spvwallet
 
 import (
@@ -8,6 +5,9 @@ import (
 	"fmt"
 
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	"github.com/bitcoin-sv/spv-wallet-go-client/commands"
+	walletclientCfg "github.com/bitcoin-sv/spv-wallet-go-client/config"
+
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/libsv/go-bk/bip32"
@@ -15,37 +15,29 @@ import (
 	"github.com/spf13/viper"
 )
 
-// AdminWalletClient is a wrapper for Admin SPV Wallet Client.
-type AdminWalletClient struct {
-	client *walletclient.WalletClient
-	log    *zerolog.Logger
+type AdminClientAdapter struct {
+	log *zerolog.Logger
+	api *walletclient.AdminAPI
 }
 
-// RegisterXpub registers xpub in SPV Wallet.
-func (c *AdminWalletClient) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
+func (a *AdminClientAdapter) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
 	// Get xpub from xpriv.
 	xpub, err := xpriv.Neuter()
-
 	if err != nil {
-		c.log.Error().Msgf("Error while creating new xPub: %v", err.Error())
+		a.log.Error().Msgf("Error while creating new xPub: %v", err.Error())
 		return "", err
 	}
 
-	// Register new xpub in SPV Wallet.
-	err = c.client.AdminNewXpub(context.Background(), xpub.String(), nil)
-
+	_, err = a.api.CreateXPub(context.TODO(), &commands.CreateUserXpub{XPub: xpriv.String()})
 	if err != nil {
-		c.log.Error().
-			Str("xpub", xpub.String()).
-			Msgf("Error while registering new xPub: %v", err.Error())
+		a.log.Error().Str("xpub", xpub.String()).Msgf("Error while registering new xPub: %v", err.Error())
 		return "", err
 	}
 
 	return xpub.String(), nil
 }
 
-// RegisterPaymail registers new paymail in SPV Wallet.
-func (c *AdminWalletClient) RegisterPaymail(alias, xpub string) (string, error) {
+func (a *AdminClientAdapter) RegisterPaymail(alias, xpub string) (string, error) {
 	// Get paymail domain from env.
 	domain := viper.GetString(config.EnvPaymailDomain)
 
@@ -55,21 +47,40 @@ func (c *AdminWalletClient) RegisterPaymail(alias, xpub string) (string, error) 
 	// Get avatar url from env.
 	avatar := viper.GetString(config.EnvPaymailAvatar)
 
-	_, err := c.client.AdminCreatePaymail(context.Background(), xpub, address, alias, avatar)
-
+	_, err := a.api.CreatePaymail(context.TODO(), &commands.CreatePaymail{
+		Key:        xpub,
+		Address:    address,
+		PublicName: alias,
+		Avatar:     avatar,
+	})
 	if err != nil {
-		c.log.Error().Msgf("Error while registering new paymail: %v", err.Error())
+		a.log.Error().Msgf("Error while registering new paymail: %v", err.Error())
 		return "", err
 	}
+
 	return address, nil
 }
 
-// GetSharedConfig returns shared config from SPV Wallet.
-func (c *AdminWalletClient) GetSharedConfig() (*models.SharedConfig, error) {
-	sharedConfig, err := c.client.GetSharedConfig(context.Background())
+func (a *AdminClientAdapter) GetSharedConfig() (*models.SharedConfig, error) {
+	sharedConfig, err := a.api.SharedConfig(context.TODO())
 	if err != nil {
-		c.log.Error().Msgf("Error while getting shared config: %v", err.Error())
+		a.log.Error().Msgf("Error while getting shared config: %v", err.Error())
 		return nil, err
 	}
-	return sharedConfig, nil
+
+	return &models.SharedConfig{
+		PaymailDomains:       sharedConfig.PaymailDomains,
+		ExperimentalFeatures: sharedConfig.ExperimentalFeatures,
+	}, nil
+}
+
+func NewAdminClientAdapter(log *zerolog.Logger) (*AdminClientAdapter, error) {
+	adminKey := viper.GetString(config.EnvAdminXpriv)
+	serverURL := viper.GetString(config.EnvServerURL)
+	api, err := walletclient.NewAdminAPIWithXPriv(walletclientCfg.New(walletclientCfg.WithAddr(serverURL)), adminKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize admin API: %w", err)
+	}
+
+	return &AdminClientAdapter{api: api, log: log}, nil
 }

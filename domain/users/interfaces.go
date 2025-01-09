@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	"github.com/bitcoin-sv/spv-wallet-go-client/commands"
 	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/bitcoin-sv/spv-wallet/models/filter"
 	"github.com/libsv/go-bk/bip32"
@@ -65,11 +65,11 @@ type (
 		// XPub Key methods
 		GetXPub() (PubKey, error)
 		// Transaction methods
-		SendToRecipients(recipients []*walletclient.Recipients, senderPaymail string) (Transaction, error)
+		SendToRecipients(recipients []*commands.Recipients, senderPaymail string) (Transaction, error)
 		GetTransactions(queryParam *filter.QueryParams, userPaymail string) ([]Transaction, error)
 		GetTransaction(transactionID, userPaymail string) (FullTransaction, error)
 		GetTransactionsCount() (int64, error)
-		CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata map[string]any) (DraftTransaction, error)
+		CreateAndFinalizeTransaction(recipients []*commands.Recipients, metadata map[string]any) (DraftTransaction, error)
 		RecordTransaction(hex, draftTxID string, metadata map[string]any) (*models.Transaction, error)
 		// Contacts methods
 		UpsertContact(ctx context.Context, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error)

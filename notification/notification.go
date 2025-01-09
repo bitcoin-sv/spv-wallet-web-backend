@@ -6,6 +6,7 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
 	"github.com/bitcoin-sv/spv-wallet/models"
+	"github.com/bitcoin-sv/spv-wallet/models/response"
 )
 
 // BaseEvent represents base of notification.
@@ -34,7 +35,24 @@ type Transaction struct {
 
 // PrepareTransactionEvent prepares event in NewTransactionEvent struct.
 func PrepareTransactionEvent(tx *models.Transaction) TransactionEvent {
-	sender, receiver := spvwallet.GetPaymailsFromMetadata(tx, "unknown")
+	sender, receiver := spvwallet.GetPaymailsFromMetadata(&response.Transaction{
+		Model:                response.Model(tx.Model),
+		ID:                   tx.ID,
+		Hex:                  tx.Hex,
+		XpubInIDs:            tx.XpubInIDs,
+		XpubOutIDs:           tx.XpubOutIDs,
+		BlockHash:            tx.BlockHash,
+		BlockHeight:          tx.BlockHeight,
+		Fee:                  tx.Fee,
+		NumberOfInputs:       tx.NumberOfInputs,
+		NumberOfOutputs:      tx.NumberOfOutputs,
+		DraftID:              tx.DraftID,
+		TotalValue:           tx.TotalValue,
+		OutputValue:          tx.OutputValue,
+		Outputs:              tx.Outputs,
+		Status:               tx.Status,
+		TransactionDirection: tx.TransactionDirection,
+	}, "unknown")
 	status := "unconfirmed"
 	if tx.BlockHeight > 0 {
 		status = "confirmed"

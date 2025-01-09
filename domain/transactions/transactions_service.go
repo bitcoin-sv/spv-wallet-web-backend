@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/avast/retry-go/v4"
-	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	"github.com/bitcoin-sv/spv-wallet-go-client/commands"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
@@ -38,7 +38,7 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		return spverrors.ErrCreateTransaction.Wrap(err)
 	}
 
-	var recipients = []*walletclient.Recipients{
+	var recipients = []*commands.Recipients{
 		{
 			Satoshis: satoshis,
 			To:       recipient,

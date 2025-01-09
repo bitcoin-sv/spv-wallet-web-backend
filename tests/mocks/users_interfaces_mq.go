@@ -8,8 +8,7 @@ import (
         context "context"
         reflect "reflect"
         time "time"
-
-        walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	"github.com/bitcoin-sv/spv-wallet-go-client/commands"
         users "github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
         models "github.com/bitcoin-sv/spv-wallet/models"
         filter "github.com/bitcoin-sv/spv-wallet/models/filter"
@@ -563,7 +562,7 @@ func (mr *MockUserWalletClientMockRecorder) CreateAccessKey() *gomock.Call {
 }
 
 // CreateAndFinalizeTransaction mocks base method.
-func (m *MockUserWalletClient) CreateAndFinalizeTransaction(recipients []*walletclient.Recipients, metadata map[string]any) (users.DraftTransaction, error) {
+func (m *MockUserWalletClient) CreateAndFinalizeTransaction(recipients []*commands.Recipients, metadata map[string]any) (users.DraftTransaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "CreateAndFinalizeTransaction", recipients, metadata)
         ret0, _ := ret[0].(users.DraftTransaction)
@@ -727,7 +726,7 @@ func (mr *MockUserWalletClientMockRecorder) RevokeAccessKey(accessKeyID interfac
 }
 
 // SendToRecipients mocks base method.
-func (m *MockUserWalletClient) SendToRecipients(recipients []*walletclient.Recipients, senderPaymail string) (users.Transaction, error) {
+func (m *MockUserWalletClient) SendToRecipients(recipients []*commands.Recipients, senderPaymail string) (users.Transaction, error) {
         m.ctrl.T.Helper()
         ret := m.ctrl.Call(m, "SendToRecipients", recipients, senderPaymail)
         ret0, _ := ret[0].(users.Transaction)
