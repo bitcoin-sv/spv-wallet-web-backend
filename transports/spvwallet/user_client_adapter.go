@@ -10,7 +10,6 @@ import (
 	"github.com/bitcoin-sv/spv-wallet-go-client/queries"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
-
 	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/bitcoin-sv/spv-wallet/models/common"
 	"github.com/bitcoin-sv/spv-wallet/models/filter"
@@ -19,12 +18,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-type UserClientAdapter struct {
+type userClientAdapter struct {
 	api *walletclient.UserAPI
 	log *zerolog.Logger
 }
 
-func (u *UserClientAdapter) CreateAccessKey() (users.AccKey, error) {
+func (u *userClientAdapter) CreateAccessKey() (users.AccKey, error) {
 	accessKey, err := u.api.GenerateAccessKey(context.TODO(), &commands.GenerateAccessKey{})
 	if err != nil {
 		u.log.Error().Msgf("Error while creating new accessKey: %v", err.Error())
@@ -34,7 +33,7 @@ func (u *UserClientAdapter) CreateAccessKey() (users.AccKey, error) {
 	return &AccessKey{ID: accessKey.ID, Key: accessKey.Key}, nil
 }
 
-func (u *UserClientAdapter) GetAccessKey(accessKeyID string) (users.AccKey, error) {
+func (u *userClientAdapter) GetAccessKey(accessKeyID string) (users.AccKey, error) {
 	accessKey, err := u.api.AccessKey(context.TODO(), accessKeyID)
 	if err != nil {
 		u.log.Error().Str("accessKeyID", accessKeyID).Msgf("Error while getting accessKey: %v", err.Error())
@@ -44,7 +43,7 @@ func (u *UserClientAdapter) GetAccessKey(accessKeyID string) (users.AccKey, erro
 	return &AccessKey{ID: accessKey.ID, Key: accessKey.Key}, nil
 }
 
-func (u *UserClientAdapter) RevokeAccessKey(accessKeyID string) (users.AccKey, error) {
+func (u *userClientAdapter) RevokeAccessKey(accessKeyID string) (users.AccKey, error) {
 	accessKey, err := u.api.AccessKey(context.TODO(), accessKeyID)
 	if err != nil {
 		u.log.Error().Str("accessKeyID", accessKeyID).Msgf("Error while fetching accessKey: %v", err.Error())
@@ -61,7 +60,7 @@ func (u *UserClientAdapter) RevokeAccessKey(accessKeyID string) (users.AccKey, e
 }
 
 // XPub Key methods
-func (u *UserClientAdapter) GetXPub() (users.PubKey, error) {
+func (u *userClientAdapter) GetXPub() (users.PubKey, error) {
 	xpub, err := u.api.XPub(context.TODO())
 	if err != nil {
 		u.log.Error().Msgf("Error while getting new xPub: %v", err.Error())
@@ -71,7 +70,7 @@ func (u *UserClientAdapter) GetXPub() (users.PubKey, error) {
 	return &XPub{ID: xpub.ID, CurrentBalance: xpub.CurrentBalance}, nil
 }
 
-func (u *UserClientAdapter) SendToRecipients(recipients []*commands.Recipients, senderPaymail string) (users.Transaction, error) {
+func (u *userClientAdapter) SendToRecipients(recipients []*commands.Recipients, senderPaymail string) (users.Transaction, error) {
 	// Send transaction.
 	transaction, err := u.api.SendToRecipients(context.Background(), &commands.SendToRecipients{
 		Recipients: recipients,
@@ -94,7 +93,7 @@ func (u *UserClientAdapter) SendToRecipients(recipients []*commands.Recipients, 
 	}, nil
 }
 
-func (u *UserClientAdapter) GetTransactions(queryParam *filter.QueryParams, userPaymail string) ([]users.Transaction, error) {
+func (u *userClientAdapter) GetTransactions(queryParam *filter.QueryParams, userPaymail string) ([]users.Transaction, error) {
 	if queryParam.OrderByField == "" {
 		queryParam.OrderByField = "created_at"
 	}
@@ -137,7 +136,7 @@ func (u *UserClientAdapter) GetTransactions(queryParam *filter.QueryParams, user
 	return transactionsData, nil
 }
 
-func (u *UserClientAdapter) GetTransaction(transactionID, userPaymail string) (users.FullTransaction, error) {
+func (u *userClientAdapter) GetTransaction(transactionID, userPaymail string) (users.FullTransaction, error) {
 	transaction, err := u.api.Transaction(context.TODO(), transactionID)
 	if err != nil {
 		u.log.Error().Str("transactionId", transactionID).Str("userPaymail", userPaymail).Msgf("Error while getting transaction: %v", err.Error())
@@ -161,11 +160,11 @@ func (u *UserClientAdapter) GetTransaction(transactionID, userPaymail string) (u
 	}, nil
 }
 
-func (u *UserClientAdapter) GetTransactionsCount() (int64, error) {
+func (u *userClientAdapter) GetTransactionsCount() (int64, error) {
 	return 0, nil // Note: Functionality it's not a part of the SPV Wallet Go client.
 }
 
-func (u *UserClientAdapter) CreateAndFinalizeTransaction(recipients []*commands.Recipients, metadata map[string]any) (users.DraftTransaction, error) {
+func (u *userClientAdapter) CreateAndFinalizeTransaction(recipients []*commands.Recipients, metadata map[string]any) (users.DraftTransaction, error) {
 	draftTx, err := u.api.SendToRecipients(context.TODO(), &commands.SendToRecipients{
 		Recipients: recipients,
 		Metadata:   metadata,
@@ -181,8 +180,8 @@ func (u *UserClientAdapter) CreateAndFinalizeTransaction(recipients []*commands.
 	}, nil
 }
 
-func (u *UserClientAdapter) RecordTransaction(hex, draftTxID string, metadata map[string]any) (*models.Transaction, error) {
-	tx, err := u.api.RecordTransaction(context.Background(), &commands.RecordTransaction{
+func (u *userClientAdapter) RecordTransaction(hex, draftTxID string, metadata map[string]any) (*models.Transaction, error) {
+	tx, err := u.api.RecordTransaction(context.TODO(), &commands.RecordTransaction{
 		Metadata:    metadata,
 		Hex:         hex,
 		ReferenceID: draftTxID,
@@ -213,8 +212,8 @@ func (u *UserClientAdapter) RecordTransaction(hex, draftTxID string, metadata ma
 }
 
 // Contacts methods
-func (u *UserClientAdapter) UpsertContact(ctx context.Context, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error) {
-	contact, err := u.api.UpsertContact(context.TODO(), commands.UpsertContact{
+func (u *userClientAdapter) UpsertContact(ctx context.Context, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error) {
+	contact, err := u.api.UpsertContact(ctx, commands.UpsertContact{
 		ContactPaymail:   paymail,
 		FullName:         fullName,
 		Metadata:         metadata,
@@ -234,19 +233,19 @@ func (u *UserClientAdapter) UpsertContact(ctx context.Context, paymail, fullName
 	}, nil
 }
 
-func (u *UserClientAdapter) AcceptContact(ctx context.Context, paymail string) error {
+func (u *userClientAdapter) AcceptContact(ctx context.Context, paymail string) error {
 	return errors.Wrap(u.api.AcceptInvitation(ctx, paymail), "accept contact error")
 }
 
-func (u *UserClientAdapter) RejectContact(ctx context.Context, paymail string) error {
+func (u *userClientAdapter) RejectContact(ctx context.Context, paymail string) error {
 	return errors.Wrap(u.api.RejectInvitation(ctx, paymail), "reject contact error")
 }
 
-func (u *UserClientAdapter) ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) error {
+func (u *userClientAdapter) ConfirmContact(ctx context.Context, contact *models.Contact, passcode, requesterPaymail string, period, digits uint) error {
 	return errors.Wrap(u.api.ConfirmContact(ctx, contact, passcode, requesterPaymail, period, digits), "confirm contact error")
 }
 
-func (u *UserClientAdapter) GetContacts(ctx context.Context, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, error) {
+func (u *userClientAdapter) GetContacts(ctx context.Context, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, error) {
 	opts := []queries.QueryOption[filter.ContactFilter]{
 		queries.QueryWithMetadataFilter[filter.ContactFilter](metadata),
 		queries.QueryWithPageFilter[filter.ContactFilter](filter.Page{
@@ -265,7 +264,7 @@ func (u *UserClientAdapter) GetContacts(ctx context.Context, conditions *filter.
 		}),
 	}
 
-	res, err := u.api.Contacts(context.TODO(), opts...)
+	res, err := u.api.Contacts(ctx, opts...)
 	if err != nil {
 		u.log.Error().Msgf("Error while fetching contacts: %v", err.Error())
 		return nil, errors.Wrap(err, "error while fetching contacts")
@@ -284,27 +283,27 @@ func (u *UserClientAdapter) GetContacts(ctx context.Context, conditions *filter.
 	}, nil
 }
 
-func (u *UserClientAdapter) GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error) {
+func (u *userClientAdapter) GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error) {
 	totp, err := u.api.GenerateTotpForContact(contact, period, digits)
 	return totp, errors.Wrap(err, "error while generating TOTP for contact")
 }
 
-func NewUserClientAdapterWithXPriv(log *zerolog.Logger, xPriv string) (*UserClientAdapter, error) {
+func newUserClientAdapterWithXPriv(log *zerolog.Logger, xPriv string) (*userClientAdapter, error) {
 	serverURL := viper.GetString(config.EnvServerURL)
 	api, err := walletclient.NewUserAPIWithXPriv(walletclientCfg.New(walletclientCfg.WithAddr(serverURL)), xPriv)
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize user API: %w", err)
+		return nil, errors.Wrap(err, "failed to initialize user API")
 	}
 
-	return &UserClientAdapter{api: api, log: log}, nil
+	return &userClientAdapter{api: api, log: log}, nil
 }
 
-func NewUserClientAdapterWithAccessKey(log *zerolog.Logger, accessKey string) (*UserClientAdapter, error) {
+func newUserClientAdapterWithAccessKey(log *zerolog.Logger, accessKey string) (*userClientAdapter, error) {
 	serverURL := viper.GetString(config.EnvServerURL)
 	api, err := walletclient.NewUserAPIWithAccessKey(walletclientCfg.New(walletclientCfg.WithAddr(serverURL)), accessKey)
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize user API: %w", err)
+		return nil, errors.Wrap(err, "failed to initialize user API")
 	}
 
-	return &UserClientAdapter{api: api, log: log}, nil
+	return &userClientAdapter{api: api, log: log}, nil
 }

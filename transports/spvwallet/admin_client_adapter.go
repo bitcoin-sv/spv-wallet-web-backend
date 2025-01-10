@@ -7,37 +7,37 @@ import (
 	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
 	"github.com/bitcoin-sv/spv-wallet-go-client/commands"
 	walletclientCfg "github.com/bitcoin-sv/spv-wallet-go-client/config"
-
 	"github.com/bitcoin-sv/spv-wallet-web-backend/config"
 	"github.com/bitcoin-sv/spv-wallet/models"
 	"github.com/libsv/go-bk/bip32"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 )
 
-type AdminClientAdapter struct {
+type adminClientAdapter struct {
 	log *zerolog.Logger
 	api *walletclient.AdminAPI
 }
 
-func (a *AdminClientAdapter) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
+func (a *adminClientAdapter) RegisterXpub(xpriv *bip32.ExtendedKey) (string, error) {
 	// Get xpub from xpriv.
 	xpub, err := xpriv.Neuter()
 	if err != nil {
-		a.log.Error().Msgf("Error while creating new xPub: %v", err.Error())
-		return "", err
+		a.log.Error().Msgf("Error while returning a new extended public key from the xPriv: %v", err.Error())
+		return "", errors.Wrap(err, "error while returning a new extended public key from the xPriv")
 	}
 
 	_, err = a.api.CreateXPub(context.TODO(), &commands.CreateUserXpub{XPub: xpriv.String()})
 	if err != nil {
-		a.log.Error().Str("xpub", xpub.String()).Msgf("Error while registering new xPub: %v", err.Error())
-		return "", err
+		a.log.Error().Str("xpub", xpub.String()).Msgf("Error while creating new xPub: %v", err.Error())
+		return "", errors.Wrap(err, "error while creating new xPub")
 	}
 
 	return xpub.String(), nil
 }
 
-func (a *AdminClientAdapter) RegisterPaymail(alias, xpub string) (string, error) {
+func (a *adminClientAdapter) RegisterPaymail(alias, xpub string) (string, error) {
 	// Get paymail domain from env.
 	domain := viper.GetString(config.EnvPaymailDomain)
 
@@ -54,18 +54,18 @@ func (a *AdminClientAdapter) RegisterPaymail(alias, xpub string) (string, error)
 		Avatar:     avatar,
 	})
 	if err != nil {
-		a.log.Error().Msgf("Error while registering new paymail: %v", err.Error())
-		return "", err
+		a.log.Error().Msgf("Error while creating new paymail: %v", err.Error())
+		return "", errors.Wrap(err, "error while creating new paymail")
 	}
 
 	return address, nil
 }
 
-func (a *AdminClientAdapter) GetSharedConfig() (*models.SharedConfig, error) {
+func (a *adminClientAdapter) GetSharedConfig() (*models.SharedConfig, error) {
 	sharedConfig, err := a.api.SharedConfig(context.TODO())
 	if err != nil {
-		a.log.Error().Msgf("Error while getting shared config: %v", err.Error())
-		return nil, err
+		a.log.Error().Msgf("Error while fetching shared config: %v", err.Error())
+		return nil, errors.Wrap(err, "error while fetching shared config")
 	}
 
 	return &models.SharedConfig{
@@ -74,13 +74,13 @@ func (a *AdminClientAdapter) GetSharedConfig() (*models.SharedConfig, error) {
 	}, nil
 }
 
-func NewAdminClientAdapter(log *zerolog.Logger) (*AdminClientAdapter, error) {
+func newAdminClientAdapter(log *zerolog.Logger) (*adminClientAdapter, error) {
 	adminKey := viper.GetString(config.EnvAdminXpriv)
 	serverURL := viper.GetString(config.EnvServerURL)
 	api, err := walletclient.NewAdminAPIWithXPriv(walletclientCfg.New(walletclientCfg.WithAddr(serverURL)), adminKey)
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize admin API: %w", err)
+		return nil, errors.Wrap(err, "failed to initialize admin API")
 	}
 
-	return &AdminClientAdapter{api: api, log: log}, nil
+	return &adminClientAdapter{api: api, log: log}, nil
 }

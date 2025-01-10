@@ -12,7 +12,6 @@ import (
 	mock "github.com/bitcoin-sv/spv-wallet-web-backend/tests/mocks"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/tests/utils"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/spvwallet"
-
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/golang/mock/gomock"
 	"github.com/rs/zerolog"
