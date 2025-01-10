@@ -28,7 +28,7 @@ func (a *adminClientAdapter) RegisterXpub(xpriv *bip32.ExtendedKey) (string, err
 		return "", errors.Wrap(err, "error while returning a new extended public key from the xPriv")
 	}
 
-	_, err = a.api.CreateXPub(context.TODO(), &commands.CreateUserXpub{XPub: xpriv.String()})
+	_, err = a.api.CreateXPub(context.Background(), &commands.CreateUserXpub{XPub: xpriv.String()})
 	if err != nil {
 		a.log.Error().Str("xpub", xpub.String()).Msgf("Error while creating new xPub: %v", err.Error())
 		return "", errors.Wrap(err, "error while creating new xPub")
@@ -47,7 +47,7 @@ func (a *adminClientAdapter) RegisterPaymail(alias, xpub string) (string, error)
 	// Get avatar url from env.
 	avatar := viper.GetString(config.EnvPaymailAvatar)
 
-	_, err := a.api.CreatePaymail(context.TODO(), &commands.CreatePaymail{
+	_, err := a.api.CreatePaymail(context.Background(), &commands.CreatePaymail{
 		Key:        xpub,
 		Address:    address,
 		PublicName: alias,
@@ -62,7 +62,7 @@ func (a *adminClientAdapter) RegisterPaymail(alias, xpub string) (string, error)
 }
 
 func (a *adminClientAdapter) GetSharedConfig() (*models.SharedConfig, error) {
-	sharedConfig, err := a.api.SharedConfig(context.TODO())
+	sharedConfig, err := a.api.SharedConfig(context.Background())
 	if err != nil {
 		a.log.Error().Msgf("Error while fetching shared config: %v", err.Error())
 		return nil, errors.Wrap(err, "error while fetching shared config")

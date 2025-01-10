@@ -24,7 +24,7 @@ type userClientAdapter struct {
 }
 
 func (u *userClientAdapter) CreateAccessKey() (users.AccKey, error) {
-	accessKey, err := u.api.GenerateAccessKey(context.TODO(), &commands.GenerateAccessKey{})
+	accessKey, err := u.api.GenerateAccessKey(context.Background(), &commands.GenerateAccessKey{})
 	if err != nil {
 		u.log.Error().Msgf("Error while creating new accessKey: %v", err.Error())
 		return nil, errors.Wrap(err, "error while creating new accessKey ")
@@ -34,7 +34,7 @@ func (u *userClientAdapter) CreateAccessKey() (users.AccKey, error) {
 }
 
 func (u *userClientAdapter) GetAccessKey(accessKeyID string) (users.AccKey, error) {
-	accessKey, err := u.api.AccessKey(context.TODO(), accessKeyID)
+	accessKey, err := u.api.AccessKey(context.Background(), accessKeyID)
 	if err != nil {
 		u.log.Error().Str("accessKeyID", accessKeyID).Msgf("Error while getting accessKey: %v", err.Error())
 		return nil, errors.Wrap(err, "error while getting accessKey")
@@ -44,13 +44,13 @@ func (u *userClientAdapter) GetAccessKey(accessKeyID string) (users.AccKey, erro
 }
 
 func (u *userClientAdapter) RevokeAccessKey(accessKeyID string) (users.AccKey, error) {
-	accessKey, err := u.api.AccessKey(context.TODO(), accessKeyID)
+	accessKey, err := u.api.AccessKey(context.Background(), accessKeyID)
 	if err != nil {
 		u.log.Error().Str("accessKeyID", accessKeyID).Msgf("Error while fetching accessKey: %v", err.Error())
 		return nil, errors.Wrap(err, "error while fetching accessKey")
 	}
 
-	err = u.api.RevokeAccessKey(context.TODO(), accessKeyID)
+	err = u.api.RevokeAccessKey(context.Background(), accessKeyID)
 	if err != nil {
 		u.log.Error().Str("accessKeyID", accessKeyID).Msgf("Error while revoking accessKey: %v", err.Error())
 		return nil, errors.Wrap(err, "error while revoking accessKey")
@@ -61,7 +61,7 @@ func (u *userClientAdapter) RevokeAccessKey(accessKeyID string) (users.AccKey, e
 
 // XPub Key methods
 func (u *userClientAdapter) GetXPub() (users.PubKey, error) {
-	xpub, err := u.api.XPub(context.TODO())
+	xpub, err := u.api.XPub(context.Background())
 	if err != nil {
 		u.log.Error().Msgf("Error while getting new xPub: %v", err.Error())
 		return nil, errors.Wrap(err, "error while getting new xPub")
@@ -102,7 +102,7 @@ func (u *userClientAdapter) GetTransactions(queryParam *filter.QueryParams, user
 		queryParam.SortDirection = "desc"
 	}
 
-	page, err := u.api.Transactions(context.TODO(), queries.QueryWithPageFilter[filter.TransactionFilter](filter.Page{
+	page, err := u.api.Transactions(context.Background(), queries.QueryWithPageFilter[filter.TransactionFilter](filter.Page{
 		Number: queryParam.Page,
 		Size:   queryParam.PageSize,
 		Sort:   queryParam.SortDirection,
@@ -137,7 +137,7 @@ func (u *userClientAdapter) GetTransactions(queryParam *filter.QueryParams, user
 }
 
 func (u *userClientAdapter) GetTransaction(transactionID, userPaymail string) (users.FullTransaction, error) {
-	transaction, err := u.api.Transaction(context.TODO(), transactionID)
+	transaction, err := u.api.Transaction(context.Background(), transactionID)
 	if err != nil {
 		u.log.Error().Str("transactionId", transactionID).Str("userPaymail", userPaymail).Msgf("Error while getting transaction: %v", err.Error())
 		return nil, errors.Wrap(err, "error while getting transaction")
@@ -165,7 +165,7 @@ func (u *userClientAdapter) GetTransactionsCount() (int64, error) {
 }
 
 func (u *userClientAdapter) CreateAndFinalizeTransaction(recipients []*commands.Recipients, metadata map[string]any) (users.DraftTransaction, error) {
-	draftTx, err := u.api.SendToRecipients(context.TODO(), &commands.SendToRecipients{
+	draftTx, err := u.api.SendToRecipients(context.Background(), &commands.SendToRecipients{
 		Recipients: recipients,
 		Metadata:   metadata,
 	})
@@ -181,7 +181,7 @@ func (u *userClientAdapter) CreateAndFinalizeTransaction(recipients []*commands.
 }
 
 func (u *userClientAdapter) RecordTransaction(hex, draftTxID string, metadata map[string]any) (*models.Transaction, error) {
-	tx, err := u.api.RecordTransaction(context.TODO(), &commands.RecordTransaction{
+	tx, err := u.api.RecordTransaction(context.Background(), &commands.RecordTransaction{
 		Metadata:    metadata,
 		Hex:         hex,
 		ReferenceID: draftTxID,
