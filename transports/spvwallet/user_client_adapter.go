@@ -192,7 +192,7 @@ func (u *userClientAdapter) RecordTransaction(hex, draftTxID string, metadata ma
 	}
 
 	return &models.Transaction{
-		Model:                common.Model{},
+		Model:                common.Model(tx.Model),
 		ID:                   tx.ID,
 		Hex:                  tx.Hex,
 		XpubInIDs:            tx.XpubInIDs,
