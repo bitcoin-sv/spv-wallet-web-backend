@@ -175,7 +175,7 @@ func (u *userClientAdapter) CreateAndFinalizeTransaction(recipients []*commands.
 	}
 
 	return &DraftTransaction{
-		TxDraftID: draftTx.ID,
+		TxDraftID: draftTx.DraftID,
 		TxHex:     draftTx.Hex,
 	}, nil
 }
