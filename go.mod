@@ -6,8 +6,8 @@ toolchain go1.22.6
 
 require (
 	github.com/avast/retry-go/v4 v4.6.0
-	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.16
-	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.34
+	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.21
+	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.39
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/centrifugal/centrifuge v0.33.6
 	github.com/gin-contrib/sessions v1.0.2
@@ -28,7 +28,7 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/antonlindstrom/pgstore v0.0.0-20220421113606-e3a6e3fed12a // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/bitcoin-sv/go-sdk v1.1.14 // indirect
+	github.com/bitcoin-sv/go-sdk v1.1.16 // indirect
 	github.com/boombuler/barcode v1.0.2 // indirect
 	github.com/bytedance/sonic v1.11.9 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
@@ -48,6 +48,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.22.0 // indirect
+	github.com/go-resty/resty/v2 v2.15.3 // indirect
 	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/context v1.1.2 // indirect
