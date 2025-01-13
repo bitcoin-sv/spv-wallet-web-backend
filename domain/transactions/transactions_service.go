@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/avast/retry-go/v4"
-	walletclient "github.com/bitcoin-sv/spv-wallet-go-client"
+	"github.com/bitcoin-sv/spv-wallet-go-client/commands"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/notification"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
@@ -38,17 +38,8 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 		return spverrors.ErrCreateTransaction.Wrap(err)
 	}
 
-	var recipients = []*walletclient.Recipients{
-		{
-			Satoshis: satoshis,
-			To:       recipient,
-		},
-	}
-
-	metadata := map[string]any{
-		"receiver": recipient,
-		"sender":   userPaymail,
-	}
+	recipients := []*commands.Recipients{{Satoshis: satoshis, To: recipient}}
+	metadata := map[string]any{"receiver": recipient, "sender": userPaymail}
 
 	draftTransaction, err := userWalletClient.CreateAndFinalizeTransaction(recipients, metadata)
 	if err != nil {
@@ -57,6 +48,10 @@ func (s *TransactionService) CreateTransaction(userPaymail, xpriv, recipient str
 	}
 
 	go func() {
+		if err == nil {
+			return
+		}
+
 		tx, err := tryRecordTransaction(userWalletClient, draftTransaction, metadata, s.log)
 		if err != nil {
 			events <- notification.PrepareTransactionErrorEvent(err)

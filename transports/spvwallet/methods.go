@@ -1,12 +1,14 @@
 package spvwallet
 
 import (
-	"github.com/bitcoin-sv/spv-wallet/models"
+	"math"
+
+	"github.com/bitcoin-sv/spv-wallet/models/response"
 )
 
 // GetPaymailsFromMetadata returns sender and receiver paymails from metadata.
 // If no paymail was found in metadata, fallback paymail is returned.
-func GetPaymailsFromMetadata(transaction *models.Transaction, fallbackPaymail string) (string, string) {
+func GetPaymailsFromMetadata(transaction *response.Transaction, fallbackPaymail string) (string, string) {
 	senderPaymail := ""
 	receiverPaymail := ""
 
@@ -41,4 +43,8 @@ func GetPaymailsFromMetadata(transaction *models.Transaction, fallbackPaymail st
 	}
 
 	return senderPaymail, receiverPaymail
+}
+
+func getAbsoluteValue(value int64) uint64 {
+	return uint64(math.Abs(float64(value)))
 }
