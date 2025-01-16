@@ -28,7 +28,7 @@ func (a *adminClientAdapter) RegisterXpub(xpriv *bip32.ExtendedKey) (string, err
 		return "", errors.Wrap(err, "error while returning a new extended public key from the xPriv")
 	}
 
-	_, err = a.api.CreateXPub(context.Background(), &commands.CreateUserXpub{XPub: xpriv.String()})
+	_, err = a.api.CreateXPub(context.Background(), &commands.CreateUserXpub{XPub: xpub.String()})
 	if err != nil {
 		a.log.Error().Str("xpub", xpub.String()).Msgf("Error while creating new xPub: %v", err.Error())
 		return "", errors.Wrap(err, "error while creating new xPub")
