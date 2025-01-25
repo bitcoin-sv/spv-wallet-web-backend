@@ -6,7 +6,7 @@ toolchain go1.22.6
 
 require (
 	github.com/avast/retry-go/v4 v4.6.0
-	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.21
+	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.22
 	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.39
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/centrifugal/centrifuge v0.34.0
