@@ -9,7 +9,7 @@ require (
 	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.21
 	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.39
 	github.com/brianvoe/gofakeit/v6 v6.28.0
-	github.com/centrifugal/centrifuge v0.33.6
+	github.com/centrifugal/centrifuge v0.34.0
 	github.com/gin-contrib/sessions v1.0.2
 	github.com/golang/mock v1.6.0
 	github.com/libsv/go-bk v0.1.6
@@ -32,7 +32,7 @@ require (
 	github.com/boombuler/barcode v1.0.2 // indirect
 	github.com/bytedance/sonic v1.11.9 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
-	github.com/centrifugal/protocol v0.13.4 // indirect
+	github.com/centrifugal/protocol v0.14.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
@@ -75,7 +75,7 @@ require (
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/quasoft/memstore v0.0.0-20191010062613-2bce066d2b0b // indirect
-	github.com/redis/rueidis v1.0.52 // indirect
+	github.com/redis/rueidis v1.0.53 // indirect
 	github.com/sagikazarmark/locafero v0.6.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
@@ -93,7 +93,7 @@ require (
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/tools v0.24.0 // indirect
-	google.golang.org/protobuf v1.35.1 // indirect
+	google.golang.org/protobuf v1.36.3 // indirect
 )
 
 require (
