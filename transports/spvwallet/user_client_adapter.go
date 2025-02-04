@@ -248,20 +248,28 @@ func (u *userClientAdapter) ConfirmContact(ctx context.Context, contact *models.
 func (u *userClientAdapter) GetContacts(ctx context.Context, conditions *filter.ContactFilter, metadata map[string]any, queryParams *filter.QueryParams) (*models.SearchContactsResponse, error) {
 	opts := []queries.QueryOption[filter.ContactFilter]{
 		queries.QueryWithMetadataFilter[filter.ContactFilter](metadata),
-		queries.QueryWithPageFilter[filter.ContactFilter](filter.Page{
-			Number: queryParams.Page,
-			Size:   queryParams.PageSize,
-			Sort:   queryParams.SortDirection,
-			SortBy: queryParams.OrderByField,
-		}),
-		queries.QueryWithFilter(filter.ContactFilter{
-			ModelFilter: conditions.ModelFilter,
-			ID:          conditions.ID,
-			FullName:    conditions.FullName,
-			Paymail:     conditions.Paymail,
-			PubKey:      conditions.PubKey,
-			Status:      conditions.Status,
-		}),
+	}
+
+	if queryParams != nil {
+		opts = append(opts,
+			queries.QueryWithPageFilter[filter.ContactFilter](filter.Page{
+				Number: queryParams.Page,
+				Size:   queryParams.PageSize,
+				Sort:   queryParams.SortDirection,
+				SortBy: queryParams.OrderByField,
+			}))
+	}
+
+	if conditions != nil {
+		opts = append(opts,
+			queries.QueryWithFilter(filter.ContactFilter{
+				ModelFilter: conditions.ModelFilter,
+				ID:          conditions.ID,
+				FullName:    conditions.FullName,
+				Paymail:     conditions.Paymail,
+				PubKey:      conditions.PubKey,
+				Status:      conditions.Status,
+			}))
 	}
 
 	res, err := u.api.Contacts(ctx, opts...)
@@ -270,17 +278,33 @@ func (u *userClientAdapter) GetContacts(ctx context.Context, conditions *filter.
 		return nil, errors.Wrap(err, "error while fetching contacts")
 	}
 
+	content := make([]*models.Contact, len(res.Content))
+	for i, c := range res.Content {
+		content[i] =  &models.Contact{
+			Model:    common.Model(c.Model),
+			FullName: c.FullName,
+			ID:       c.ID,
+			Paymail:  c.Paymail,
+			PubKey:   c.PubKey,
+			Status:   c.Status,
+		}
+	}
+
+	page := models.Page{
+		TotalElements: int64(res.Page.TotalElements),
+		TotalPages:    res.Page.TotalPages,
+		Size:          res.Page.Size,
+		Number:        res.Page.Number,
+	}
+
+	if queryParams != nil {
+		page.OrderByField = &queryParams.OrderByField
+		page.SortDirection = &queryParams.SortDirection
+	}
+
 	return &models.SearchContactsResponse{
-		Content: []*models.Contact{},
-		Page: models.Page{
-			OrderByField:  &queryParams.OrderByField,
-			SortDirection: &queryParams.SortDirection,
-			TotalElements: int64(res.Page.TotalElements),
-			TotalPages:    res.Page.TotalPages,
-			Size:          res.Page.Size,
-			Number:        res.Page.Number,
-		},
-	}, nil
+		Content: content,
+		Page:    page}, nil
 }
 
 func (u *userClientAdapter) GenerateTotpForContact(contact *models.Contact, period, digits uint) (string, error) {
