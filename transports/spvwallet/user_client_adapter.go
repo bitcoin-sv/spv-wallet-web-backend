@@ -280,7 +280,7 @@ func (u *userClientAdapter) GetContacts(ctx context.Context, conditions *filter.
 
 	content := make([]*models.Contact, len(res.Content))
 	for i, c := range res.Content {
-		content[i] =  &models.Contact{
+		content[i] = &models.Contact{
 			Model:    common.Model(c.Model),
 			FullName: c.FullName,
 			ID:       c.ID,
