@@ -9,7 +9,7 @@ require (
 	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.23
 	github.com/bitcoin-sv/spv-wallet/models v1.0.0-beta.40
 	github.com/brianvoe/gofakeit/v6 v6.28.0
-	github.com/centrifugal/centrifuge v0.34.0
+	github.com/centrifugal/centrifuge v0.34.2
 	github.com/gin-contrib/sessions v1.0.2
 	github.com/golang/mock v1.6.0
 	github.com/libsv/go-bk v0.1.6
@@ -24,7 +24,7 @@ require (
 )
 
 require (
-	github.com/FZambia/eagle v0.1.0 // indirect
+	github.com/FZambia/eagle v0.2.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/antonlindstrom/pgstore v0.0.0-20220421113606-e3a6e3fed12a // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -99,7 +99,7 @@ require (
 require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gin-gonic/gin v1.10.0
-	github.com/golang-migrate/migrate/v4 v4.18.1
+	github.com/golang-migrate/migrate/v4 v4.18.2
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/lib/pq v1.10.9
 	github.com/magiconair/properties v1.8.7 // indirect
