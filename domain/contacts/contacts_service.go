@@ -30,8 +30,8 @@ func NewContactsService(adminWalletClient users.AdminWalletClient, walletClientF
 }
 
 // UpsertContact creates or updates a contact
-func (s *Service) UpsertContact(ctx context.Context, accessKey, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error) {
-	userWalletClient, err := s.walletClientFactory.CreateWithAccessKey(accessKey)
+func (s *Service) UpsertContact(ctx context.Context, xPriv, paymail, fullName, requesterPaymail string, metadata map[string]any) (*models.Contact, error) {
+	userWalletClient, err := s.walletClientFactory.CreateWithXpriv(xPriv)
 	if err != nil {
 		return nil, spverrors.ErrUpsertContact.Wrap(err)
 	}

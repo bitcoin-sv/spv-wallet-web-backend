@@ -5,6 +5,7 @@ import (
 
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/contacts"
+	"github.com/bitcoin-sv/spv-wallet-web-backend/domain/users"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/spverrors"
 	"github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/auth"
 	router "github.com/bitcoin-sv/spv-wallet-web-backend/transports/http/endpoints/routes"
@@ -15,6 +16,7 @@ import (
 )
 
 type handler struct {
+	uService users.UserService
 	cService contacts.Service
 	log      *zerolog.Logger
 }
@@ -22,6 +24,7 @@ type handler struct {
 // NewHandler creates new endpoint handler.
 func NewHandler(s *domain.Services, log *zerolog.Logger) router.APIEndpoints {
 	return &handler{
+		uService: *s.UsersService,
 		cService: *s.ContactsService,
 		log:      log,
 	}
@@ -81,7 +84,7 @@ func (h *handler) upsertContact(c *gin.Context) {
 		return
 	}
 
-	_, err := h.cService.UpsertContact(c.Request.Context(), c.GetString(auth.SessionAccessKey), paymail, req.FullName, c.GetString(auth.SessionUserPaymail), req.Metadata)
+	_, err := h.cService.UpsertContact(c.Request.Context(), c.GetString(auth.SessionXPriv), paymail, req.FullName, c.GetString(auth.SessionUserPaymail), req.Metadata)
 	if err != nil {
 		spverrors.ErrorResponse(c, err, h.log)
 		return
