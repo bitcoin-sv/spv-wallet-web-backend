@@ -1,6 +1,7 @@
 module github.com/bitcoin-sv/spv-wallet-web-backend
 
-go 1.22.5
+go 1.24.0
+
 require (
 	github.com/avast/retry-go/v4 v4.6.0
 	github.com/bitcoin-sv/spv-wallet-go-client v1.0.0-beta.25
